@@ -26,6 +26,12 @@ const {
 	getFutureEvents,
 	updateFutureEvent,
 	deleteFutureEvent,
+	updatePeriodBudget,
+	deletePeriodBudget,
+	createExpenseRequest,
+	getExpenseRequests,
+	approveExpenseRequest,
+	rejectExpenseRequest,
 } = require('../controllers/BudgetController');
 
 const budgetRouter = express.Router();
@@ -55,11 +61,19 @@ budgetRouter.post('/periods', restrictTo('Parent'), createPeriodBudget);
 budgetRouter.get('/periods', restrictTo('Parent'), getPeriodBudgets);
 budgetRouter.get('/inventory-summary', getInventoryBudgetSummary);
 budgetRouter.get('/periods/:periodBudgetId', restrictTo('Parent'), getPeriodBudgetDetails);
+budgetRouter.patch('/periods/:periodBudgetId', restrictTo('Parent'), updatePeriodBudget);
+budgetRouter.delete('/periods/:periodBudgetId', restrictTo('Parent'), deletePeriodBudget);
 budgetRouter.put('/periods/:periodBudgetId/allocations', restrictTo('Parent'), setPeriodBudgetAllocations);
 budgetRouter.put('/periods/:periodBudgetId/allowances', restrictTo('Parent'), setPeriodMemberAllowances);
 budgetRouter.get('/periods/:periodBudgetId/allowances', restrictTo('Parent'), getPeriodMemberAllowances);
 
 // Withdrawal tracking against allocations with parent notifications
 budgetRouter.post('/allocations/:allocationId/withdrawals', recordAllocationWithdrawal);
+
+// Child expense requests
+budgetRouter.post('/expense-requests', createExpenseRequest);
+budgetRouter.get('/expense-requests', restrictTo('Parent'), getExpenseRequests);
+budgetRouter.patch('/expense-requests/:expenseId/approve', restrictTo('Parent'), approveExpenseRequest);
+budgetRouter.patch('/expense-requests/:expenseId/reject', restrictTo('Parent'), rejectExpenseRequest);
 
 module.exports = budgetRouter;

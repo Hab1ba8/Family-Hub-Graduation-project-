@@ -85,6 +85,16 @@ const expenseSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'FutureEvent',
 		default: null
+	},
+	request_status: {
+		type: String,
+		enum: ['pending', 'approved', 'rejected'],
+		default: null
+	},
+	expense_scope: {
+		type: String,
+		enum: ['shared', 'personal'],
+		default: 'shared'
 	}
 }, {
 	timestamps: true

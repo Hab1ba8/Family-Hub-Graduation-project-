@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../core/styling/responsive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/services/api_service.dart';
@@ -6,6 +7,40 @@ import '../core/localization/app_i18n.dart';
 import '../core/widgets/language_switch_chip.dart';
 import 'home.dart';
 import 'manage_accounts_page.dart';
+
+// ─── Shared input decoration ────────────────────────────────────────────────
+InputDecoration _fieldDeco(String hint, IconData icon, {Widget? suffix}) {
+  return InputDecoration(
+    hintText: hint,
+    hintStyle: const TextStyle(color: Color(0xFFAAAAAA), fontSize: 14),
+    prefixIcon: Icon(icon, color: const Color(0xFF4CAF50), size: 20),
+    suffixIcon: suffix,
+    filled: true,
+    fillColor: const Color(0xFFF7FAF7),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: Color(0xFFD4E8D4)),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: Color(0xFFD4E8D4)),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: Color(0xFF4CAF50), width: 1.5),
+    ),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+  );
+}
+
+// ─── Shared primary button style ────────────────────────────────────────────
+ButtonStyle _primaryBtn() => ElevatedButton.styleFrom(
+  backgroundColor: const Color(0xFF2E7D32),
+  foregroundColor: Colors.white,
+  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+  elevation: 3,
+  shadowColor: const Color(0xFF2E7D32).withOpacity(0.35),
+);
 
 // ================= LOGIN PAGE =================
 class LoginPage extends StatefulWidget {
@@ -378,11 +413,11 @@ class _LoginPageState extends State<LoginPage> {
                 
                 // Welcome Back Text
                 Text(
-                  _t('Welcome Back !', 'مرحباً بعودتك!'),
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                  _t('Welcome Back!', 'مرحباً بعودتك!'),
+                  style: GoogleFonts.poppins(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF1A1A1A),
                   ),
                 ),
                 if (_savedProfiles.isNotEmpty) const SizedBox(height: 16),
@@ -443,164 +478,48 @@ class _LoginPageState extends State<LoginPage> {
                       },
                     ),
                   ),
-                const SizedBox(height: 32),
-                
+                const SizedBox(height: 28),
+
                 // Email TextField
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: TextField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      hintText: _t('Email', 'البريد الإلكتروني'),
-                      hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 16,
-                      ),
-                    ),
+                TextField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: _fieldDeco(
+                    _t('Email', 'البريد الإلكتروني'),
+                    Icons.email_outlined,
                   ),
                 ),
-                const SizedBox(height: 16),
-                const SizedBox(height: 24),
-                
-                // Login Button
+                const SizedBox(height: 20),
+
+                // Continue Button
                 SizedBox(
                   width: double.infinity,
-                  height: 48,
+                  height: 52,
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _handleEmailSubmit,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4CAF50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      elevation: 0,
-                    ),
+                    style: _primaryBtn(),
                     child: _isLoading
                         ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                           )
                         : Text(
                             _t('Continue', 'متابعة'),
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white,
-                            ),
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                           ),
                   ),
                 ),
-                const SizedBox(height: 20),
-                
-                // Security Message
+                const SizedBox(height: 16),
+
+                // Security note
                 Text(
-                  _t('Your password is securely encrypted using top-tier technology', 'كلمة المرور الخاصة بك مشفرة بأعلى مستوى من الأمان'),
+                  _t('Your data is securely encrypted', 'بياناتك مشفرة بالكامل'),
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.black45,
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                
-                // Divider with text
-                Row(
-                  children: [
-                    const Expanded(child: Divider(color: Colors.black26)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        _t('Or sign in with', 'أو سجّل الدخول باستخدام'),
-                        style: const TextStyle(
-                          color: Colors.black45,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                    const Expanded(child: Divider(color: Colors.black26)),
-                  ],
+                  style: const TextStyle(color: Color(0xFF999999), fontSize: 12),
                 ),
                 const SizedBox(height: 20),
-                
-                // Social Login Buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Facebook Button
-                    InkWell(
-                      onTap: () {},
-                      child: Container(
-                        width: 48,
-                        height: 48,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF1877F2),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.facebook,
-                          color: Colors.white,
-                          size: 26,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 24),
-                    
-                    // Google Button
-                    InkWell(
-                      onTap: () {},
-                      child: Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.grey.shade300),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Image.network(
-                            'https://www.google.com/favicon.ico',
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(Icons.g_mobiledata, size: 26);
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 24),
-                    
-                    // Apple Button
-                    InkWell(
-                      onTap: () {},
-                      child: Container(
-                        width: 48,
-                        height: 48,
-                        decoration: const BoxDecoration(
-                          color: Colors.black,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.apple,
-                          color: Colors.white,
-                          size: 26,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                
+
                 // Sign Up Link
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -1013,112 +932,96 @@ class _FamilyPasswordLoginPageState extends State<FamilyPasswordLoginPage> {
                 const SizedBox(height: 8),
                 Text(
                   _t('Continue Login', 'متابعة تسجيل الدخول'),
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                  style: GoogleFonts.poppins(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF1A1A1A),
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  widget.email,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.black54,
-                  ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    const Icon(Icons.email_outlined, size: 14, color: Color(0xFF4CAF50)),
+                    const SizedBox(width: 6),
+                    Text(
+                      widget.email,
+                      style: const TextStyle(fontSize: 13, color: Color(0xFF555555)),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
+
+                // Family picker
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
+                    color: const Color(0xFFF7FAF7),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFD4E8D4)),
                   ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      isExpanded: true,
-                      value: _selectedFamilyId,
-                      hint: Text(_t('Select family', 'اختر العائلة')),
-                      items: widget.families.map((family) {
-                        final familyId = family['family_id']?.toString() ?? '';
-                        final title = family['familyTitle']?.toString() ?? _t('Family', 'العائلة');
-                        final username = family['username']?.toString() ?? '';
-                        return DropdownMenuItem<String>(
-                          value: familyId,
-                          child: Text('$title ($username)'),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedFamilyId = value;
-                        });
-                      },
-                    ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.family_restroom, color: Color(0xFF4CAF50), size: 20),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            isExpanded: true,
+                            value: _selectedFamilyId,
+                            hint: Text(_t('Select family', 'اختر العائلة'),
+                                style: const TextStyle(color: Color(0xFFAAAAAA), fontSize: 14)),
+                            items: widget.families.map((family) {
+                              final familyId = family['family_id']?.toString() ?? '';
+                              final title = family['familyTitle']?.toString() ?? _t('Family', 'العائلة');
+                              final username = family['username']?.toString() ?? '';
+                              return DropdownMenuItem<String>(
+                                value: familyId,
+                                child: Text('$title ($username)'),
+                              );
+                            }).toList(),
+                            onChanged: (value) => setState(() => _selectedFamilyId = value),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 16),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: TextField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      hintText: _t('Password', 'كلمة المرور'),
-                      hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
-                      border: const OutlineInputBorder(
-                        borderSide: BorderSide.none,
+                const SizedBox(height: 14),
+
+                // Password field
+                TextField(
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
+                  decoration: _fieldDeco(
+                    _t('Password', 'كلمة المرور'),
+                    Icons.lock_outline,
+                    suffix: IconButton(
+                      icon: Icon(
+                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                        color: const Color(0xFF888888),
+                        size: 20,
                       ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 16,
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                          color: Colors.grey,
-                          size: 22,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
+                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                     ),
                   ),
                 ),
                 const SizedBox(height: 24),
+
                 SizedBox(
                   width: double.infinity,
-                  height: 48,
+                  height: 52,
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _handleLogin,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4CAF50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      elevation: 0,
-                    ),
+                    style: _primaryBtn(),
                     child: _isLoading
                         ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                           )
                         : Text(
                             _t('Log In', 'تسجيل الدخول'),
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white,
-                            ),
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                           ),
                   ),
                 ),
@@ -1335,12 +1238,18 @@ class _SignUpPageState extends State<SignUpPage> {
                 
                 // Title
                 Text(
-                  _t('Create Your Parent Account', 'أنشئ حساب ولي الأمر'),
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                  _t('Create Your Account', 'أنشئ حسابك'),
+                  style: GoogleFonts.poppins(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF1A1A1A),
                   ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _t('Family admin — you manage the whole hub', 'مدير العائلة — أنت تدير كل شيء'),
+                  style: const TextStyle(fontSize: 12, color: Color(0xFF888888)),
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 40),
                 
@@ -1348,156 +1257,94 @@ class _SignUpPageState extends State<SignUpPage> {
                 _buildTextField(
                   controller: _emailController,
                   hintText: _t('Email', 'البريد الإلكتروني'),
+                  icon: Icons.email_outlined,
                   keyboardType: TextInputType.emailAddress,
                 ),
-                const SizedBox(height: 16),
-                
+                const SizedBox(height: 14),
+
                 // Birthdate TextField
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: TextField(
-                    controller: _birthdateController,
-                    readOnly: true,
-                    onTap: () => _selectDate(context),
-                    decoration: InputDecoration(
-                      hintText: _t('Birthdate', 'تاريخ الميلاد'),
-                      hintStyle: TextStyle(color: Colors.grey),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 16,
-                      ),
-                      suffixIcon: Icon(
-                        Icons.calendar_today,
-                        color: Colors.grey,
-                      ),
-                    ),
+                TextField(
+                  controller: _birthdateController,
+                  readOnly: true,
+                  onTap: () => _selectDate(context),
+                  decoration: _fieldDeco(
+                    _t('Birthdate', 'تاريخ الميلاد'),
+                    Icons.cake_outlined,
+                    suffix: const Icon(Icons.calendar_today, color: Color(0xFF4CAF50), size: 18),
                   ),
                 ),
-                const SizedBox(height: 16),
-                
+                const SizedBox(height: 14),
+
                 // Family Title TextField
                 _buildTextField(
                   controller: _familyTitleController,
                   hintText: _t('Family Title', 'اسم العائلة'),
+                  icon: Icons.home_outlined,
                 ),
-                const SizedBox(height: 16),
-                
+                const SizedBox(height: 14),
+
                 // Username TextField
                 _buildTextField(
                   controller: _usernameController,
                   hintText: _t('Username', 'اسم المستخدم'),
+                  icon: Icons.person_outline,
                 ),
-                const SizedBox(height: 16),
-                
+                const SizedBox(height: 14),
+
                 // Password TextField
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: TextField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      hintText: _t('Password', 'كلمة المرور'),
-                      hintStyle: const TextStyle(color: Colors.grey),
-                      border: const OutlineInputBorder(
-                        borderSide: BorderSide.none,
+                TextField(
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
+                  decoration: _fieldDeco(
+                    _t('Password', 'كلمة المرور'),
+                    Icons.lock_outline,
+                    suffix: IconButton(
+                      icon: Icon(
+                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                        color: const Color(0xFF888888),
+                        size: 20,
                       ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 16,
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          color: Colors.grey,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
+                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
-                
+                const SizedBox(height: 14),
+
                 // Confirm Password TextField
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: TextField(
-                    controller: _confirmPasswordController,
-                    obscureText: _obscureConfirmPassword,
-                    decoration: InputDecoration(
-                      hintText: _t('Confirm Password', 'تأكيد كلمة المرور'),
-                      hintStyle: const TextStyle(color: Colors.grey),
-                      border: const OutlineInputBorder(
-                        borderSide: BorderSide.none,
+                TextField(
+                  controller: _confirmPasswordController,
+                  obscureText: _obscureConfirmPassword,
+                  decoration: _fieldDeco(
+                    _t('Confirm Password', 'تأكيد كلمة المرور'),
+                    Icons.lock_outline,
+                    suffix: IconButton(
+                      icon: Icon(
+                        _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                        color: const Color(0xFF888888),
+                        size: 20,
                       ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 16,
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscureConfirmPassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          color: Colors.grey,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscureConfirmPassword = !_obscureConfirmPassword;
-                          });
-                        },
-                      ),
+                      onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
                     ),
                   ),
                 ),
-                const SizedBox(height: 32),
-                
+                const SizedBox(height: 28),
+
                 // Sign Up Button
                 SizedBox(
                   width: double.infinity,
-                  height: 50,
+                  height: 52,
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _handleSignUp,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4CAF50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      elevation: 0,
-                    ),
+                    style: _primaryBtn(),
                     child: _isLoading
                         ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                           )
                         : Text(
                             _t('Sign Up', 'إنشاء حساب'),
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white,
-                            ),
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                           ),
                   ),
                 ),
@@ -1542,28 +1389,13 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget _buildTextField({
     required TextEditingController controller,
     required String hintText,
+    IconData icon = Icons.edit_outlined,
     TextInputType? keyboardType,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: TextField(
-        controller: controller,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: const TextStyle(color: Colors.grey),
-          border: const OutlineInputBorder(
-            borderSide: BorderSide.none,
-          ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 16,
-          ),
-        ),
-      ),
+    return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
+      decoration: _fieldDeco(hintText, icon),
     );
   }
 }

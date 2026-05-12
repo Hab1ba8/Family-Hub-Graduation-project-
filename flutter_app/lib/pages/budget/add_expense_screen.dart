@@ -21,7 +21,6 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   bool _isEmergency = false;
   bool _isLoading = false;
   XFile? _receiptImage;
-  String? _receiptPhotoUrl;
 
   List<Map<String, dynamic>> get _categories {
     final raw = List<Map<String, dynamic>>.from(widget.budget['categories'] ?? []);
@@ -54,12 +53,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     final picker = ImagePicker();
     final img = await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
     if (img != null) {
-      setState(() {
-        _receiptImage = img;
-        // In production: upload to cloud storage and set _receiptPhotoUrl
-        // For now we use the local path as URL placeholder
-        _receiptPhotoUrl = img.path;
-      });
+      setState(() => _receiptImage = img);
     }
   }
 
@@ -80,36 +74,59 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     setState(() => _isLoading = true);
     try {
       final provider = context.read<FamilyBudgetProvider>();
-      await provider.createExpense({
-        'budget_id': widget.budget['_id'],
-        'budget_category_id': _selectedCategoryId,
-        'amount': amount,
-        'expense_date': _expenseDate.toIso8601String(),
-        'description': _descCtrl.text.trim(),
-        'is_emergency': _isEmergency,
-        'receipt_photo_url': _receiptPhotoUrl,
-        'source_module': 'manual',
-        'expense_scope': _expenseScope,
-        'title': _descCtrl.text.trim().isEmpty
-            ? '${_expenseScope == 'personal' ? 'Personal' : 'Shared'} expense'
-            : _descCtrl.text.trim(),
-        'category': _selectedCategoryId == null
+      final isParent = provider.isParentUser;
+      final title = _descCtrl.text.trim().isEmpty
+          ? '${_expenseScope == 'personal' ? 'Personal' : 'Shared'} expense'
+          : _descCtrl.text.trim();
+      final categoryName = _selectedCategoryId == null
           ? 'General'
-          : (categories
-              .firstWhere((cat) => cat['_id'] == _selectedCategoryId,
+          : (categories.firstWhere(
+                (cat) => cat['_id'] == _selectedCategoryId,
                 orElse: () => {})['name'] ??
-            'General'),
-      });
-      if (mounted) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Expense added!'),
-              backgroundColor: Color(0xFF388E3C)));
+              'General');
+
+      if (!isParent && _expenseScope == 'shared') {
+        // Child submitting a shared expense → request flow
+        await provider.submitExpenseRequest({
+          'budget_id': widget.budget['_id'],
+          'budget_category_id': _selectedCategoryId,
+          'amount': amount,
+          'description': _descCtrl.text.trim(),
+          'title': title,
+        });
+        if (mounted) {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Request submitted! Waiting for parent approval.'),
+                backgroundColor: Color(0xFF1565C0)));
+        }
+      } else {
+        // Parent or personal expense → direct
+        await provider.createExpense({
+          'budget_id': widget.budget['_id'],
+          'budget_category_id': _selectedCategoryId,
+          'amount': amount,
+          'expense_date': _expenseDate.toIso8601String(),
+          'description': _descCtrl.text.trim(),
+          'source_module': 'manual',
+          'expense_scope': _expenseScope,
+          'title': title,
+          'category': categoryName,
+        });
+        if (mounted) {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Expense added!'),
+                backgroundColor: Color(0xFF388E3C)));
+        }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')),
+          SnackBar(
+              content: Text(e.toString().replaceAll('Exception: ', '')),
               backgroundColor: Colors.red));
       }
     } finally {

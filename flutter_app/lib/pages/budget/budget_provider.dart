@@ -227,7 +227,8 @@ class FamilyBudgetProvider extends ChangeNotifier {
       );
       final data = jsonDecode(res.body);
       if (res.statusCode == 200) {
-        selectedBudget = data['data']['budget'];
+        final raw = data['data']['period_budget'];
+        selectedBudget = raw != null ? _normalizeBudget(Map<String, dynamic>.from(raw)) : null;
         await loadExpenses(budgetId: budgetId);
         await loadAnalytics(budgetId);
       }
@@ -282,6 +283,47 @@ class FamilyBudgetProvider extends ChangeNotifier {
       final data = jsonDecode(res.body);
       throw Exception(data['message'] ?? 'Failed to delete expense');
     }
+  }
+
+  // ── Expense Requests (child → parent approval) ─────────────────────────────
+  Future<Map<String, dynamic>> submitExpenseRequest(Map<String, dynamic> payload) async {
+    final res = await http.post(
+      Uri.parse('$_baseUrl/budget/expense-requests'),
+      headers: await _headers(),
+      body: jsonEncode(payload),
+    );
+    final data = jsonDecode(res.body);
+    if (res.statusCode == 201) return data['data']['expense'];
+    throw Exception(data['message'] ?? 'Failed to submit request');
+  }
+
+  Future<List<Map<String, dynamic>>> getExpenseRequests({String? status}) async {
+    var url = '$_baseUrl/budget/expense-requests';
+    if (status != null) url += '?status=$status';
+    final res = await http.get(Uri.parse(url), headers: await _headers());
+    final data = jsonDecode(res.body);
+    if (res.statusCode == 200) {
+      return List<Map<String, dynamic>>.from(data['data']['requests'] ?? []);
+    }
+    throw Exception(data['message'] ?? 'Failed to load requests');
+  }
+
+  Future<void> approveExpenseRequest(String expenseId) async {
+    final res = await http.patch(
+      Uri.parse('$_baseUrl/budget/expense-requests/$expenseId/approve'),
+      headers: await _headers(),
+    );
+    final data = jsonDecode(res.body);
+    if (res.statusCode != 200) throw Exception(data['message'] ?? 'Failed to approve');
+  }
+
+  Future<void> rejectExpenseRequest(String expenseId) async {
+    final res = await http.patch(
+      Uri.parse('$_baseUrl/budget/expense-requests/$expenseId/reject'),
+      headers: await _headers(),
+    );
+    final data = jsonDecode(res.body);
+    if (res.statusCode != 200) throw Exception(data['message'] ?? 'Failed to reject');
   }
 
   Future<void> uploadReceiptPhoto(String expenseId, String photoUrl) async {

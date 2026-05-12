@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/services/api_service.dart';
 import '../core/models/member_model.dart';
@@ -29,6 +30,15 @@ class _HomePageState extends State<HomePage> {
   
   int _activeTab = 0;
   bool _locationSharing = true;
+
+  static const _avatarColors = [
+    Color(0xFF1565C0), Color(0xFF6A1B9A), Color(0xFFAD1457),
+    Color(0xFFE65100), Color(0xFF00695C), Color(0xFF2E7D32),
+  ];
+  static const _avatarBgs = [
+    Color(0xFFE3F2FD), Color(0xFFF3E5F5), Color(0xFFFCE4EC),
+    Color(0xFFFFF3E0), Color(0xFFE0F2F1), Color(0xFFE8F5E9),
+  ];
   bool _protectionSetting = false;
   List<Member> _familyMembers = [];
   String _familyTitle = '';
@@ -283,6 +293,18 @@ class _HomePageState extends State<HomePage> {
           ),
         );
       },
+    );
+  }
+
+  Widget _sectionHeader(String en, String ar) {
+    return Text(
+      _t(en, ar),
+      style: GoogleFonts.poppins(
+        fontSize: 12,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.8,
+        color: const Color(0xFF666666),
+      ),
     );
   }
 
@@ -743,17 +765,27 @@ class _HomePageState extends State<HomePage> {
                 onLongPress: _showAccountSwitcherSheet,
                 onTap: _showAccountSwitcherSheet,
                 child: Container(
-                  width: 70,
-                  height: 70,
+                  width: 62,
+                  height: 62,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFF4CAF50), width: 3),
-                    color: Colors.white,
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFF43A047), Color(0xFF1B5E20)],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF2E7D32).withOpacity(0.35),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
-                  child: const Icon(Icons.family_restroom, color: Color(0xFF4CAF50), size: 35),
+                  child: const Icon(Icons.family_restroom, color: Colors.white, size: 32),
                 ),
               ),
-              const SizedBox(width: 15),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -762,18 +794,18 @@ class _HomePageState extends State<HomePage> {
                       _familyTitle.isNotEmpty
                           ? (_t('$_familyTitle Family', 'عائلة $_familyTitle'))
                           : _t('Family Hub', 'فاميلي هب'),
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF1A1A1A),
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF1A1A1A),
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       _t('Welcome $_userName', 'مرحباً $_userName'),
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF666666),
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        color: const Color(0xFF666666),
                       ),
                     ),
                     if (_hasActiveProfile) const SizedBox(height: 6),
@@ -802,47 +834,45 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-        OutlinedButton.icon(
-          onPressed: () async {
-            final selected = await showDialog<String>(
-              context: context,
-              builder: (dialogContext) {
-                return AlertDialog(
-                  title: Text(_t('Logout options', 'خيارات تسجيل الخروج')),
-                  content: Text(_t('Choose logout scope for this device.', 'اختر نطاق تسجيل الخروج لهذا الجهاز.')),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(dialogContext).pop('cancel'),
-                      child: Text(_t('Cancel', 'إلغاء')),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.of(dialogContext).pop('current'),
-                      child: Text(_t('Logout current', 'تسجيل خروج الحساب الحالي')),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.of(dialogContext).pop('all'),
-                      child: Text(_t('Logout all', 'تسجيل خروج جميع الحسابات'), style: const TextStyle(color: Colors.red)),
-                    ),
-                  ],
-                );
-              },
-            );
+        Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF2E7D32).withOpacity(0.08),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: IconButton(
+            onPressed: () async {
+              final selected = await showDialog<String>(
+                context: context,
+                builder: (dialogContext) {
+                  return AlertDialog(
+                    title: Text(_t('Logout options', 'خيارات تسجيل الخروج')),
+                    content: Text(_t('Choose logout scope for this device.', 'اختر نطاق تسجيل الخروج لهذا الجهاز.')),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(dialogContext).pop('cancel'),
+                        child: Text(_t('Cancel', 'إلغاء')),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.of(dialogContext).pop('current'),
+                        child: Text(_t('Logout current', 'تسجيل خروج الحساب الحالي')),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.of(dialogContext).pop('all'),
+                        child: Text(_t('Logout all', 'تسجيل خروج جميع الحسابات'), style: const TextStyle(color: Colors.red)),
+                      ),
+                    ],
+                  );
+                },
+              );
 
-            if (selected == 'current') {
-              await _handleLogout();
-            } else if (selected == 'all') {
-              await _handleLogoutAll();
-            }
-          },
-          icon: const Icon(Icons.logout, size: 20),
-          label: Text(_t('Logout', 'خروج')),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: const Color(0xFF4CAF50),
-            side: const BorderSide(color: Color(0xFF4CAF50), width: 2),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              if (selected == 'current') {
+                await _handleLogout();
+              } else if (selected == 'all') {
+                await _handleLogoutAll();
+              }
+            },
+            icon: const Icon(Icons.logout_outlined, size: 22, color: Color(0xFF2E7D32)),
+            tooltip: _t('Logout', 'خروج'),
           ),
         ),
       ],
@@ -1028,15 +1058,8 @@ class _HomePageState extends State<HomePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          _t('Family Members', 'أفراد العائلة'),
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF1A1A1A),
-          ),
-        ),
-        const SizedBox(height: 15),
+        _sectionHeader('FAMILY MEMBERS', 'أفراد العائلة'),
+        const SizedBox(height: 14),
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
@@ -1044,29 +1067,33 @@ class _HomePageState extends State<HomePage> {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 14,
+                offset: const Offset(0, 5),
               ),
             ],
           ),
           child: _loading
-              ? const Center(child: CircularProgressIndicator())
+              ? const Center(child: CircularProgressIndicator(color: Color(0xFF2E7D32)))
               : Wrap(
                   spacing: 15,
                   runSpacing: 15,
-                  children: _familyMembers.map((member) => _buildMemberCard(member)).toList(),
+                  children: _familyMembers.asMap().entries
+                      .map((e) => _buildMemberCard(e.value, e.key))
+                      .toList(),
                 ),
         ),
       ],
     );
   }
 
-  Widget _buildMemberCard(Member member) {
+  Widget _buildMemberCard(Member member, int index) {
+    final avatarColor = _avatarColors[index % _avatarColors.length];
+    final avatarBg = _avatarBgs[index % _avatarBgs.length];
     return GestureDetector(
-      onTap: () => _showMemberOptionsDialog(member),
+      onTap: () => _showMemberOptionsDialog(member, index),
       child: SizedBox(
-        width: 70,
+        width: 72,
         child: Column(
           children: [
             Stack(
@@ -1074,14 +1101,15 @@ class _HomePageState extends State<HomePage> {
                 Container(
                   width: 60,
                   height: 60,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFD4E7D7),
+                  decoration: BoxDecoration(
+                    color: avatarBg,
                     shape: BoxShape.circle,
+                    border: Border.all(color: avatarColor.withOpacity(0.25), width: 2),
                   ),
                   child: Center(
                     child: Text(
                       member.getAvatarEmoji(),
-                      style: const TextStyle(fontSize: 32),
+                      style: const TextStyle(fontSize: 30),
                     ),
                   ),
                 ),
@@ -1103,16 +1131,16 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 8),
             Text(
               member.username,
-              style: const TextStyle(fontSize: 12, color: Color(0xFF666666)),
+              style: GoogleFonts.poppins(fontSize: 11, color: const Color(0xFF333333), fontWeight: FontWeight.w600),
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
             Text(
               member.memberType?.type ?? _t('Member', 'عضو'),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 10,
-                color: Color(0xFF4CAF50),
+                color: avatarColor,
                 fontWeight: FontWeight.w600,
               ),
               textAlign: TextAlign.center,
@@ -1123,7 +1151,9 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _showMemberOptionsDialog(Member member) {
+  void _showMemberOptionsDialog(Member member, int index) {
+    final avatarColor = _avatarColors[index % _avatarColors.length];
+    final avatarBg = _avatarBgs[index % _avatarBgs.length];
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
@@ -1141,9 +1171,10 @@ class _HomePageState extends State<HomePage> {
                 Container(
                   width: 80,
                   height: 80,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFD4E7D7),
+                  decoration: BoxDecoration(
+                    color: avatarBg,
                     shape: BoxShape.circle,
+                    border: Border.all(color: avatarColor.withOpacity(0.3), width: 2),
                   ),
                   child: Center(
                     child: Text(
@@ -1364,230 +1395,125 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildQuickActions() {
+    final actions = [
+      {
+        'label_en': 'Add Member', 'label_ar': 'إضافة عضو',
+        'icon': Icons.person_add_alt_1_outlined,
+        'color': const Color(0xFF2E7D32), 'bg': const Color(0xFFE8F5E9),
+        'onTap': _showAddMemberDialog,
+      },
+      {
+        'label_en': 'Tasks', 'label_ar': 'المهام',
+        'icon': Icons.assignment_outlined,
+        'color': const Color(0xFF1565C0), 'bg': const Color(0xFFE3F2FD),
+        'onTap': () => Navigator.pushNamed(context, '/task-management'),
+      },
+      {
+        'label_en': 'Planning AI', 'label_ar': 'المساعد الذكي',
+        'icon': Icons.smart_toy_outlined,
+        'color': const Color(0xFF6A1B9A), 'bg': const Color(0xFFF3E5F5),
+        'onTap': () => Navigator.pushNamed(context, '/planning-chat'),
+      },
+      {
+        'label_en': 'Budget', 'label_ar': 'الميزانية',
+        'icon': Icons.account_balance_wallet_outlined,
+        'color': const Color(0xFFE65100), 'bg': const Color(0xFFFFF3E0),
+        'onTap': () => Navigator.pushNamed(context, '/budget'),
+      },
+      {
+        'label_en': 'Inventory', 'label_ar': 'المخزون',
+        'icon': Icons.inventory_2_outlined,
+        'color': const Color(0xFF00695C), 'bg': const Color(0xFFE0F2F1),
+        'onTap': () => Navigator.pushNamed(context, '/inventory'),
+      },
+      {
+        'label_en': 'Food Hub', 'label_ar': 'مركز الطعام',
+        'icon': Icons.restaurant_outlined,
+        'color': const Color(0xFFF57F17), 'bg': const Color(0xFFFFFDE7),
+        'onTap': () => Navigator.pushNamed(context, '/food-hub'),
+      },
+      {
+        'label_en': 'Rewards', 'label_ar': 'المكافآت',
+        'icon': Icons.emoji_events_outlined,
+        'color': const Color(0xFFAD1457), 'bg': const Color(0xFFFCE4EC),
+        'onTap': () => Navigator.pushNamed(context, '/rewards'),
+      },
+      {
+        'label_en': 'Family Map', 'label_ar': 'خريطة العائلة',
+        'icon': Icons.map_outlined,
+        'color': const Color(0xFF1B5E20), 'bg': const Color(0xFFE8F5E9),
+        'onTap': () => Navigator.pushNamed(context, '/family-map'),
+      },
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          _t('Quick Actions', 'إجراءات سريعة'),
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF1A1A1A),
+        _sectionHeader('QUICK ACTIONS', 'إجراءات سريعة'),
+        const SizedBox(height: 14),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 1.4,
           ),
-        ),
-        const SizedBox(height: 15),
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              InkWell(
-                onTap: () => _showAddMemberDialog(),
-                child: Container(
-                  padding: const EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF4CAF50), Color(0xFF45A049)],
-                    ),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.person_add, color: Colors.white, size: 24),
-                      SizedBox(width: 10),
-                      Text(
-                        _t('Add New Member', 'إضافة عضو جديد'),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 15),
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-           
-                        color: const Color(0xFFF5F9F6),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Row(
-                        children: [
-                          Icon(Icons.home, color: Color(0xFF4CAF50), size: 18),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Weekly Chores Complete: 70%',
-                              style: TextStyle(fontSize: 12, color: Color(0xFF666666)),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF5F9F6),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 36,
-                          height: 36,
-                          child: Stack(
-                            children: [
-                              CircularProgressIndicator(
-                                value: 0.7,
-                                backgroundColor: Colors.grey[300],
-                                valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF4CAF50)),
-                                strokeWidth: 3,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        const Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Pending Invites (1)',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF1A1A1A),
-                              ),
-                            ),
-                            Text(
-                              'Awaiting acceptance',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: Color(0xFF999999),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 15),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {},
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Color(0xFF4CAF50)),
-                        foregroundColor: const Color(0xFF4CAF50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      child: const Text('Set Family Title'),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF4CAF50),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      child: const Text('View Family Hub'),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 15),
-              // Task Management Button
-              InkWell(
-                onTap: () => Navigator.pushNamed(context, '/task-management'),
-                child: Container(
-                  padding: const EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF2196F3), Color(0xFF1976D2)],
-                    ),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.assignment, color: Colors.white, size: 24),
-                      SizedBox(width: 10),
-                      Text(
-                        'Task Management',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 15),
-              // Planning AI Button
-              InkWell(
-                onTap: () => Navigator.pushNamed(context, '/planning-chat'),
-                child: Container(
-                  padding: const EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF6A1B9A), Color(0xFF8E24AA)],
-                    ),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.smart_toy_outlined, color: Colors.white, size: 24),
-                      const SizedBox(width: 10),
-                      Text(
-                        _t('Planning AI', 'المساعد الذكي'),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+          itemCount: actions.length,
+          itemBuilder: (context, i) {
+            final a = actions[i];
+            return _buildActionCard(
+              labelEn: a['label_en'] as String,
+              labelAr: a['label_ar'] as String,
+              icon: a['icon'] as IconData,
+              color: a['color'] as Color,
+              bg: a['bg'] as Color,
+              onTap: a['onTap'] as VoidCallback,
+            );
+          },
         ),
       ],
+    );
+  }
+
+  Widget _buildActionCard({
+    required String labelEn,
+    required String labelAr,
+    required IconData icon,
+    required Color color,
+    required Color bg,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 10, offset: const Offset(0, 3)),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(14)),
+              child: Icon(icon, color: color, size: 26),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              _t(labelEn, labelAr),
+              style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0xFF1A1A1A)),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -1600,14 +1526,7 @@ class _HomePageState extends State<HomePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          _t('Upcoming Activities', 'الأنشطة القادمة'),
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF1A1A1A),
-          ),
-        ),
+        _sectionHeader('UPCOMING ACTIVITIES', 'الأنشطة القادمة'),
         const SizedBox(height: 15),
         Container(
           padding: const EdgeInsets.all(20),
@@ -1736,14 +1655,7 @@ class _HomePageState extends State<HomePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          _t('Safety & Connection', 'الأمان والتواصل'),
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF1A1A1A),
-          ),
-        ),
+        _sectionHeader('SAFETY & CONNECTION', 'الأمان والتواصل'),
         const SizedBox(height: 15),
         Container(
           padding: const EdgeInsets.all(20),
@@ -1847,23 +1759,23 @@ class _HomePageState extends State<HomePage> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 14,
+            offset: const Offset(0, -3),
           ),
         ],
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(Icons.home, 'Home', 0),
-              _buildNavItem(Icons.emoji_events, 'Rewards', 1),
-              _buildNavItem(Icons.restaurant, 'Food Hub', 2),
-                  _buildNavItem(Icons.map_outlined, 'Map', 3),
-                  _buildNavItem(Icons.settings, 'Settings', 4),
+              _buildNavItem(Icons.home_rounded, Icons.home_outlined, 'Home', 'الرئيسية', 0),
+              _buildNavItem(Icons.emoji_events, Icons.emoji_events_outlined, 'Rewards', 'المكافآت', 1),
+              _buildNavItem(Icons.restaurant, Icons.restaurant_outlined, 'Food Hub', 'الطعام', 2),
+              _buildNavItem(Icons.map, Icons.map_outlined, 'Map', 'الخريطة', 3),
+              _buildNavItem(Icons.settings, Icons.settings_outlined, 'Settings', 'الإعدادات', 4),
             ],
           ),
         ),
@@ -1871,7 +1783,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, int index) {
+  Widget _buildNavItem(IconData filledIcon, IconData outlinedIcon, String labelEn, String labelAr, int index) {
     final isActive = _activeTab == index;
     return GestureDetector(
       onTap: () {
@@ -1898,25 +1810,33 @@ class _HomePageState extends State<HomePage> {
             break;
         }
       },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Column(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOut,
+        padding: EdgeInsets.symmetric(horizontal: isActive ? 14 : 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isActive ? const Color(0xFF2E7D32).withOpacity(0.11) : Colors.transparent,
+          borderRadius: BorderRadius.circular(22),
+        ),
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              icon,
-              color: isActive ? const Color(0xFF4CAF50) : const Color(0xFF999999),
-              size: 24,
+              isActive ? filledIcon : outlinedIcon,
+              color: isActive ? const Color(0xFF2E7D32) : const Color(0xFF999999),
+              size: 22,
             ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                color: isActive ? const Color(0xFF4CAF50) : const Color(0xFF999999),
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+            if (isActive) ...[
+              const SizedBox(width: 6),
+              Text(
+                _t(labelEn, labelAr),
+                style: GoogleFonts.poppins(
+                  fontSize: 11,
+                  color: const Color(0xFF2E7D32),
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),

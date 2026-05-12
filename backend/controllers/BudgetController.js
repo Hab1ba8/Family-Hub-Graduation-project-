@@ -213,13 +213,20 @@ exports.createExpense = catchAsync(async (req, res, next) => {
 			return next(new AppError('Please provide a valid budget_id for shared expenses', 400));
 		}
 
-		linkedBudget = await Budget.findOne({ _id: budget_id, family_id: req.familyAccount._id, is_active: true });
+		linkedBudget = await PeriodBudget.findOne({ _id: budget_id, family_id: req.familyAccount._id, is_active: true });
 		if (!linkedBudget) {
 			return next(new AppError('Shared budget not found', 404));
 		}
 
 		linkedBudget.spent_amount = Number((Number(linkedBudget.spent_amount || 0) + normalizedAmount).toFixed(2));
 		await linkedBudget.save();
+
+		if (budget_category_id && mongoose.Types.ObjectId.isValid(budget_category_id)) {
+			await BudgetAllocation.findOneAndUpdate(
+				{ period_budget_id: linkedBudget._id, inventory_category_id: budget_category_id, is_active: true },
+				{ $inc: { spent_amount: normalizedAmount } }
+			);
+		}
 	} else {
 		linkedAllowance = await getActivePersonalAllowance(req.familyAccount._id, req.member.mail, expenseDate);
 		linkedAllowance.money_amount = Number(Number(linkedAllowance.money_amount || 0).toFixed(2));
@@ -227,43 +234,32 @@ exports.createExpense = catchAsync(async (req, res, next) => {
 		linkedAllowance.last_activity_at = new Date();
 		await linkedAllowance.save();
 
-		await logBalanceWalletDetail({
-			family_id: req.familyAccount._id,
-			member_id: req.member._id,
-			member_mail: req.member.mail,
-			wallet_scope: 'personal_budget',
-			change_type: 'credit',
-			source_type: 'allowance',
-			amount: Number(linkedAllowance.money_amount || 0),
-			previous_balance: Number(linkedAllowance.spent_amount || 0),
-			new_balance: Number(linkedAllowance.money_amount || 0),
-			title: 'Personal budget allowance updated',
-			description: `Allowance updated for ${req.member.mail}`,
-			added_by_member_id: req.member._id,
-			added_by_mail: req.member.mail,
-			budget_id: budget_id || null,
-			notes: 'personal allowance allocation',
-		});
+		const memberWallet = await ensureMoneyWallet(req.member.mail, req.familyAccount._id);
+		const prevWalletBalance = Number(memberWallet.balance || 0);
+		memberWallet.balance = Number(Math.max(0, prevWalletBalance - normalizedAmount).toFixed(2));
+		memberWallet.last_update = new Date();
+		await memberWallet.save();
 	}
 
 	const expense = await Expense.create({
 		family_id: req.familyAccount._id,
 		member_id: req.member._id,
 		member_mail: req.member.mail,
-		category: category || linkedBudget?.category_name || 'General',
+		category: category || 'General',
 		title,
 		amount: normalizedAmount,
 		description: description || '',
 		notes: notes || source_module || '',
 		expense_date: expenseDate,
 		expense_source: expenseSource,
+		expense_scope: normalizedScope,
 		budget_id: linkedBudget?._id || budget_id || null,
 		budget_category_id: budget_category_id && mongoose.Types.ObjectId.isValid(budget_category_id)
 			? budget_category_id
 			: null,
 		linked_member_allowance_id: linkedAllowance?._id || null,
-		is_finalized: normalizedScope === 'personal',
-		finalized_at: normalizedScope === 'personal' ? new Date() : null,
+		is_finalized: true,
+		finalized_at: new Date(),
 	});
 
 	await logBalanceWalletDetail({
@@ -276,10 +272,10 @@ exports.createExpense = catchAsync(async (req, res, next) => {
 		amount: normalizedAmount,
 		previous_balance: normalizedScope === 'personal'
 			? Number((Number(linkedAllowance?.money_amount || 0) + Number(normalizedAmount || 0)).toFixed(2))
-			: Number((Number(linkedBudget?.budget_amount || 0) + Number(normalizedAmount || 0) - Number(linkedBudget?.spent_amount || 0)).toFixed(2)),
+			: Number((Number(linkedBudget?.total_amount || 0) - Number(linkedBudget?.spent_amount || 0) + Number(normalizedAmount || 0)).toFixed(2)),
 		new_balance: normalizedScope === 'personal'
 			? Number(Math.max(0, Number(linkedAllowance?.money_amount || 0) - Number(linkedAllowance?.spent_amount || 0)).toFixed(2))
-			: Number(Math.max(0, Number(linkedBudget?.budget_amount || 0) - Number(linkedBudget?.spent_amount || 0)).toFixed(2)),
+			: Number(Math.max(0, Number(linkedBudget?.total_amount || 0) - Number(linkedBudget?.spent_amount || 0)).toFixed(2)),
 		title,
 		description: description || '',
 		added_by_member_id: req.member._id,
@@ -2266,5 +2262,194 @@ exports.deleteFutureEvent = catchAsync(async (req, res, next) => {
 	res.status(204).json({
 		status: 'success',
 		data: null,
+	});
+});
+
+// ── Update a period budget ─────────────────────────────────────────────────
+exports.updatePeriodBudget = catchAsync(async (req, res, next) => {
+	const { periodBudgetId } = req.params;
+
+	if (!mongoose.Types.ObjectId.isValid(periodBudgetId)) {
+		return next(new AppError('Invalid period budget ID', 400));
+	}
+
+	const allowed = ['title', 'period_type', 'start_date', 'end_date', 'total_amount', 'emergency_fund_percentage', 'threshold_percentage', 'is_active'];
+	const updates = {};
+	allowed.forEach((k) => { if (req.body[k] !== undefined) updates[k] = req.body[k]; });
+
+	const periodBudget = await PeriodBudget.findOneAndUpdate(
+		{ _id: periodBudgetId, family_id: req.familyAccount._id },
+		{ $set: updates },
+		{ new: true, runValidators: true }
+	);
+
+	if (!periodBudget) {
+		return next(new AppError('Period budget not found', 404));
+	}
+
+	res.status(200).json({
+		status: 'success',
+		message: 'Period budget updated successfully',
+		data: { period_budget: periodBudget },
+	});
+});
+
+// ── Delete a period budget ─────────────────────────────────────────────────
+exports.deletePeriodBudget = catchAsync(async (req, res, next) => {
+	const { periodBudgetId } = req.params;
+
+	if (!mongoose.Types.ObjectId.isValid(periodBudgetId)) {
+		return next(new AppError('Invalid period budget ID', 400));
+	}
+
+	const periodBudget = await PeriodBudget.findOneAndDelete({
+		_id: periodBudgetId,
+		family_id: req.familyAccount._id,
+	});
+
+	if (!periodBudget) {
+		return next(new AppError('Period budget not found', 404));
+	}
+
+	await BudgetAllocation.deleteMany({ period_budget_id: periodBudgetId });
+	await MemberAllowance.deleteMany({ period_budget_id: periodBudgetId });
+
+	res.status(204).json({ status: 'success', data: null });
+});
+
+// ── Child: submit expense request ──────────────────────────────────────────
+exports.createExpenseRequest = catchAsync(async (req, res, next) => {
+	const { title, amount, description, budget_id, budget_category_id } = req.body;
+
+	if (!title || amount === undefined) {
+		return next(new AppError('Please provide title and amount', 400));
+	}
+
+	const normalizedAmount = Number(amount);
+	if (!Number.isFinite(normalizedAmount) || normalizedAmount <= 0) {
+		return next(new AppError('amount must be a positive number', 400));
+	}
+
+	const expense = await Expense.create({
+		family_id: req.familyAccount._id,
+		member_id: req.member._id,
+		member_mail: req.member.mail,
+		title,
+		amount: normalizedAmount,
+		description: description || '',
+		expense_source: 'budget',
+		expense_scope: 'shared',
+		budget_id: budget_id && mongoose.Types.ObjectId.isValid(budget_id) ? budget_id : null,
+		budget_category_id: budget_category_id && mongoose.Types.ObjectId.isValid(budget_category_id) ? budget_category_id : null,
+		request_status: 'pending',
+		is_finalized: false,
+	});
+
+	await sendParentNotification(
+		req.familyAccount._id,
+		'New expense request from family member',
+		`${req.member.username || req.member.mail} requested an expense: "${title}" for ${normalizedAmount.toFixed(2)} EGP. Please review in the app.`
+	).catch(() => {});
+
+	res.status(201).json({
+		status: 'success',
+		message: 'Expense request submitted for parent approval',
+		data: { expense },
+	});
+});
+
+// ── Parent: get expense requests ───────────────────────────────────────────
+exports.getExpenseRequests = catchAsync(async (req, res, next) => {
+	const { status } = req.query;
+	const filter = {
+		family_id: req.familyAccount._id,
+		request_status: { $ne: null },
+	};
+	if (status && ['pending', 'approved', 'rejected'].includes(status)) {
+		filter.request_status = status;
+	}
+
+	const requests = await Expense.find(filter)
+		.populate('member_id', 'username mail')
+		.populate('budget_category_id', 'title')
+		.sort({ createdAt: -1 })
+		.limit(100);
+
+	res.status(200).json({
+		status: 'success',
+		results: requests.length,
+		data: { requests },
+	});
+});
+
+// ── Parent: approve expense request ───────────────────────────────────────
+exports.approveExpenseRequest = catchAsync(async (req, res, next) => {
+	const { expenseId } = req.params;
+
+	if (!mongoose.Types.ObjectId.isValid(expenseId)) {
+		return next(new AppError('Invalid expense ID', 400));
+	}
+
+	const expense = await Expense.findOne({
+		_id: expenseId,
+		family_id: req.familyAccount._id,
+		request_status: 'pending',
+	});
+
+	if (!expense) {
+		return next(new AppError('Pending expense request not found', 404));
+	}
+
+	if (expense.budget_id) {
+		const periodBudget = await PeriodBudget.findOne({ _id: expense.budget_id, family_id: req.familyAccount._id });
+		if (periodBudget) {
+			periodBudget.spent_amount = Number((Number(periodBudget.spent_amount || 0) + expense.amount).toFixed(2));
+			await periodBudget.save();
+		}
+		if (expense.budget_category_id) {
+			await BudgetAllocation.findOneAndUpdate(
+				{ period_budget_id: expense.budget_id, inventory_category_id: expense.budget_category_id, is_active: true },
+				{ $inc: { spent_amount: expense.amount } }
+			);
+		}
+	}
+
+	expense.request_status = 'approved';
+	expense.is_finalized = true;
+	expense.finalized_at = new Date();
+	await expense.save();
+
+	res.status(200).json({
+		status: 'success',
+		message: 'Expense request approved',
+		data: { expense },
+	});
+});
+
+// ── Parent: reject expense request ────────────────────────────────────────
+exports.rejectExpenseRequest = catchAsync(async (req, res, next) => {
+	const { expenseId } = req.params;
+
+	if (!mongoose.Types.ObjectId.isValid(expenseId)) {
+		return next(new AppError('Invalid expense ID', 400));
+	}
+
+	const expense = await Expense.findOne({
+		_id: expenseId,
+		family_id: req.familyAccount._id,
+		request_status: 'pending',
+	});
+
+	if (!expense) {
+		return next(new AppError('Pending expense request not found', 404));
+	}
+
+	expense.request_status = 'rejected';
+	await expense.save();
+
+	res.status(200).json({
+		status: 'success',
+		message: 'Expense request rejected',
+		data: { expense },
 	});
 });

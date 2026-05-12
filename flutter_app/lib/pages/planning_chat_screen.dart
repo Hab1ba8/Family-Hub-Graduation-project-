@@ -9,7 +9,9 @@ class PlanningChatScreen extends StatefulWidget {
   State<PlanningChatScreen> createState() => _PlanningChatScreenState();
 }
 
-class _PlanningChatScreenState extends State<PlanningChatScreen> {
+class _PlanningChatScreenState extends State<PlanningChatScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _dotsController;
+  late List<Animation<double>> _dotAnimations;
   final ApiService _api = ApiService();
   final TextEditingController _inputCtrl = TextEditingController();
   final ScrollController _scrollCtrl = ScrollController();
@@ -37,6 +39,18 @@ class _PlanningChatScreenState extends State<PlanningChatScreen> {
   @override
   void initState() {
     super.initState();
+    _dotsController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1100),
+    )..repeat();
+    _dotAnimations = List.generate(3, (i) {
+      return Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+          parent: _dotsController,
+          curve: Interval(i * 0.2, 0.6 + i * 0.2, curve: Curves.easeInOut),
+        ),
+      );
+    });
     _loadHistory();
   }
 
@@ -130,6 +144,7 @@ class _PlanningChatScreenState extends State<PlanningChatScreen> {
 
   @override
   void dispose() {
+    _dotsController.dispose();
     _inputCtrl.dispose();
     _scrollCtrl.dispose();
     super.dispose();
@@ -334,7 +349,7 @@ class _PlanningChatScreenState extends State<PlanningChatScreen> {
       alignment: Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: const BorderRadius.only(
@@ -346,18 +361,31 @@ class _PlanningChatScreenState extends State<PlanningChatScreen> {
           border: Border.all(color: const Color(0xFFE0E0E0)),
           boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 6)],
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(
-              width: 18,
-              height: 18,
-              child: CircularProgressIndicator(strokeWidth: 2, color: _lightGreen),
-            ),
-            const SizedBox(width: 10),
-            Text(_t('Thinking...', 'يفكر...'),
-                style: const TextStyle(fontSize: 13, color: Colors.grey)),
-          ],
+        child: AnimatedBuilder(
+          animation: _dotsController,
+          builder: (context, _) {
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: List.generate(3, (i) {
+                final t = _dotAnimations[i].value;
+                final lift = t < 0.5 ? t * 2 : (1 - t) * 2;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 3),
+                  child: Transform.translate(
+                    offset: Offset(0, -6 * lift),
+                    child: Container(
+                      width: 9,
+                      height: 9,
+                      decoration: BoxDecoration(
+                        color: _lightGreen.withOpacity(0.4 + 0.6 * lift),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            );
+          },
         ),
       ),
     );
