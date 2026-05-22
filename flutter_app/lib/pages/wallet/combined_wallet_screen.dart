@@ -2,7 +2,10 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:app_frontend/core/services/api_service.dart';
+import 'package:app_frontend/core/theme/app_theme.dart';
+import 'package:app_frontend/core/theme/theme_provider.dart';
 import 'package:app_frontend/core/widgets/app_bottom_nav.dart';
 
 class CombinedWalletScreen extends StatefulWidget {
@@ -14,9 +17,9 @@ class CombinedWalletScreen extends StatefulWidget {
 
 class _CombinedWalletScreenState extends State<CombinedWalletScreen>
     with SingleTickerProviderStateMixin {
+  // ── State (ALL UNCHANGED) ─────────────────────────────────────────────────
   final ApiService _apiService = ApiService();
   final PageController _cardController = PageController(viewportFraction: 0.92);
-
   late TabController _tabController;
 
   bool _isLoading = true;
@@ -28,6 +31,11 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
 
   Map<String, dynamic> _balance = {};
   List<Map<String, dynamic>> _transactions = [];
+
+  double _sp(double size) {
+    final w = MediaQuery.of(context).size.width.clamp(320.0, 480.0);
+    return size * (w / 390.0);
+  }
 
   @override
   void initState() {
@@ -42,6 +50,8 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
     _tabController.dispose();
     super.dispose();
   }
+
+  // ── Logic (ALL UNCHANGED) ─────────────────────────────────────────────────
 
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
@@ -123,7 +133,6 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
         'date': createdAt,
       });
 
-      // Synthetic money-side record for conversions so users can see both wallet impacts.
       if (isConversion) {
         final moneyEquivalent = pointsAmount.abs() * conversionRate;
         final moneyPositive = pointsAmount < 0;
@@ -184,96 +193,169 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
 
             return Padding(
               padding: EdgeInsets.only(
-                left: 20,
-                right: 20,
-                top: 20,
-                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+                left: 20, right: 20, top: 24,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 24,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Handle
+                  Center(
+                    child: Container(
+                      width: 36, height: 4,
+                      decoration: BoxDecoration(
+                          color: AppColors.border,
+                          borderRadius: BorderRadius.circular(2)),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   Text(
                     moneyToPoints ? 'Convert Money to Points' : 'Convert Points to Money',
-                    style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w700),
+                    style: GoogleFonts.poppins(
+                        fontSize: _sp(18), fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   Text(
-                    'Current rate: 1 EGP = ${m2p.toStringAsFixed(2)} points, 1 point = ${p2m.toStringAsFixed(2)} EGP',
-                    style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[700]),
+                    '1 EGP = ${m2p.toStringAsFixed(2)} pts  ·  1 pt = ${p2m.toStringAsFixed(2)} EGP',
+                    style: GoogleFonts.poppins(
+                        fontSize: _sp(11), color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: 20),
-                  Text(
-                    moneyToPoints
-                        ? "You'll get ${converted.toStringAsFixed(2)} points for ${sliderValue.toStringAsFixed(2)} EGP"
-                        : "You'll get ${converted.toStringAsFixed(2)} EGP for ${sliderValue.toStringAsFixed(2)} points",
-                    style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                  const SizedBox(height: 18),
+                  // Result preview
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: AppColors.primarySurface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'You receive',
+                          style: GoogleFonts.poppins(
+                              fontSize: _sp(12), color: AppColors.textSecondary),
+                        ),
+                        Text(
+                          moneyToPoints
+                              ? '${converted.toStringAsFixed(0)} pts'
+                              : '${converted.toStringAsFixed(2)} EGP',
+                          style: GoogleFonts.poppins(
+                              fontSize: _sp(16), fontWeight: FontWeight.w700,
+                              color: AppColors.primary),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 12),
-                  Slider(
-                    value: sliderValue,
-                    min: 0,
-                    max: maxValue,
-                    divisions: 100,
-                    label: sliderValue.toStringAsFixed(2),
-                    onChanged: (v) => setModalState(() => sliderValue = v),
+                  const SizedBox(height: 4),
+                  Center(
+                    child: Text(
+                      'for ${sliderValue.toStringAsFixed(moneyToPoints ? 2 : 0)} '
+                      '${moneyToPoints ? 'EGP' : 'pts'}',
+                      style: GoogleFonts.poppins(
+                          fontSize: _sp(11), color: AppColors.textHint),
+                    ),
                   ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1B5E20),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                      onPressed: () async {
-                        final ok = await showDialog<bool>(
-                              context: context,
-                              builder: (ctx) => AlertDialog(
-                                title: const Text('Confirm Conversion'),
-                                content: Text(
-                                  moneyToPoints
-                                      ? 'Convert ${sliderValue.toStringAsFixed(2)} EGP to ${converted.toStringAsFixed(2)} points?'
-                                      : 'Convert ${sliderValue.toStringAsFixed(2)} points to ${converted.toStringAsFixed(2)} EGP?',
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(ctx, false),
-                                    child: const Text('Cancel'),
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () => Navigator.pop(ctx, true),
-                                    child: const Text('Confirm'),
-                                  ),
-                                ],
+                  const SizedBox(height: 10),
+                  SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      activeTrackColor: AppColors.primary,
+                      thumbColor: AppColors.primary,
+                      inactiveTrackColor: AppColors.border,
+                      overlayColor: AppColors.primary.withOpacity(0.12),
+                    ),
+                    child: Slider(
+                      value: sliderValue,
+                      min: 0,
+                      max: maxValue,
+                      divisions: 100,
+                      label: sliderValue.toStringAsFixed(2),
+                      onChanged: (v) => setModalState(() => sliderValue = v),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  GestureDetector(
+                    onTap: () async {
+                      final ok = await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: Text('Confirm Conversion',
+                                  style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+                              content: Text(
+                                moneyToPoints
+                                    ? 'Convert ${sliderValue.toStringAsFixed(2)} EGP to ${converted.toStringAsFixed(2)} points?'
+                                    : 'Convert ${sliderValue.toStringAsFixed(2)} points to ${converted.toStringAsFixed(2)} EGP?',
+                                style: GoogleFonts.poppins(),
                               ),
-                            ) ??
-                            false;
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, false),
+                                  child: Text('Cancel',
+                                      style: GoogleFonts.poppins(color: AppColors.textSecondary)),
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.primary),
+                                  onPressed: () => Navigator.pop(ctx, true),
+                                  child: Text('Confirm',
+                                      style: GoogleFonts.poppins(color: Colors.white)),
+                                ),
+                              ],
+                            ),
+                          ) ??
+                          false;
 
-                        if (!ok) return;
+                      if (!ok) return;
 
-                        try {
-                          if (moneyToPoints) {
-                            await _apiService.convertMoneyToPoints(sliderValue);
-                          } else {
-                            await _apiService.convertPointsToMoney(sliderValue);
-                          }
-                          if (!mounted) return;
-                          Navigator.pop(context);
-                          await _loadData();
-                          if (!mounted) return;
-                          ScaffoldMessenger.of(this.context).showSnackBar(
-                            const SnackBar(content: Text('Conversion completed successfully.')),
-                          );
-                        } catch (e) {
-                          if (!mounted) return;
-                          ScaffoldMessenger.of(this.context).showSnackBar(
-                            SnackBar(content: Text('Conversion failed: $e'), backgroundColor: Colors.red),
-                          );
+                      try {
+                        if (moneyToPoints) {
+                          await _apiService.convertMoneyToPoints(sliderValue);
+                        } else {
+                          await _apiService.convertPointsToMoney(sliderValue);
                         }
-                      },
-                      child: const Text('Confirm'),
+                        if (!mounted) return;
+                        Navigator.pop(context);
+                        await _loadData();
+                        if (!mounted) return;
+                        ScaffoldMessenger.of(this.context).showSnackBar(
+                          const SnackBar(content: Text('Conversion completed successfully.')),
+                        );
+                      } catch (e) {
+                        if (!mounted) return;
+                        ScaffoldMessenger.of(this.context).showSnackBar(
+                          SnackBar(
+                              content: Text('Conversion failed: $e'),
+                              backgroundColor: Colors.red),
+                        );
+                      }
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF00897B), Color(0xFF00ACC1)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(13),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.3),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text('Confirm Conversion',
+                            style: GoogleFonts.poppins(
+                                fontSize: _sp(14), fontWeight: FontWeight.w700,
+                                color: Colors.white)),
+                      ),
                     ),
                   ),
                 ],
@@ -306,10 +388,17 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
     return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 
+  // ── BUILD ─────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
-    final moneyBalance = (_balance['money_balance'] ?? 0).toDouble();
-    final pointsBalance = (_balance['points_balance'] ?? 0).toDouble();
+    final isDark = context.watch<ThemeProvider>().isDark;
+    final bg     = isDark ? const Color(0xFF0A1628) : AppColors.background;
+    final cardBg = isDark ? const Color(0xFF122030) : Colors.white;
+    final border = isDark ? const Color(0xFF1E3A4A) : AppColors.border;
+
+    final moneyBalance    = (_balance['money_balance']     ?? 0).toDouble();
+    final pointsBalance   = (_balance['points_balance']    ?? 0).toDouble();
     final totalValueMoney = (_balance['total_value_in_money'] ?? 0).toDouble();
 
     final lifetimePointsEarned = _transactions
@@ -327,77 +416,74 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
     });
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F7F3),
+      backgroundColor: bg,
       appBar: AppBar(
-        title: Text(
-          'Combined Wallet',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w700),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(gradient: AppColors.primaryGradient),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
         elevation: 0,
+        title: Text('My Wallet',
+            style: GoogleFonts.poppins(
+                fontSize: _sp(17), fontWeight: FontWeight.w700)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh_outlined, color: Colors.white),
+            onPressed: _loadData,
+          ),
+        ],
       ),
-      bottomNavigationBar: const AppBottomNav(selectedIndex: 3),
+      bottomNavigationBar: const AppBottomNav(selectedIndex: 1),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : RefreshIndicator(
-              onRefresh: _loadData,
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  if (_isParent && _members.isNotEmpty) _buildChildSelector(),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    height: 230,
-                    child: PageView(
-                      controller: _cardController,
-                      children: [
-                        _buildMoneyCard(moneyBalance, lifetimeMoneySaved),
-                        _buildPointsCard(pointsBalance, lifetimePointsEarned),
+          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+          : Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 700),
+                child: RefreshIndicator(
+                  color: AppColors.primary,
+                  onRefresh: _loadData,
+                  child: ListView(
+                    padding: const EdgeInsets.fromLTRB(14, 14, 14, 80),
+                    children: [
+                      // Child selector (parent only)
+                      if (_isParent && _members.isNotEmpty) ...[
+                        _buildChildSelector(cardBg, border, isDark),
+                        const SizedBox(height: 12),
                       ],
-                    ),
+
+                      // Both wallet cards always visible
+                      _buildMoneyCard(moneyBalance, lifetimeMoneySaved),
+                      const SizedBox(height: 10),
+                      _buildPointsCard(pointsBalance, lifetimePointsEarned),
+                      const SizedBox(height: 12),
+
+                      // Total value
+                      _buildTotalValue(totalValueMoney, cardBg, border, isDark),
+                      const SizedBox(height: 14),
+
+                      // Recent transactions
+                      _buildSectionLabel('RECENT TRANSACTIONS', isDark),
+                      const SizedBox(height: 8),
+                      _buildTransactionsList(cardBg, border, isDark),
+                      const SizedBox(height: 14),
+
+                      // Conversion panel
+                      _buildSectionLabel('CONVERT', isDark),
+                      const SizedBox(height: 8),
+                      _buildConversionButtons(cardBg, border, isDark),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                  _buildCombinedValue(totalValueMoney),
-                  const SizedBox(height: 16),
-                  _buildQuickActions(),
-                  const SizedBox(height: 16),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      children: [
-                        TabBar(
-                          controller: _tabController,
-                          labelColor: const Color(0xFF1B5E20),
-                          unselectedLabelColor: Colors.grey,
-                          indicatorColor: const Color(0xFF1B5E20),
-                          tabs: const [
-                            Tab(text: 'Recent Transactions'),
-                            Tab(text: 'Conversion'),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 360,
-                          child: TabBarView(
-                            controller: _tabController,
-                            children: [
-                              _buildRecentTransactions(),
-                              _buildConversionPanel(),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
     );
   }
 
-  Widget _buildChildSelector() {
+  // ── Child selector ─────────────────────────────────────────────────────────
+
+  Widget _buildChildSelector(Color cardBg, Color border, bool isDark) {
     final children = _members.where((m) {
       final type = (m['member_type_id'] is Map)
           ? (m['member_type_id']['type'] ?? '').toString()
@@ -408,27 +494,40 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
     if (children.isEmpty) return const SizedBox.shrink();
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: border, width: 0.8),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: _selectedMemberId,
           isExpanded: true,
-          hint: const Text('Select child'),
+          dropdownColor: cardBg,
+          icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
+          hint: Text('Select member',
+              style: GoogleFonts.poppins(
+                  fontSize: _sp(13), color: AppColors.textHint)),
           items: children.map<DropdownMenuItem<String>>((member) {
             return DropdownMenuItem<String>(
               value: member['_id']?.toString(),
-              child: Text((member['username'] ?? member['mail'] ?? 'Member').toString()),
+              child: Text(
+                (member['username'] ?? member['mail'] ?? 'Member').toString(),
+                style: GoogleFonts.poppins(
+                    fontSize: _sp(13),
+                    color: isDark
+                        ? const Color(0xFFE0F2F1)
+                        : AppColors.textPrimary),
+              ),
             );
           }).toList(),
           onChanged: (value) async {
             if (value == null) return;
-            final selected = children.firstWhere((m) => m['_id']?.toString() == value);
+            final selected =
+                children.firstWhere((m) => m['_id']?.toString() == value);
             setState(() {
-              _selectedMemberId = value;
+              _selectedMemberId  = value;
               _selectedMemberMail = selected['mail']?.toString();
             });
             await _loadData();
@@ -438,294 +537,432 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
     );
   }
 
+  // ── Money card ─────────────────────────────────────────────────────────────
+
   Widget _buildMoneyCard(double moneyBalance, double lifetimeMoneySaved) {
     return Container(
-      margin: const EdgeInsets.only(right: 10),
+      margin: const EdgeInsets.only(right: 8),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF0D47A1), Color(0xFF1976D2)],
+          colors: [Color(0xFF00695C), Color(0xFF00897B)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF00897B).withOpacity(0.3),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Text('Money Wallet', style: GoogleFonts.poppins(color: Colors.white70)),
-          const SizedBox(height: 4),
-          Text(
-            '${moneyBalance.toStringAsFixed(2)} EGP',
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 30,
-              fontWeight: FontWeight.w800,
+          Positioned(
+            top: -20, right: -20,
+            child: Container(
+              width: 80, height: 80,
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.07)),
             ),
           ),
-          Text(
-            'Total saved lifetime: ${lifetimeMoneySaved.toStringAsFixed(2)} EGP',
-            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
-          ),
-          const Spacer(),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (_isParent)
-                _cardButton(
-                  'Add Money',
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Add money flow will be connected next.')),
-                    );
-                  },
+              Text('💵 Money Wallet',
+                  style: GoogleFonts.poppins(
+                      fontSize: _sp(11), color: Colors.white.withOpacity(0.75))),
+              const SizedBox(height: 4),
+              Text(
+                '${moneyBalance.toStringAsFixed(2)} EGP',
+                style: GoogleFonts.poppins(
+                    fontSize: _sp(26), fontWeight: FontWeight.w700,
+                    color: Colors.white, letterSpacing: -0.5),
+              ),
+              Text(
+                'Saved lifetime: ${lifetimeMoneySaved.toStringAsFixed(2)} EGP',
+                style: GoogleFonts.poppins(
+                    fontSize: _sp(10), color: Colors.white.withOpacity(0.65)),
+              ),
+              const Spacer(),
+              GestureDetector(
+                onTap: () => _openConversionSheet(moneyToPoints: true),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text('Convert to Points →',
+                      style: GoogleFonts.poppins(
+                          fontSize: _sp(11), fontWeight: FontWeight.w700,
+                          color: Colors.white)),
                 ),
-              _cardButton('Convert to Points', onTap: () => _openConversionSheet(moneyToPoints: true)),
+              ),
             ],
-          )
+          ),
         ],
       ),
     );
   }
+
+  // ── Points card ────────────────────────────────────────────────────────────
 
   Widget _buildPointsCard(double pointsBalance, double lifetimePointsEarned) {
+    final m2p = _moneyToPointsRate(_balance);
+    final p2m = _pointsToMoneyRate(_balance);
+
     return Container(
-      margin: const EdgeInsets.only(left: 10),
+      margin: const EdgeInsets.only(left: 8),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF1B5E20), Color(0xFF43A047)],
+          colors: [Color(0xFF00838F), Color(0xFF00ACC1)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF00ACC1).withOpacity(0.3),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Text('Points Wallet', style: GoogleFonts.poppins(color: Colors.white70)),
-          const SizedBox(height: 4),
-          Text(
-            '${pointsBalance.toStringAsFixed(0)} pts',
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 30,
-              fontWeight: FontWeight.w800,
+          Positioned(
+            top: -20, right: -20,
+            child: Container(
+              width: 80, height: 80,
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.07)),
             ),
           ),
-          Text(
-            'Lifetime points earned: ${lifetimePointsEarned.toStringAsFixed(0)}',
-            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('⭐ Points Wallet',
+                  style: GoogleFonts.poppins(
+                      fontSize: _sp(11), color: Colors.white.withOpacity(0.75))),
+              const SizedBox(height: 4),
+              Text(
+                '${pointsBalance.toStringAsFixed(0)} pts',
+                style: GoogleFonts.poppins(
+                    fontSize: _sp(26), fontWeight: FontWeight.w700,
+                    color: Colors.white, letterSpacing: -0.5),
+              ),
+              Text(
+                'Rate: ${m2p.toStringAsFixed(0)} EGP = 100 pts  ·  1 pt = ${p2m.toStringAsFixed(2)} EGP',
+                style: GoogleFonts.poppins(
+                    fontSize: _sp(9), color: Colors.white.withOpacity(0.65)),
+              ),
+              const Spacer(),
+              GestureDetector(
+                onTap: () => _openConversionSheet(moneyToPoints: false),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text('Convert to Money →',
+                      style: GoogleFonts.poppins(
+                          fontSize: _sp(11), fontWeight: FontWeight.w700,
+                          color: Colors.white)),
+                ),
+              ),
+            ],
           ),
-          const Spacer(),
-          _cardButton('Convert to Money', onTap: () => _openConversionSheet(moneyToPoints: false)),
         ],
       ),
     );
   }
 
-  Widget _cardButton(String text, {required VoidCallback onTap}) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
-        elevation: 0,
-      ),
-      onPressed: onTap,
-      child: Text(text, style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 12)),
-    );
-  }
+  // ── Total value ────────────────────────────────────────────────────────────
 
-  Widget _buildCombinedValue(double totalValueMoney) {
+  Widget _buildTotalValue(double totalValueMoney, Color cardBg, Color border, bool isDark) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: const Color(0xFF263238),
-        borderRadius: BorderRadius.circular(14),
+        color: cardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: border, width: 0.8),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8, offset: const Offset(0, 2)),
+        ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            'Total Value',
-            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 15),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Total Value',
+                  style: GoogleFonts.poppins(
+                      fontSize: _sp(11), color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w600)),
+              Text('Money + Points combined',
+                  style: GoogleFonts.poppins(
+                      fontSize: _sp(9), color: AppColors.textHint)),
+            ],
           ),
           Text(
             '${totalValueMoney.toStringAsFixed(2)} EGP',
             style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-            ),
+                fontSize: _sp(20), fontWeight: FontWeight.w700,
+                color: AppColors.primary),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildQuickActions() {
-    return Row(
-      children: [
-        Expanded(
-          child: _quickAction(
-            icon: Icons.swap_horiz,
-            label: 'Transfer',
-            onTap: () => _tabController.animateTo(1),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _quickAction(
-            icon: Icons.remove_circle_outline,
-            label: 'Add Spending',
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Spending flow will be connected next.')),
-              );
-            },
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _quickAction(
-            icon: Icons.history,
-            label: 'View History',
-            onTap: () => _tabController.animateTo(0),
-          ),
-        ),
-      ],
-    );
-  }
+  // ── Transaction list ───────────────────────────────────────────────────────
 
-  Widget _quickAction({required IconData icon, required String label, required VoidCallback onTap}) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: const Color(0xFF1B5E20)),
-            const SizedBox(height: 6),
-            Text(label, style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRecentTransactions() {
+  Widget _buildTransactionsList(Color cardBg, Color border, bool isDark) {
     if (_transactions.isEmpty) {
-      return Center(
-        child: Text(
-          'No transactions yet',
-          style: GoogleFonts.poppins(color: Colors.grey[600]),
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: cardBg,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: border, width: 0.8),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.receipt_long_outlined,
+                color: AppColors.textSecondary, size: 18),
+            const SizedBox(width: 10),
+            Text('No transactions yet',
+                style: GoogleFonts.poppins(
+                    fontSize: _sp(12), color: AppColors.textSecondary)),
+          ],
         ),
       );
     }
 
-    return ListView.separated(
-      padding: const EdgeInsets.all(12),
-      itemCount: _transactions.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
-      itemBuilder: (context, index) {
-        final tx = _transactions[index];
-        final kind = (tx['kind'] ?? 'points').toString();
-        final isPositive = tx['isPositive'] == true;
-        final color = isPositive ? Colors.green : Colors.red;
+    final divider = isDark ? const Color(0xFF1E3A4A) : AppColors.borderLight;
 
-        final iconText = kind == 'money'
-            ? '💰'
-            : kind == 'conversion'
-                ? '🔄'
-                : '⭐';
+    return Container(
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: border, width: 0.8),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05),
+              blurRadius: 8, offset: const Offset(0, 2)),
+        ],
+      ),
+      child: Column(
+        children: _transactions.take(10).toList().asMap().entries.map((entry) {
+          final i   = entry.key;
+          final tx  = entry.value;
+          final isLast   = i == (_transactions.length < 10
+              ? _transactions.length - 1 : 9);
+          final kind      = (tx['kind'] ?? 'points').toString();
+          final isPositive = tx['isPositive'] == true;
+          final amountText = (tx['amountText'] ?? '').toString();
 
-        return Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
-          ),
-          child: Row(
-            children: [
-              Text(iconText, style: const TextStyle(fontSize: 20)),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      (tx['title'] ?? 'Transaction').toString(),
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13),
-                    ),
-                    Text(
-                      (tx['subtitle'] ?? '').toString(),
-                      style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[600]),
-                    ),
-                    Text(
-                      _dateLabel(tx['date'] as DateTime?),
-                      style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[500]),
-                    ),
-                  ],
+          // Icon config
+          final Color iconBg;
+          final Widget iconChild;
+          if (kind == 'conversion') {
+            iconBg = AppColors.primarySurface;
+            iconChild = const Text('⭐', style: TextStyle(fontSize: 15));
+          } else if (kind == 'money') {
+            iconBg = isPositive
+                ? AppColors.primarySurface
+                : const Color(0xFFFFEBEE);
+            iconChild = Icon(
+              isPositive ? Icons.arrow_downward : Icons.arrow_upward,
+              size: 16,
+              color: isPositive ? AppColors.primary : AppColors.error,
+            );
+          } else {
+            // points
+            iconBg = isPositive
+                ? AppColors.primarySurface
+                : const Color(0xFFFFEBEE);
+            iconChild = isPositive
+                ? const Text('⭐', style: TextStyle(fontSize: 14))
+                : const Text('🎁', style: TextStyle(fontSize: 14));
+          }
+
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+            decoration: BoxDecoration(
+              border: isLast
+                  ? null
+                  : Border(
+                      bottom: BorderSide(color: divider, width: 0.5)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 34, height: 34,
+                  decoration: BoxDecoration(
+                      color: iconBg, borderRadius: BorderRadius.circular(10)),
+                  child: Center(child: iconChild),
                 ),
-              ),
-              Text(
-                (tx['amountText'] ?? '').toString(),
-                style: GoogleFonts.poppins(color: color, fontWeight: FontWeight.w700),
-              ),
-            ],
-          ),
-        );
-      },
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        (tx['title'] ?? 'Transaction').toString(),
+                        style: GoogleFonts.poppins(
+                            fontSize: _sp(12), fontWeight: FontWeight.w600,
+                            color: isDark
+                                ? const Color(0xFFE0F2F1)
+                                : AppColors.textPrimary),
+                        maxLines: 1, overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        _dateLabel(tx['date'] as DateTime?),
+                        style: GoogleFonts.poppins(
+                            fontSize: _sp(10), color: AppColors.textHint),
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  amountText,
+                  style: GoogleFonts.poppins(
+                    fontSize: _sp(12), fontWeight: FontWeight.w700,
+                    color: isPositive ? AppColors.primary : AppColors.error,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 
-  Widget _buildConversionPanel() {
+  // ── Conversion buttons ─────────────────────────────────────────────────────
+
+  Widget _buildConversionButtons(Color cardBg, Color border, bool isDark) {
     final m2p = _moneyToPointsRate(_balance);
     final p2m = _pointsToMoneyRate(_balance);
-    return Padding(
-      padding: const EdgeInsets.all(16),
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: border, width: 0.8),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05),
+              blurRadius: 8, offset: const Offset(0, 2)),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Conversion Rate',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 8),
-          Text('1 EGP = ${m2p.toStringAsFixed(2)} points', style: GoogleFonts.poppins()),
-          Text('1 point = ${p2m.toStringAsFixed(2)} EGP', style: GoogleFonts.poppins()),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () => _openConversionSheet(moneyToPoints: true),
-              icon: const Icon(Icons.arrow_upward),
-              label: const Text('Convert Money to Points'),
-            ),
-          ),
-          const SizedBox(height: 10),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () => _openConversionSheet(moneyToPoints: false),
-              icon: const Icon(Icons.arrow_downward),
-              label: const Text('Convert Points to Money'),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+                color: AppColors.primarySurface,
+                borderRadius: BorderRadius.circular(10)),
+            child: Text(
+              '1 EGP = ${m2p.toStringAsFixed(0)} pts  ·  1 pt = ${p2m.toStringAsFixed(2)} EGP',
+              style: GoogleFonts.poppins(
+                  fontSize: _sp(11), color: AppColors.primary,
+                  fontWeight: FontWeight.w600),
             ),
           ),
           const SizedBox(height: 12),
-          Text(
-            'Note: money transaction rows currently include conversion-side records and point history. A dedicated wallet-transaction feed can be added when backend endpoint is exposed.',
-            style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[600]),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => _openConversionSheet(moneyToPoints: true),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF00695C), Color(0xFF00897B)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                            color: AppColors.primary.withOpacity(0.25),
+                            blurRadius: 8, offset: const Offset(0, 3)),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.arrow_upward, color: Colors.white, size: 15),
+                        const SizedBox(width: 6),
+                        Text('Money → Points',
+                            style: GoogleFonts.poppins(
+                                fontSize: _sp(11), fontWeight: FontWeight.w700,
+                                color: Colors.white)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => _openConversionSheet(moneyToPoints: false),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF00838F), Color(0xFF00ACC1)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                            color: const Color(0xFF00ACC1).withOpacity(0.25),
+                            blurRadius: 8, offset: const Offset(0, 3)),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.arrow_downward, color: Colors.white, size: 15),
+                        const SizedBox(width: 6),
+                        Text('Points → Money',
+                            style: GoogleFonts.poppins(
+                                fontSize: _sp(11), fontWeight: FontWeight.w700,
+                                color: Colors.white)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
+
+  // ── Shared helpers ─────────────────────────────────────────────────────────
+
+  Widget _buildSectionLabel(String text, bool isDark) => Text(
+    text,
+    style: GoogleFonts.poppins(
+      fontSize: _sp(9), fontWeight: FontWeight.w700,
+      letterSpacing: 0.8, color: AppColors.textSecondary,
+    ),
+  );
 }
