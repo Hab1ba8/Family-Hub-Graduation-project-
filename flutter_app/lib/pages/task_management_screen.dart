@@ -1,7 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../core/services/api_service.dart';
+import '../core/theme/theme_provider.dart';
 import 'create_task_screen.dart';
+
+// ─── Teal theme constants ────────────────────────────────────────────────────
+const _tmPrimary = Color(0xFF00897B);
+const _tmPrimaryLight = Color(0xFF00ACC1);
+const _tmBgLight = Color(0xFFE8F5F5);
+const _tmBgDark = Color(0xFF0A1628);
+const _tmCardDark = Color(0xFF122030);
+const _tmBorderLight = Color(0xFFB2DFDB);
+const _tmBorderDark = Color(0xFF1E3A4A);
+const _tmBorderInner = Color(0xFFE0F2F1);
+const _tmTextPrimaryLight = Color(0xFF00352E);
+const _tmTextPrimaryDark = Color(0xFFE0F2F1);
+const _tmTextSecLight = Color(0xFF4DB6AC);
+const _tmTextSecDark = Color(0xFF80CBC4);
 
 class TaskManagementScreen extends StatefulWidget {
   const TaskManagementScreen({super.key});
@@ -117,38 +133,105 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
     super.dispose();
   }
 
+  // ─── Avatar helpers ──────────────────────────────────────────────────────
+  Map<String, Color> _getAvatarColors(String name) {
+    const sets = [
+      {'bg': Color(0xFFE3F2FD), 'text': Color(0xFF1565C0), 'border': Color(0xFF90CAF9)},
+      {'bg': Color(0xFFFFF3E0), 'text': Color(0xFFE65100), 'border': Color(0xFFFFCC80)},
+      {'bg': Color(0xFFFCE4EC), 'text': Color(0xFFC2185B), 'border': Color(0xFFF48FB1)},
+      {'bg': Color(0xFFE0F2F1), 'text': Color(0xFF00695C), 'border': Color(0xFF80CBC4)},
+      {'bg': Color(0xFFF3E5F5), 'text': Color(0xFF7B1FA2), 'border': Color(0xFFCE93D8)},
+      {'bg': Color(0xFFE8F5E9), 'text': Color(0xFF2E7D32), 'border': Color(0xFFA5D6A7)},
+    ];
+    final idx = name.isEmpty ? 0 : name.codeUnitAt(0) % sets.length;
+    return sets[idx];
+  }
+
+  Widget _buildAvatar(String name, {double size = 36}) {
+    final initials = name.length >= 2
+        ? name.substring(0, 2).toUpperCase()
+        : name.toUpperCase();
+    final c = _getAvatarColors(name);
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: c['bg'],
+        shape: BoxShape.circle,
+        border: Border.all(color: c['border']!, width: 2),
+      ),
+      child: Center(
+        child: Text(
+          initials,
+          style: GoogleFonts.poppins(
+              fontSize: size * 0.33,
+              fontWeight: FontWeight.w700,
+              color: c['text']),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAvatarWithDot(String name, {double size = 36}) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        _buildAvatar(name, size: size),
+        Positioned(
+          bottom: 0,
+          right: 0,
+          child: Container(
+            width: 9,
+            height: 9,
+            decoration: BoxDecoration(
+              color: const Color(0xFF4CAF50),
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 1.5),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isDark = context.watch<ThemeProvider>().isDark;
+    final bg = isDark ? _tmBgDark : _tmBgLight;
+    final textPrimary = isDark ? _tmTextPrimaryDark : _tmTextPrimaryLight;
+    final textSec = isDark ? _tmTextSecDark : _tmTextSecLight;
+    final border = isDark ? _tmBorderDark : _tmBorderLight;
+
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: const Color(0xFFE8F5E9),
+        backgroundColor: bg,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          title: Text('Task Management',
+          title: Text('Manage Tasks',
               style: GoogleFonts.poppins(
-                  color: Colors.black, fontWeight: FontWeight.bold)),
+                  color: textPrimary, fontWeight: FontWeight.bold)),
         ),
         body: const Center(
-            child: CircularProgressIndicator(color: Colors.green)),
+            child: CircularProgressIndicator(color: _tmPrimary)),
       );
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFE8F5E9),
+      backgroundColor: bg,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.green),
+          icon: const Icon(Icons.arrow_back, color: _tmPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text('Task Management',
+        title: Text('Manage Tasks',
             style: GoogleFonts.poppins(
-                color: Colors.black, fontWeight: FontWeight.bold)),
+                color: textPrimary, fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.green),
+            icon: const Icon(Icons.refresh, color: _tmPrimary),
             onPressed: _loadData,
           ),
         ],
@@ -157,51 +240,80 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 700),
           child: Column(
-        children: [
-          // Tab Bar
-          Container(
-            margin: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.green[100],
-              borderRadius: BorderRadius.circular(25),
-            ),
-            child: TabBar(
-              controller: _tabController,
-              indicator: BoxDecoration(
-                color: Colors.green[700],
-                borderRadius: BorderRadius.circular(25),
+            children: [
+              // ── Scrollable tab pills ──────────────────────────────────
+              Container(
+                margin: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF1A2F42) : _tmBorderInner,
+                  borderRadius: BorderRadius.circular(25),
+                  border: Border.all(color: border),
+                ),
+                child: TabBar(
+                  controller: _tabController,
+                  indicator: BoxDecoration(
+                    color: _tmPrimary,
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelColor: Colors.white,
+                  unselectedLabelColor: textSec,
+                  labelStyle: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w600, fontSize: 11),
+                  dividerColor: Colors.transparent,
+                  isScrollable: true,
+                  tabAlignment: TabAlignment.start,
+                  tabs: [
+                    const Tab(text: 'My Tasks'),
+                    const Tab(text: 'Assign Task'),
+                    const Tab(text: 'Templates'),
+                    if (_isParent)
+                      Tab(
+                        child: Row(children: [
+                          const Text('Approvals'),
+                          if (_tasksWaitingApproval.isNotEmpty ||
+                              _pendingAssignments.isNotEmpty) ...[
+                            const SizedBox(width: 5),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 5, vertical: 1),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE53935),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                '${_tasksWaitingApproval.length + _pendingAssignments.length}',
+                                style: GoogleFonts.poppins(
+                                    fontSize: 9,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700),
+                              ),
+                            ),
+                          ],
+                        ]),
+                      ),
+                    if (_isParent) const Tab(text: 'History'),
+                  ],
+                ),
               ),
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.black87,
-              labelStyle: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600, fontSize: 11),
-              isScrollable: true,
-              tabs: [
-                const Tab(text: 'My Tasks'),
-                const Tab(text: 'Assign Task'),
-                const Tab(text: 'Templates'),
-                if (_isParent) const Tab(text: 'Approvals'),
-                if (_isParent) const Tab(text: 'History'),
-              ],
-            ),
-          ),
 
-          // Tab Views
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildMyTasksTab(),
-                _buildAssignTaskTab(),
-                _buildTaskTemplatesTab(),
-                if (_isParent) _buildApprovalsTab(),
-                if (_isParent) _buildHistoryTab(),
-              ],
-            ),
+              // ── Tab views ─────────────────────────────────────────────
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildMyTasksTab(),
+                    _buildAssignTaskTab(),
+                    _buildTaskTemplatesTab(),
+                    if (_isParent) _buildApprovalsTab(),
+                    if (_isParent) _buildHistoryTab(),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-      ),
+        ),
       ),
     );
   }
@@ -323,42 +435,50 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
   }
 
   Widget _buildMyTaskStatCard(String title, String value, IconData icon, Color color) {
+    final isDark = context.read<ThemeProvider>().isDark;
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        color: isDark ? _tmCardDark : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: _tmBorderLight),
+        boxShadow: isDark
+            ? []
+            : [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 6, offset: const Offset(0, 2))],
       ),
       child: Column(
         children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 6),
           Text(value,
               style: GoogleFonts.poppins(
-                  fontSize: 22, fontWeight: FontWeight.bold, color: color)),
+                  fontSize: 20, fontWeight: FontWeight.bold, color: color)),
+          const SizedBox(height: 2),
           Text(title,
-              style: GoogleFonts.poppins(fontSize: 11, color: color.withOpacity(0.8))),
+              style: GoogleFonts.poppins(
+                  fontSize: 10, color: isDark ? _tmTextSecDark : _tmTextSecLight),
+              textAlign: TextAlign.center),
         ],
       ),
     );
   }
 
   Widget _buildSectionHeader(String title, IconData icon, Color color) {
+    final isDark = context.read<ThemeProvider>().isDark;
+    final textPrimary = isDark ? _tmTextPrimaryDark : _tmTextPrimaryLight;
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(7),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: color.withValues(alpha: 0.25)),
           ),
-          child: Icon(icon, color: color, size: 20),
+          child: Icon(icon, color: color, size: 18),
         ),
         const SizedBox(width: 10),
         Text(title,
             style: GoogleFonts.poppins(
-                fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87)),
+                fontSize: 15, fontWeight: FontWeight.bold, color: textPrimary)),
       ],
     );
   }
@@ -440,7 +560,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.15),
+            color: Colors.grey.withValues(alpha: 0.15),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -453,7 +573,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: statusColor.withOpacity(0.1),
+              color: statusColor.withValues(alpha: 0.1),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
                 topRight: Radius.circular(16),
@@ -640,9 +760,9 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
-                              color: _getPriorityColor(priority).withOpacity(0.1),
+                              color: _getPriorityColor(priority).withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: _getPriorityColor(priority).withOpacity(0.3)),
+                              border: Border.all(color: _getPriorityColor(priority).withValues(alpha: 0.3)),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -1114,15 +1234,15 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
         children: [
           // Info card
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: Colors.blue[50],
+              color: _tmBorderInner,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.blue[200]!),
+              border: Border.all(color: _tmBorderLight),
             ),
             child: Row(
               children: [
-                Icon(Icons.info_outline, color: Colors.blue[700]),
+                const Icon(Icons.info_outline, color: _tmPrimary),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -1130,7 +1250,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                         ? 'As a parent, your task assignments are automatically approved.'
                         : 'Your task assignments will need parent approval.',
                     style: GoogleFonts.poppins(
-                        fontSize: 12, color: Colors.blue[700]),
+                        fontSize: 12, color: _tmPrimary),
                   ),
                 ),
               ],
@@ -1148,10 +1268,12 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                   style: GoogleFonts.poppins(
                       color: Colors.white, fontWeight: FontWeight.w600)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[700],
+                backgroundColor: _tmPrimary,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
+                elevation: 3,
+                shadowColor: _tmPrimary.withValues(alpha: 0.4),
               ),
             ),
           ),
@@ -1160,9 +1282,9 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
           // Quick Stats
           Text('Quick Stats',
               style: GoogleFonts.poppins(
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.green[800])),
+                  color: _tmTextPrimaryLight)),
           const SizedBox(height: 12),
 
           Row(
@@ -1215,27 +1337,28 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
 
   Widget _buildStatCard(
       String title, String value, IconData icon, Color color) {
+    final isDark = context.read<ThemeProvider>().isDark;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              blurRadius: 6,
-              offset: const Offset(0, 2)),
-        ],
+        color: isDark ? _tmCardDark : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: isDark ? _tmBorderDark : _tmBorderLight),
+        boxShadow: isDark
+            ? []
+            : [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 6, offset: const Offset(0, 2))],
       ),
       child: Column(
         children: [
-          Icon(icon, color: color, size: 28),
-          const SizedBox(height: 8),
+          Icon(icon, color: color, size: 26),
+          const SizedBox(height: 6),
           Text(value,
               style: GoogleFonts.poppins(
-                  fontSize: 24, fontWeight: FontWeight.bold, color: color)),
+                  fontSize: 22, fontWeight: FontWeight.bold, color: color)),
           Text(title,
-              style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[600]),
+              style: GoogleFonts.poppins(
+                  fontSize: 11,
+                  color: isDark ? _tmTextSecDark : _tmTextSecLight),
               textAlign: TextAlign.center),
         ],
       ),
@@ -1563,7 +1686,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                       style: GoogleFonts.poppins(
                           color: Colors.white, fontWeight: FontWeight.w600)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green[700],
+                    backgroundColor: _tmPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
@@ -1615,27 +1738,28 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                     final templateRewardType = (task['reward_type'] ?? 'points').toString();
                     final templateMoneyReward = ((task['money_reward'] ?? 0) as num).toDouble();
 
+                    final isDark = context.read<ThemeProvider>().isDark;
+                    final textPrimary = isDark ? _tmTextPrimaryDark : _tmTextPrimaryLight;
+                    final textSec = isDark ? _tmTextSecDark : _tmTextSecLight;
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.grey.withOpacity(0.1),
-                              blurRadius: 6,
-                              offset: const Offset(0, 2)),
-                        ],
+                        color: isDark ? _tmCardDark : Colors.white,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(color: isDark ? _tmBorderDark : _tmBorderLight),
+                        boxShadow: isDark
+                            ? []
+                            : [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 6, offset: const Offset(0, 2))],
                       ),
                       child: Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(10),
+                            padding: const EdgeInsets.all(9),
                             decoration: BoxDecoration(
                               color: isMandatory
-                                  ? Colors.red[50]
-                                  : Colors.green[50],
+                                  ? const Color(0xFFFFEBEE)
+                                  : _tmBorderInner,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Icon(
@@ -1643,8 +1767,9 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                                   ? Icons.priority_high
                                   : Icons.task_alt,
                               color: isMandatory
-                                  ? Colors.red[700]
-                                  : Colors.green[700],
+                                  ? const Color(0xFFC62828)
+                                  : _tmPrimary,
+                              size: 22,
                             ),
                           ),
                           const SizedBox(width: 14),
@@ -1659,7 +1784,8 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                                         task['title'] ?? 'Unknown',
                                         style: GoogleFonts.poppins(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 15),
+                                            fontSize: 14,
+                                            color: textPrimary),
                                       ),
                                     ),
                                     if (isMandatory)
@@ -1667,14 +1793,14 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 8, vertical: 2),
                                         decoration: BoxDecoration(
-                                          color: Colors.red[100],
+                                          color: const Color(0xFFFFEBEE),
                                           borderRadius:
                                               BorderRadius.circular(10),
                                         ),
                                         child: Text('Mandatory',
                                             style: GoogleFonts.poppins(
-                                                fontSize: 10,
-                                                color: Colors.red[700],
+                                                fontSize: 9,
+                                                color: const Color(0xFFC62828),
                                                 fontWeight: FontWeight.w600)),
                                       ),
                                   ],
@@ -1683,7 +1809,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                                   Text(
                                     task['description'],
                                     style: GoogleFonts.poppins(
-                                        fontSize: 12, color: Colors.grey[600]),
+                                        fontSize: 11, color: textSec),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -1691,12 +1817,12 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                                 Row(
                                   children: [
                                     Icon(Icons.folder_outlined,
-                                        size: 14, color: Colors.grey[500]),
+                                        size: 13, color: textSec),
                                     const SizedBox(width: 4),
                                     Text(
                                       category?['title'] ?? 'No Category',
                                       style: GoogleFonts.poppins(
-                                          fontSize: 11, color: Colors.grey[500]),
+                                          fontSize: 11, color: textSec),
                                     ),
                                   ],
                                 ),
@@ -1709,18 +1835,18 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                                           : templateRewardType == 'both'
                                               ? '⭐💰'
                                               : '⭐',
-                                      style: const TextStyle(fontSize: 13),
+                                      style: const TextStyle(fontSize: 12),
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
                                       templateRewardType == 'money'
                                           ? '${templateMoneyReward.toStringAsFixed(2)} EGP'
                                           : templateRewardType == 'both'
-                                              ? '${templateMoneyReward.toStringAsFixed(2)} EGP + points on assignment'
+                                              ? '${templateMoneyReward.toStringAsFixed(2)} EGP + pts'
                                               : 'Points on assignment',
                                       style: GoogleFonts.poppins(
                                           fontSize: 11,
-                                          color: Colors.green[700],
+                                          color: _tmPrimary,
                                           fontWeight: FontWeight.w600),
                                     ),
                                   ],
@@ -1755,151 +1881,6 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
     if (created == true) {
       _loadData();
     }
-  }
-
-  void _showCreateTaskTemplateDialog() {
-    final titleController = TextEditingController();
-    final descriptionController = TextEditingController();
-    String? selectedCategoryId;
-    bool isMandatory = false;
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
-              title: Text('Create Task Template',
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
-              content: SingleChildScrollView(
-                child: SizedBox(
-                  width: 350,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Title *',
-                          style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w600, fontSize: 13)),
-                      const SizedBox(height: 6),
-                      TextField(
-                        controller: titleController,
-                        decoration: InputDecoration(
-                          hintText: 'e.g., Clean Room',
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      Text('Description',
-                          style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w600, fontSize: 13)),
-                      const SizedBox(height: 6),
-                      TextField(
-                        controller: descriptionController,
-                        maxLines: 3,
-                        decoration: InputDecoration(
-                          hintText: 'Task description...',
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      Text('Category *',
-                          style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w600, fontSize: 13)),
-                      const SizedBox(height: 6),
-                      DropdownButtonFormField<String>(
-                        value: selectedCategoryId,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                        ),
-                        hint: const Text('Select category'),
-                        items: _categories.map((cat) {
-                          return DropdownMenuItem<String>(
-                            value: cat['_id'],
-                            child: Text(cat['title'] ?? 'Unknown'),
-                          );
-                        }).toList(),
-                        onChanged: (v) =>
-                            setDialogState(() => selectedCategoryId = v),
-                      ),
-                      const SizedBox(height: 16),
-
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: isMandatory,
-                            onChanged: (v) =>
-                                setDialogState(() => isMandatory = v ?? false),
-                            activeColor: Colors.green[700],
-                          ),
-                          Text('Mandatory Task',
-                              style: GoogleFonts.poppins(fontSize: 14)),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text('Cancel', style: GoogleFonts.poppins()),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (titleController.text.isEmpty ||
-                        selectedCategoryId == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Please fill required fields')),
-                      );
-                      return;
-                    }
-
-                    try {
-                      await _apiService.createTask({
-                        'title': titleController.text,
-                        'description': descriptionController.text,
-                        'category_id': selectedCategoryId,
-                        'is_mandatory': isMandatory,
-                      });
-
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Task template created!'),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                      _loadData();
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content: Text('Error: $e'),
-                            backgroundColor: Colors.red),
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[700]),
-                  child: Text('Create',
-                      style: GoogleFonts.poppins(color: Colors.white)),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
   }
 
   void _showCreateCategoryDialog() {
@@ -2020,32 +2001,32 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
 
   // ==================== TAB 3: APPROVALS (Parent Only) ====================
   Widget _buildApprovalsTab() {
+    final isDark = context.read<ThemeProvider>().isDark;
     return DefaultTabController(
       length: 2,
       child: Column(
         children: [
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.all(3),
             decoration: BoxDecoration(
-              color: Colors.grey[200],
+              color: isDark ? const Color(0xFF1A2F42) : _tmBorderInner,
               borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: isDark ? _tmBorderDark : _tmBorderLight),
             ),
             child: TabBar(
               indicator: BoxDecoration(
-                color: Colors.green[600],
-                borderRadius: BorderRadius.circular(20),
+                color: _tmPrimary,
+                borderRadius: BorderRadius.circular(17),
               ),
+              indicatorSize: TabBarIndicatorSize.tab,
               labelColor: Colors.white,
-              unselectedLabelColor: Colors.black87,
-              labelStyle: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600, fontSize: 12),
+              unselectedLabelColor: isDark ? _tmTextSecDark : _tmTextSecLight,
+              labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 11),
+              dividerColor: Colors.transparent,
               tabs: [
-                Tab(
-                    text:
-                        'Assignment Requests (${_pendingAssignments.length})'),
-                Tab(
-                    text:
-                        'Completion Requests (${_tasksWaitingApproval.length})'),
+                Tab(text: 'Assignments (${_pendingAssignments.length})'),
+                Tab(text: 'Completions (${_tasksWaitingApproval.length})'),
               ],
             ),
           ),
@@ -2064,15 +2045,21 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
   }
 
   Widget _buildPendingAssignmentsList() {
+    final isDark = context.read<ThemeProvider>().isDark;
+    final textPrimary = isDark ? _tmTextPrimaryDark : _tmTextPrimaryLight;
+    final textSec = isDark ? _tmTextSecDark : _tmTextSecLight;
+    final cardColor = isDark ? _tmCardDark : Colors.white;
+    final borderColor = isDark ? _tmBorderDark : _tmBorderLight;
+
     if (_pendingAssignments.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.check_circle, size: 60, color: Colors.green[300]),
+            const Icon(Icons.check_circle, size: 60, color: Color(0xFF80CBC4)),
             const SizedBox(height: 16),
             Text('No pending assignment requests',
-                style: GoogleFonts.poppins(color: Colors.grey)),
+                style: GoogleFonts.poppins(color: textSec)),
           ],
         ),
       );
@@ -2086,101 +2073,50 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
         final task = assignment['task_id'];
         final assignedTo = assignment['member_mail'];
         final assignedBy = assignment['assigned_by'];
+        final memberName = assignedTo?['username'] ?? (assignedTo is String ? assignedTo.split('@').first : 'Unknown');
+        final byName = assignedBy?['username'] ?? (assignedBy is String ? assignedBy.split('@').first : 'Unknown');
 
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.orange[200]!),
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2)),
-            ],
+            color: cardColor,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: borderColor),
+            boxShadow: isDark ? [] : [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 6, offset: const Offset(0, 2))],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.orange[50],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(Icons.pending_actions,
-                        color: Colors.orange[700], size: 24),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(task?['title'] ?? 'Unknown Task',
-                            style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.bold, fontSize: 15)),
-                        Text(
-                          'Assigned by: ${assignedBy?['username'] ?? assignedBy ?? 'Unknown'}',
-                          style: GoogleFonts.poppins(
-                              fontSize: 12, color: Colors.grey[600]),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(8),
-                ),
+              _buildAvatarWithDot(memberName, size: 40),
+              const SizedBox(width: 12),
+              Expanded(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildInfoRow(Icons.person, 'Assign To',
-                        assignedTo?['username'] ?? assignedTo ?? 'Unknown'),
-                    _buildInfoRow(Icons.star, 'Reward Points',
-                        '${assignment['assigned_points']} pts'),
-                    _buildInfoRow(Icons.remove_circle_outline, 'Penalty',
-                        '${assignment['penalty_points'] ?? 0} pts'),
-                    _buildInfoRow(Icons.calendar_today, 'Deadline',
-                        _formatDeadline(assignment['deadline'])),
+                    Text(task?['title'] ?? 'Unknown Task',
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13, color: textPrimary)),
+                    Text('To: $memberName · By: $byName',
+                        style: GoogleFonts.poppins(fontSize: 10, color: textSec)),
+                    const SizedBox(height: 3),
+                    Row(children: [
+                      const Icon(Icons.star, size: 12, color: Color(0xFFFB8C00)),
+                      const SizedBox(width: 3),
+                      Text('${assignment['assigned_points']} pts',
+                          style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w600, color: _tmPrimary)),
+                      const SizedBox(width: 10),
+                      Icon(Icons.schedule, size: 12, color: textSec),
+                      const SizedBox(width: 3),
+                      Text(_formatDeadline(assignment['deadline']),
+                          style: GoogleFonts.poppins(fontSize: 11, color: textSec)),
+                    ]),
                   ],
                 ),
               ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () =>
-                          _approveAssignment(assignment['_id'], false),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red[100],
-                        foregroundColor: Colors.red[700],
-                      ),
-                      child: Text('Reject', style: GoogleFonts.poppins()),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () =>
-                          _approveAssignment(assignment['_id'], true),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green[700],
-                      ),
-                      child: Text('Approve',
-                          style: GoogleFonts.poppins(color: Colors.white)),
-                    ),
-                  ),
-                ],
-              ),
+              const SizedBox(width: 8),
+              // ✓ / ✕ icon buttons
+              _buildApproveBtn(() => _approveAssignment(assignment['_id'], true)),
+              const SizedBox(width: 6),
+              _buildRejectBtn(() => _approveAssignment(assignment['_id'], false)),
             ],
           ),
         );
@@ -2189,15 +2125,21 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
   }
 
   Widget _buildTasksWaitingApprovalList() {
+    final isDark = context.read<ThemeProvider>().isDark;
+    final textPrimary = isDark ? _tmTextPrimaryDark : _tmTextPrimaryLight;
+    final textSec = isDark ? _tmTextSecDark : _tmTextSecLight;
+    final cardColor = isDark ? _tmCardDark : Colors.white;
+    final borderColor = isDark ? _tmBorderDark : _tmBorderLight;
+
     if (_tasksWaitingApproval.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.check_circle, size: 60, color: Colors.green[300]),
+            const Icon(Icons.check_circle, size: 60, color: Color(0xFF80CBC4)),
             const SizedBox(height: 16),
             Text('No tasks waiting for approval',
-                style: GoogleFonts.poppins(color: Colors.grey)),
+                style: GoogleFonts.poppins(color: textSec)),
           ],
         ),
       );
@@ -2210,103 +2152,54 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
         final taskDetail = _tasksWaitingApproval[index];
         final task = taskDetail['task_id'];
         final memberMail = taskDetail['member_mail'];
-        
+
         String getMemberName(dynamic email) {
           if (email == null) return 'Unknown';
           if (email is String) return email.split('@').first;
           if (email is Map && email['username'] != null) return email['username'];
           return 'Unknown';
         }
-        
+
         final memberName = getMemberName(memberMail);
 
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.blue[200]!),
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2)),
-            ],
+            color: cardColor,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: borderColor),
+            boxShadow: isDark ? [] : [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 6, offset: const Offset(0, 2))],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.blue[50],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(Icons.task_alt,
-                        color: Colors.blue[700], size: 24),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(task?['title'] ?? 'Unknown Task',
-                            style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.bold, fontSize: 15)),
-                        Text(
-                          'Completed by: $memberName',
-                          style: GoogleFonts.poppins(
-                              fontSize: 12, color: Colors.grey[600]),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.green[100],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text('+${taskDetail['assigned_points']} pts',
-                        style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            color: Colors.green[700],
-                            fontWeight: FontWeight.bold)),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () =>
-                          _approveCompletion(taskDetail['_id'], false),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red[100],
-                        foregroundColor: Colors.red[700],
+              _buildAvatarWithDot(memberName, size: 40),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(task?['title'] ?? 'Unknown Task',
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13, color: textPrimary)),
+                    Text('Completed by: $memberName',
+                        style: GoogleFonts.poppins(fontSize: 10, color: textSec)),
+                    const SizedBox(height: 3),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE0F2F1),
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Text('Reject', style: GoogleFonts.poppins()),
+                      child: Text('+${taskDetail['assigned_points']} pts',
+                          style: GoogleFonts.poppins(fontSize: 11, color: _tmPrimary, fontWeight: FontWeight.w600)),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () =>
-                          _approveCompletion(taskDetail['_id'], true),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green[700],
-                      ),
-                      child: Text('Approve & Award',
-                          style: GoogleFonts.poppins(color: Colors.white)),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
+              _buildApproveBtn(() => _approveCompletion(taskDetail['_id'], true)),
+              const SizedBox(width: 6),
+              _buildRejectBtn(() => _approveCompletion(taskDetail['_id'], false)),
             ],
           ),
         );
@@ -2314,21 +2207,38 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: Colors.grey[600]),
-          const SizedBox(width: 8),
-          Text('$label: ', style: GoogleFonts.poppins(fontSize: 12)),
-          Text(value,
-              style: GoogleFonts.poppins(
-                  fontSize: 12, fontWeight: FontWeight.w600)),
-        ],
+  Widget _buildApproveBtn(VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          color: const Color(0xFFE0F2F1),
+          shape: BoxShape.circle,
+          border: Border.all(color: _tmBorderLight),
+        ),
+        child: const Icon(Icons.check, color: _tmPrimary, size: 18),
       ),
     );
   }
+
+  Widget _buildRejectBtn(VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFEBEE),
+          shape: BoxShape.circle,
+          border: Border.all(color: const Color(0xFFFFCDD2)),
+        ),
+        child: const Icon(Icons.close, color: Color(0xFFE53935), size: 18),
+      ),
+    );
+  }
+
 
   Future<void> _approveAssignment(String taskDetailId, bool approved) async {
     try {
@@ -2432,8 +2342,8 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
           margin: const EdgeInsets.all(16),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.green[700]!, Colors.green[500]!],
+            gradient: const LinearGradient(
+              colors: [Color(0xFF00695C), _tmPrimaryLight],
             ),
             borderRadius: BorderRadius.circular(16),
           ),
@@ -2453,7 +2363,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
@@ -2531,7 +2441,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: isSelected ? Colors.white.withOpacity(0.2) : Colors.grey[300],
+              color: isSelected ? Colors.white.withValues(alpha: 0.2) : Colors.grey[300],
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
@@ -2629,15 +2539,16 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
       }
     }
 
+    final isDark = context.read<ThemeProvider>().isDark;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: statusColor.withOpacity(0.3)),
+        color: isDark ? _tmCardDark : Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: statusColor.withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -2650,7 +2561,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: statusColor.withOpacity(0.1),
+              color: statusColor.withValues(alpha: 0.1),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),
