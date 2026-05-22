@@ -178,7 +178,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   static const _modules = [
     {'label': 'Tasks',      'icon': Icons.checklist_rounded,            'route': '/tasks',                'bg': Color(0xFFE0F2F1), 'fg': Color(0xFF00897B)},
     {'label': 'Budget',     'icon': Icons.account_balance_wallet_outlined,'route': '/budget',              'bg': Color(0xFFE8F5E9), 'fg': Color(0xFF2E7D32)},
-    {'label': 'Events',     'icon': Icons.event_outlined,                 'route': '/event-funding',       'bg': Color(0xFFFFF3E0), 'fg': Color(0xFFE65100)},
+    {'label': 'Events',     'icon': Icons.event_outlined,                 'route': '/future-events',       'bg': Color(0xFFFFF3E0), 'fg': Color(0xFFE65100)},
     {'label': 'Wallet',     'icon': Icons.credit_card_outlined,           'route': '/combined-wallet',     'bg': Color(0xFFE0F2F1), 'fg': Color(0xFF00695C)},
     {'label': 'Rewards',    'icon': Icons.emoji_events_outlined,        'route': '/rewards',              'bg': Color(0xFFFFF8E1), 'fg': Color(0xFFF9A825)},
     {'label': 'Redeem',     'icon': Icons.card_giftcard_outlined,       'route': '/redeem',               'bg': Color(0xFFFCE4EC), 'fg': Color(0xFFAD1457)},

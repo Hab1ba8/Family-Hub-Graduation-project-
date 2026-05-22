@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:app_frontend/core/services/api_service.dart';
 import 'package:app_frontend/core/theme/app_theme.dart';
 import 'package:app_frontend/core/theme/theme_provider.dart';
 import 'package:app_frontend/core/widgets/app_bottom_nav.dart';
@@ -19,6 +20,10 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
     return size * (w / 390.0);
   }
 
+  final ApiService _apiService = ApiService();
+  List<Map<String, dynamic>> _localEvents = [];
+  bool _eventsLoading = true;
+
   // ── Color / icon palette per event index ─────────────────────────────────
   static const _eventBg = [
     Color(0xFFE0F2F1), Color(0xFFFFF8E1), Color(0xFFE8F5E9),
@@ -30,14 +35,46 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
   ];
   static const _eventEmojis = ['✈️', '🛍️', '🎒', '🎉', '🏖️', '🎓'];
 
-  // ── Lifecycle (UNCHANGED) ─────────────────────────────────────────────────
+  // ── Lifecycle ─────────────────────────────────────────────────────────────
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<FamilyBudgetProvider>().loadFutureEvents();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _fetchEvents());
+  }
+
+  Future<void> _fetchEvents() async {
+    if (!mounted) return;
+    setState(() => _eventsLoading = true);
+    try {
+      final raw = await _apiService.getFutureEvents();
+      debugPrint('✓ _fetchEvents got ${raw.length} events: $raw');
+      if (!mounted) return;
+      setState(() {
+        _localEvents = raw.map<Map<String, dynamic>>((e) {
+          final m = Map<String, dynamic>.from(e as Map);
+          return {
+            ...m,
+            'name': (m['title'] ?? m['name'] ?? '').toString(),
+            'expected_date': (m['event_date'] ?? m['expected_date'] ?? '').toString(),
+            'estimated_cost': m['estimated_cost'] ?? 0,
+            'saved_amount': m['total_contributed_money'] ?? m['saved_amount'] ?? 0,
+          };
+        }).toList();
+        _eventsLoading = false;
+      });
+    } catch (e) {
+      debugPrint('✗ _fetchEvents error: $e');
+      if (!mounted) return;
+      setState(() => _eventsLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error loading events: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 6),
+        ),
+      );
+    }
   }
 
   // ── Logic (ALL UNCHANGED) ─────────────────────────────────────────────────
@@ -245,6 +282,7 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
                               await provider.createFutureEvent(payload);
                             }
                             if (ctx.mounted) Navigator.pop(ctx);
+                            await _fetchEvents();
                           } catch (e) {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -327,6 +365,7 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
     if (confirm == true) {
       try {
         await provider.deleteFutureEvent(eventId);
+        await _fetchEvents();
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -363,7 +402,7 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
             actions: [
               IconButton(
                 icon: const Icon(Icons.refresh_outlined, color: Colors.white),
-                onPressed: provider.loadFutureEvents,
+                onPressed: _fetchEvents,
               ),
             ],
           ),
@@ -389,10 +428,10 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
             ),
           ),
           bottomNavigationBar: const AppBottomNav(selectedIndex: 1),
-          body: provider.isLoading
+          body: _eventsLoading
               ? const Center(
                   child: CircularProgressIndicator(color: AppColors.primary))
-              : provider.futureEvents.isEmpty
+              : _localEvents.isEmpty
                   ? _buildEmptyState(ctx, provider, isDark)
                   : Align(
                       alignment: Alignment.topCenter,
@@ -400,14 +439,14 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
                         constraints: const BoxConstraints(maxWidth: 700),
                         child: RefreshIndicator(
                           color: AppColors.primary,
-                          onRefresh: provider.loadFutureEvents,
+                          onRefresh: _fetchEvents,
                           child: ListView.builder(
                             padding: const EdgeInsets.fromLTRB(14, 14, 14, 100),
-                            itemCount: provider.futureEvents.length,
+                            itemCount: _localEvents.length,
                             itemBuilder: (_, i) => _buildEventCard(
                               ctx,
                               provider,
-                              provider.futureEvents[i],
+                              _localEvents[i],
                               i,
                               isDark,
                             ),

@@ -2186,7 +2186,6 @@ exports.getFutureEvents = catchAsync(async (req, res, next) => {
 	console.log('🔍 getFutureEvents called with familyId:', familyId);
 
 	const events = await FutureEvent.find({ family_id: familyId })
-		.populate('created_by', 'username')
 		.populate('members_contributing.member_id', 'username email')
 		.sort({ event_date: 1 })
 		.lean();

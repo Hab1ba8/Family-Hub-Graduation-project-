@@ -35,6 +35,7 @@ import 'package:provider/provider.dart';
 import 'package:app_frontend/pages/budget/budget_provider.dart';
 import 'package:app_frontend/pages/budget/budget_dashboard_screen.dart';
 import 'package:app_frontend/pages/budget/event_funding_screen.dart';
+import 'package:app_frontend/pages/budget/future_events_screen.dart';
 import 'pages/planning_chat_screen.dart';
 
 Future<void> main() async {
@@ -108,6 +109,7 @@ class MyApp extends StatelessWidget {
               '/groceries': (context) => const GroceriesScreen(),
               '/grocery-list-detail': (context) => const GroceryListDetailScreen(),
               '/budget': (context) => const BudgetDashboardScreen(),
+              '/future-events': (context) => const FutureEventsScreen(),
               '/event-funding': (context) => const EventFundingScreen(),
               '/family-map': (context) => const FamilyMapScreen(),
               '/combined-wallet': (context) => const CombinedWalletScreen(),

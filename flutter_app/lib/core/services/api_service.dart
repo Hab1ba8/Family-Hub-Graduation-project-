@@ -1194,7 +1194,7 @@ class ApiService {
       final responseData = jsonDecode(response.body);
       return responseData['data']['events'] ?? [];
     }
-    throw Exception('Failed to load future events');
+    throw Exception('Failed to load future events: ${response.statusCode}');
   }
 
   // ======================= COMBINED ANALYTICS APIs =======================
