@@ -101,6 +101,10 @@ class _TasksScreenState extends State<TasksScreen>
   // Member info
   String _memberName = '';
   String _memberType = '';
+  String _currentMail = '';
+
+  // Categories for the "Add Task" flow
+  List<dynamic> _taskCategories = [];
 
   final _taskNameController = TextEditingController();
   final _taskDescriptionController = TextEditingController();
@@ -157,7 +161,15 @@ class _TasksScreenState extends State<TasksScreen>
         }
       }
 
-      // Try to resolve display name from members list
+      // Fall back to wallet to get email when no tasks exist yet
+      if (memberMail.isEmpty) {
+        try {
+          final wallet = await _apiService.getMyWallet();
+          memberMail = wallet['member_mail']?.toString() ?? '';
+        } catch (_) {}
+      }
+
+      // Resolve display name + save current email
       if (memberMail.isNotEmpty) {
         try {
           final members = await _apiService.getAllMembers();
@@ -167,6 +179,7 @@ class _TasksScreenState extends State<TasksScreen>
           );
           if (match is Map && match.isNotEmpty) {
             setState(() {
+              _currentMail = memberMail;
               _memberName = match['username']?.toString() ??
                   memberMail.split('@').first;
               _memberType =
@@ -174,15 +187,23 @@ class _TasksScreenState extends State<TasksScreen>
             });
           } else {
             setState(() {
+              _currentMail = memberMail;
               _memberName = memberMail.split('@').first;
             });
           }
         } catch (_) {
           setState(() {
+            _currentMail = memberMail;
             _memberName = memberMail.split('@').first;
           });
         }
       }
+
+      // Load task categories for the "Add Task" flow
+      try {
+        final cats = await _apiService.getAllTaskCategories();
+        setState(() => _taskCategories = cats);
+      } catch (_) {}
 
       setState(() {
         _mandatoryTasks = mandatory;
@@ -230,26 +251,56 @@ class _TasksScreenState extends State<TasksScreen>
     });
   }
 
-  // ─── Logic: local add task ────────────────────────────────────────────────
-  void _addNewTask() {
-    if (_taskNameController.text.isNotEmpty) {
-      setState(() {
-        final newTask = TaskItem(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: _taskNameController.text,
-          description: _taskDescriptionController.text,
-          isMandatory: _tabController.index == 0,
-          progress: 0.0,
-        );
-        if (_tabController.index == 0) {
-          _mandatoryTasks.add(newTask);
-        } else {
-          _availableTasks.add(newTask);
-        }
+  // ─── Logic: create task + self-assign via API ─────────────────────────────
+  Future<void> _addNewTask(String? categoryId) async {
+    final title = _taskNameController.text.trim();
+    if (title.isEmpty || categoryId == null || _currentMail.isEmpty) return;
+
+    try {
+      // 1. Create task template
+      final taskResp = await _apiService.createTask({
+        'title': title,
+        'description': _taskDescriptionController.text.trim(),
+        'category_id': categoryId,
+        'is_mandatory': _tabController.index == 0,
+        'reward_type': 'points',
+        'money_reward': 0,
       });
+
+      final taskId = taskResp['data']?['task']?['_id']?.toString() ?? '';
+      if (taskId.isEmpty) throw Exception('Task creation failed');
+
+      // 2. Assign to self
+      await _apiService.assignTask({
+        'task_id': taskId,
+        'member_mail': _currentMail,
+        'assigned_points': 10,
+        'penalty_points': 0,
+        'deadline':
+            DateTime.now().add(const Duration(days: 7)).toIso8601String(),
+        'priority': 0,
+      });
+
       _taskNameController.clear();
       _taskDescriptionController.clear();
-      Navigator.pop(context);
+
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Task added and assigned to you!'),
+            backgroundColor: Color(0xFF00897B),
+          ),
+        );
+        _loadTasks();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
     }
   }
 
@@ -812,71 +863,163 @@ class _TasksScreenState extends State<TasksScreen>
     final isDark = context.read<ThemeProvider>().isDark;
     final cardColor = isDark ? _cardDark : Colors.white;
     final textPrimary = isDark ? _textPrimaryDark : _textPrimaryLight;
+    String? selectedCategoryId =
+        _taskCategories.isNotEmpty ? _taskCategories.first['_id']?.toString() : null;
+    bool isSubmitting = false;
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: cardColor,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text('Add New Task',
-            style: GoogleFonts.poppins(
-                fontWeight: FontWeight.bold, color: textPrimary)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _taskNameController,
-              style: GoogleFonts.poppins(color: textPrimary),
-              decoration: InputDecoration(
-                labelText: 'Task Name',
-                labelStyle:
-                    GoogleFonts.poppins(color: _textSecondaryLight),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: _borderLight)),
-                focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide:
-                        const BorderSide(color: _primary, width: 2)),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          backgroundColor: cardColor,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18)),
+          title: Text('Add New Task',
+              style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold, color: textPrimary)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Task name
+              TextField(
+                controller: _taskNameController,
+                style: GoogleFonts.poppins(color: textPrimary),
+                decoration: InputDecoration(
+                  labelText: 'Task Name *',
+                  labelStyle:
+                      GoogleFonts.poppins(color: _textSecondaryLight),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          const BorderSide(color: _borderLight)),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          const BorderSide(color: _primary, width: 2)),
+                ),
               ),
+              const SizedBox(height: 12),
+              // Description
+              TextField(
+                controller: _taskDescriptionController,
+                style: GoogleFonts.poppins(color: textPrimary),
+                decoration: InputDecoration(
+                  labelText: 'Description',
+                  labelStyle:
+                      GoogleFonts.poppins(color: _textSecondaryLight),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          const BorderSide(color: _borderLight)),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          const BorderSide(color: _primary, width: 2)),
+                ),
+              ),
+              // Category picker — only shown when categories are loaded
+              if (_taskCategories.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  value: selectedCategoryId,
+                  isExpanded: true,
+                  decoration: InputDecoration(
+                    labelText: 'Category *',
+                    labelStyle:
+                        GoogleFonts.poppins(color: _textSecondaryLight),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                            const BorderSide(color: _borderLight)),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                            const BorderSide(color: _primary, width: 2)),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 10),
+                  ),
+                  dropdownColor: cardColor,
+                  items: _taskCategories.map((cat) {
+                    return DropdownMenuItem<String>(
+                      value: cat['_id']?.toString(),
+                      child: Text(
+                        (cat['title'] ?? 'Unknown').toString(),
+                        style: GoogleFonts.poppins(
+                            color: textPrimary, fontSize: 13),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (v) =>
+                      setDialogState(() => selectedCategoryId = v),
+                ),
+              ],
+              // Warning when no categories or email available
+              if (_taskCategories.isEmpty || _currentMail.isEmpty) ...[
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.orange[50],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.orange[200]!),
+                  ),
+                  child: Text(
+                    _taskCategories.isEmpty
+                        ? 'No categories available. Ask a parent to create one first.'
+                        : 'Could not identify your account. Please refresh.',
+                    style: GoogleFonts.poppins(
+                        fontSize: 11, color: Colors.orange[800]),
+                  ),
+                ),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                _taskNameController.clear();
+                _taskDescriptionController.clear();
+                Navigator.pop(ctx);
+              },
+              child: Text('Cancel',
+                  style: GoogleFonts.poppins(
+                      color: _textSecondaryLight)),
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _taskDescriptionController,
-              style: GoogleFonts.poppins(color: textPrimary),
-              decoration: InputDecoration(
-                labelText: 'Description',
-                labelStyle:
-                    GoogleFonts.poppins(color: _textSecondaryLight),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: _borderLight)),
-                focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide:
-                        const BorderSide(color: _primary, width: 2)),
-              ),
+            ElevatedButton(
+              onPressed: (isSubmitting ||
+                      _taskCategories.isEmpty ||
+                      _currentMail.isEmpty)
+                  ? null
+                  : () async {
+                      if (_taskNameController.text.trim().isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Please enter a task name')),
+                        );
+                        return;
+                      }
+                      setDialogState(() => isSubmitting = true);
+                      await _addNewTask(selectedCategoryId);
+                      if (ctx.mounted) {
+                        setDialogState(() => isSubmitting = false);
+                      }
+                    },
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: _primary,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10))),
+              child: isSubmitting
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white))
+                  : Text('Add',
+                      style:
+                          GoogleFonts.poppins(color: Colors.white)),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancel',
-                style:
-                    GoogleFonts.poppins(color: _textSecondaryLight)),
-          ),
-          ElevatedButton(
-            onPressed: _addNewTask,
-            style: ElevatedButton.styleFrom(
-                backgroundColor: _primary,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10))),
-            child: Text('Add',
-                style: GoogleFonts.poppins(color: Colors.white)),
-          ),
-        ],
       ),
     );
   }
