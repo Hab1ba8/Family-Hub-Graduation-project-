@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../core/services/api_service.dart';
 import '../core/theme/theme_provider.dart';
 
-// Task Model
+// ─── Task Model ────────────────────────────────────────────────────────────────
 class TaskItem {
   String id;
   String title;
@@ -17,6 +17,8 @@ class TaskItem {
   String? deadline;
   double progress;
   bool isSelectedToDelete;
+  String notes;
+  bool assignmentApproved;
 
   TaskItem({
     required this.id,
@@ -30,6 +32,8 @@ class TaskItem {
     this.deadline,
     this.progress = 0.0,
     this.isSelectedToDelete = false,
+    this.notes = '',
+    this.assignmentApproved = true,
   });
 
   factory TaskItem.fromJson(Map<String, dynamic> json) {
@@ -54,16 +58,14 @@ class TaskItem {
       moneyReward: ((json['task_id']?['money_reward'] ?? json['money_reward'] ?? 0) as num).toDouble(),
       deadline: json['deadline'],
       progress: progress,
+      notes: json['notes'] ?? '',
+      assignmentApproved: json['assignment_approved'] ?? true,
     );
   }
 
   String get rewardLabel {
-    if (rewardType == 'money') {
-      return '${moneyReward.toStringAsFixed(2)} EGP';
-    }
-    if (rewardType == 'both') {
-      return '$points pts + ${moneyReward.toStringAsFixed(2)} EGP';
-    }
+    if (rewardType == 'money') return '${moneyReward.toStringAsFixed(2)} EGP';
+    if (rewardType == 'both') return '$points pts + ${moneyReward.toStringAsFixed(2)} EGP';
     return '$points pts';
   }
 
@@ -72,8 +74,15 @@ class TaskItem {
     if (rewardType == 'both') return '⭐💰';
     return '⭐';
   }
+
+  bool get canComplete =>
+      assignmentApproved && (status == 'assigned' || status == 'in_progress');
+  bool get isWaitingApproval => assignmentApproved && status == 'completed';
+  bool get isRejected => assignmentApproved && status == 'rejected';
+  bool get isDone => status == 'approved';
 }
 
+// ─── Screen ────────────────────────────────────────────────────────────────────
 class TasksScreen extends StatefulWidget {
   const TasksScreen({super.key});
 
@@ -89,18 +98,21 @@ class _TasksScreenState extends State<TasksScreen>
   bool _isDeleteMode = false;
   bool _isLoading = true;
 
+  // Member info
+  String _memberName = '';
+  String _memberType = '';
+
   final _taskNameController = TextEditingController();
   final _taskDescriptionController = TextEditingController();
 
   List<TaskItem> _mandatoryTasks = [];
   List<TaskItem> _availableTasks = [];
 
-  // ─── Theme constants ───────────────────────────────────────────────────────
+  // ─── Theme constants ─────────────────────────────────────────────────────────
   static const _primary = Color(0xFF00897B);
   static const _primaryLight = Color(0xFF00ACC1);
   static const _bgLight = Color(0xFFE8F5F5);
   static const _bgDark = Color(0xFF0A1628);
-  static const _cardLight = Colors.white;
   static const _cardDark = Color(0xFF122030);
   static const _borderLight = Color(0xFFB2DFDB);
   static const _borderDark = Color(0xFF1E3A4A);
@@ -115,13 +127,12 @@ class _TasksScreenState extends State<TasksScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
-      if (!_tabController.indexIsChanging) {
-        setState(() {});
-      }
+      if (!_tabController.indexIsChanging) setState(() {});
     });
     _loadTasks();
   }
 
+  // ─── API: load tasks + member info ────────────────────────────────────────
   Future<void> _loadTasks() async {
     setState(() => _isLoading = true);
     try {
@@ -129,12 +140,47 @@ class _TasksScreenState extends State<TasksScreen>
       final mandatory = <TaskItem>[];
       final available = <TaskItem>[];
 
+      // Extract current member's mail from first task
+      String memberMail = '';
+      if (tasks.isNotEmpty) {
+        memberMail = (tasks.first['member_mail'] is String)
+            ? tasks.first['member_mail'] as String
+            : '';
+      }
+
       for (var task in tasks) {
         final taskItem = TaskItem.fromJson(task);
         if (taskItem.isMandatory) {
           mandatory.add(taskItem);
         } else {
           available.add(taskItem);
+        }
+      }
+
+      // Try to resolve display name from members list
+      if (memberMail.isNotEmpty) {
+        try {
+          final members = await _apiService.getAllMembers();
+          final match = members.firstWhere(
+            (m) => m['mail'] == memberMail,
+            orElse: () => <String, dynamic>{},
+          );
+          if (match is Map && match.isNotEmpty) {
+            setState(() {
+              _memberName = match['username']?.toString() ??
+                  memberMail.split('@').first;
+              _memberType =
+                  match['member_type_id']?['type']?.toString() ?? '';
+            });
+          } else {
+            setState(() {
+              _memberName = memberMail.split('@').first;
+            });
+          }
+        } catch (_) {
+          setState(() {
+            _memberName = memberMail.split('@').first;
+          });
         }
       }
 
@@ -163,10 +209,11 @@ class _TasksScreenState extends State<TasksScreen>
     super.dispose();
   }
 
+  // ─── Logic: delete mode ────────────────────────────────────────────────────
   void _deleteSelectedTasks() {
     setState(() {
-      _mandatoryTasks.removeWhere((task) => task.isSelectedToDelete);
-      _availableTasks.removeWhere((task) => task.isSelectedToDelete);
+      _mandatoryTasks.removeWhere((t) => t.isSelectedToDelete);
+      _availableTasks.removeWhere((t) => t.isSelectedToDelete);
       _isDeleteMode = false;
     });
   }
@@ -174,15 +221,16 @@ class _TasksScreenState extends State<TasksScreen>
   void _toggleDeleteMode() {
     setState(() {
       _isDeleteMode = !_isDeleteMode;
-      for (var task in _mandatoryTasks) {
-        task.isSelectedToDelete = false;
+      for (var t in _mandatoryTasks) {
+        t.isSelectedToDelete = false;
       }
-      for (var task in _availableTasks) {
-        task.isSelectedToDelete = false;
+      for (var t in _availableTasks) {
+        t.isSelectedToDelete = false;
       }
     });
   }
 
+  // ─── Logic: local add task ────────────────────────────────────────────────
   void _addNewTask() {
     if (_taskNameController.text.isNotEmpty) {
       setState(() {
@@ -193,18 +241,157 @@ class _TasksScreenState extends State<TasksScreen>
           isMandatory: _tabController.index == 0,
           progress: 0.0,
         );
-
         if (_tabController.index == 0) {
           _mandatoryTasks.add(newTask);
         } else {
           _availableTasks.add(newTask);
         }
       });
-
       _taskNameController.clear();
       _taskDescriptionController.clear();
       Navigator.pop(context);
     }
+  }
+
+  // ─── Logic: complete task via API ─────────────────────────────────────────
+  Future<void> _completeTask(TaskItem task) async {
+    final isDark = context.read<ThemeProvider>().isDark;
+    final cardColor = isDark ? _cardDark : Colors.white;
+    final textPrimary = isDark ? _textPrimaryDark : _textPrimaryLight;
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: cardColor,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        title: Row(
+          children: [
+            const Icon(Icons.check_circle_outline, color: _primary),
+            const SizedBox(width: 10),
+            Text('Complete Task',
+                style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold, color: textPrimary)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Mark "${task.title}" as completed?',
+              style: GoogleFonts.poppins(fontSize: 13, color: textPrimary),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF1A2F42) : _borderInner,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: _borderLight),
+              ),
+              child: Text(
+                'Reward: ${task.rewardLabel}',
+                style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: _primary),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Cancel',
+                style: GoogleFonts.poppins(color: _textSecondaryLight)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _primary,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            child: Text('Yes, Complete!',
+                style: GoogleFonts.poppins(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true || !mounted) return;
+
+    try {
+      final response = await _apiService.completeTask(task.id);
+      final rewardSummary = response['data']?['rewardSummary'];
+      if (mounted && rewardSummary is Map<String, dynamic>) {
+        await _showRewardDialog(rewardSummary);
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Task completed! Rewards applied.'),
+            backgroundColor: Color(0xFF00897B),
+          ),
+        );
+      }
+      _loadTasks();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('Error: $e'),
+              backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  Future<void> _showRewardDialog(Map<String, dynamic> rewardSummary) async {
+    final points =
+        ((rewardSummary['points_awarded'] ?? 0) as num).toDouble();
+    final money =
+        ((rewardSummary['money_awarded'] ?? 0) as num).toDouble();
+    final type = (rewardSummary['reward_type'] ?? 'points').toString();
+
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        title: Text('🎉 Reward Applied!',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (type == 'points' || type == 'both') ...[
+              const Text('⭐', style: TextStyle(fontSize: 28)),
+              const SizedBox(width: 6),
+              Text('+${points.toStringAsFixed(0)} pts',
+                  style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold, fontSize: 17)),
+            ],
+            if (type == 'both') const SizedBox(width: 14),
+            if (type == 'money' || type == 'both') ...[
+              const Text('💰', style: TextStyle(fontSize: 28)),
+              const SizedBox(width: 6),
+              Text('+${money.toStringAsFixed(2)} EGP',
+                  style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold, fontSize: 17)),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Nice!',
+                style: GoogleFonts.poppins(color: _primary)),
+          ),
+        ],
+      ),
+    );
   }
 
   // ─── Status helpers ────────────────────────────────────────────────────────
@@ -231,11 +418,11 @@ class _TasksScreenState extends State<TasksScreen>
       case 'pending_approval':
         return 'Waiting';
       case 'completed':
-        return 'Review';
+        return 'Waiting ⏳';
       case 'in_progress':
         return 'Active';
       case 'rejected':
-        return 'Rejected';
+        return 'Rejected ✕';
       case 'late':
         return 'Late';
       default:
@@ -257,18 +444,55 @@ class _TasksScreenState extends State<TasksScreen>
     }
   }
 
+  // ─── Avatar helper ─────────────────────────────────────────────────────────
+  static const _avatarPalette = [
+    {'bg': Color(0xFFE3F2FD), 'text': Color(0xFF1565C0), 'border': Color(0xFF90CAF9)},
+    {'bg': Color(0xFFFFF3E0), 'text': Color(0xFFE65100), 'border': Color(0xFFFFCC80)},
+    {'bg': Color(0xFFFCE4EC), 'text': Color(0xFFC2185B), 'border': Color(0xFFF48FB1)},
+    {'bg': Color(0xFFE0F2F1), 'text': Color(0xFF00695C), 'border': Color(0xFF80CBC4)},
+    {'bg': Color(0xFFF3E5F5), 'text': Color(0xFF7B1FA2), 'border': Color(0xFFCE93D8)},
+    {'bg': Color(0xFFE8F5E9), 'text': Color(0xFF2E7D32), 'border': Color(0xFFA5D6A7)},
+  ];
+
+  Widget _buildAvatar(String name, {double size = 40}) {
+    final initials = name.length >= 2
+        ? name.substring(0, 2).toUpperCase()
+        : name.toUpperCase();
+    final idx =
+        name.isEmpty ? 0 : name.codeUnitAt(0) % _avatarPalette.length;
+    final c = _avatarPalette[idx];
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: c['bg'] as Color,
+        shape: BoxShape.circle,
+        border: Border.all(color: c['border'] as Color, width: 2),
+      ),
+      child: Center(
+        child: Text(
+          initials,
+          style: GoogleFonts.poppins(
+              fontSize: size * 0.33,
+              fontWeight: FontWeight.w700,
+              color: c['text'] as Color),
+        ),
+      ),
+    );
+  }
+
   // ─── Build ─────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     final isDark = context.watch<ThemeProvider>().isDark;
-
-    final bgColor = isDark ? _bgDark : _bgLight;
+    final bg = isDark ? _bgDark : _bgLight;
     final textPrimary = isDark ? _textPrimaryDark : _textPrimaryLight;
-    final textSecondary = isDark ? _textSecondaryDark : _textSecondaryLight;
-    final borderColor = isDark ? _borderDark : _borderLight;
+    final textSec = isDark ? _textSecondaryDark : _textSecondaryLight;
+    final border = isDark ? _borderDark : _borderLight;
+    final totalTasks = _mandatoryTasks.length + _availableTasks.length;
 
     return Scaffold(
-      backgroundColor: bgColor,
+      backgroundColor: bg,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -276,11 +500,9 @@ class _TasksScreenState extends State<TasksScreen>
           icon: const Icon(Icons.arrow_back, color: _primary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          'My Tasks',
-          style: GoogleFonts.poppins(
-              color: textPrimary, fontWeight: FontWeight.bold),
-        ),
+        title: Text('My Tasks',
+            style: GoogleFonts.poppins(
+                color: textPrimary, fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh, color: _primary),
@@ -296,23 +518,75 @@ class _TasksScreenState extends State<TasksScreen>
         ],
       ),
       body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: _primary))
+          ? const Center(child: CircularProgressIndicator(color: _primary))
           : Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 600),
                 child: Column(
                   children: [
-                    // ── Tab Bar ──────────────────────────────────────────
+                    // ── Member header ─────────────────────────────────────
+                    if (_memberName.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 10),
+                        child: Row(
+                          children: [
+                            Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                _buildAvatar(_memberName, size: 42),
+                                Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF4CAF50),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                          color: bg, width: 1.5),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _memberName,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: textPrimary,
+                                    ),
+                                  ),
+                                  Text(
+                                    _memberType.isNotEmpty
+                                        ? '$_memberType · $totalTasks tasks'
+                                        : '$totalTasks tasks',
+                                    style: GoogleFonts.poppins(
+                                        fontSize: 10, color: textSec),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    // ── Tab Bar ───────────────────────────────────────────
                     Container(
-                      margin: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+                      margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                       padding: const EdgeInsets.all(3),
                       decoration: BoxDecoration(
                         color: isDark
                             ? const Color(0xFF1A2F42)
                             : _borderInner,
                         borderRadius: BorderRadius.circular(25),
-                        border: Border.all(color: borderColor),
+                        border: Border.all(color: border),
                       ),
                       child: TabBar(
                         controller: _tabController,
@@ -322,7 +596,7 @@ class _TasksScreenState extends State<TasksScreen>
                         ),
                         indicatorSize: TabBarIndicatorSize.tab,
                         labelColor: Colors.white,
-                        unselectedLabelColor: textSecondary,
+                        unselectedLabelColor: textSec,
                         labelStyle: GoogleFonts.poppins(
                             fontWeight: FontWeight.w600, fontSize: 12),
                         dividerColor: Colors.transparent,
@@ -365,9 +639,10 @@ class _TasksScreenState extends State<TasksScreen>
                       ),
                     ),
 
-                    // ── Section header ───────────────────────────────────
+                    // ── Section header ────────────────────────────────────
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 16),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -376,26 +651,26 @@ class _TasksScreenState extends State<TasksScreen>
                                 ? 'Mandatory Tasks'
                                 : 'Available Tasks',
                             style: GoogleFonts.poppins(
-                              fontSize: 16,
+                              fontSize: 15,
                               fontWeight: FontWeight.bold,
                               color: textPrimary,
                             ),
                           ),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 4),
+                                horizontal: 10, vertical: 3),
                             decoration: BoxDecoration(
                               color: isDark
                                   ? const Color(0xFF1A2F42)
                                   : _borderInner,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: borderColor),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: border),
                             ),
                             child: Text(
                               '${_tabController.index == 0 ? _mandatoryTasks.length : _availableTasks.length} tasks',
                               style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: textSecondary,
+                                fontSize: 11,
+                                color: textSec,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -403,17 +678,17 @@ class _TasksScreenState extends State<TasksScreen>
                         ],
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
 
-                    // ── Task lists ───────────────────────────────────────
+                    // ── Task lists ────────────────────────────────────────
                     Expanded(
                       child: TabBarView(
                         controller: _tabController,
                         children: [
                           _buildTaskList(_mandatoryTasks, isDark,
-                              textPrimary, textSecondary, borderColor),
+                              textPrimary, textSec, border),
                           _buildTaskList(_availableTasks, isDark,
-                              textPrimary, textSecondary, borderColor),
+                              textPrimary, textSec, border),
                         ],
                       ),
                     ),
@@ -421,9 +696,10 @@ class _TasksScreenState extends State<TasksScreen>
                 ),
               ),
             ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.centerFloat,
       floatingActionButton:
-          _isDeleteMode ? _buildDeleteModeButtons() : _buildNormalButtons(),
+          _isDeleteMode ? _buildDeleteModeButtons() : _buildNormalFab(),
     );
   }
 
@@ -439,57 +715,70 @@ class _TasksScreenState extends State<TasksScreen>
         child: Text(
           '$count',
           style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 8,
-              fontWeight: FontWeight.w700),
+              color: Colors.white, fontSize: 8, fontWeight: FontWeight.w700),
         ),
       ),
     );
   }
 
   Widget _buildStatusBadge(String status) {
-    final color = _statusDotColor(status);
+    final dotColor = _statusDotColor(status);
+    final isRejected = status == 'rejected' || status == 'late';
+    final isWaiting = status == 'completed';
+    final borderCol = isRejected
+        ? const Color(0xFFFFCDD2)
+        : isWaiting
+            ? const Color(0xFFBBDEFB)
+            : dotColor.withValues(alpha: 0.3);
+    final bgCol = isRejected
+        ? const Color(0xFFFFEBEE)
+        : isWaiting
+            ? const Color(0xFFE3F2FD)
+            : dotColor.withValues(alpha: 0.1);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: bgCol,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.35)),
+        border: Border.all(color: borderCol),
       ),
       child: Text(
         _statusLabel(status),
         style: GoogleFonts.poppins(
-            fontSize: 9, fontWeight: FontWeight.w600, color: color),
+            fontSize: 9, fontWeight: FontWeight.w600, color: dotColor),
       ),
     );
   }
 
-  Widget _buildNormalButtons() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            child: ElevatedButton.icon(
-              onPressed: _showAddTaskModal,
-              icon: const Icon(Icons.add, color: Colors.white),
-              label: Text(
-                'Add Task',
-                style: GoogleFonts.poppins(
-                    color: Colors.white, fontWeight: FontWeight.w600),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _primary,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                elevation: 3,
-                shadowColor: _primary.withOpacity(0.4),
-              ),
-            ),
+  // ─── Gradient FAB (normal mode) ────────────────────────────────────────────
+  Widget _buildNormalFab() {
+    return Container(
+      width: 56,
+      height: 56,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF00897B), Color(0xFF00ACC1)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: _primary.withValues(alpha: 0.35),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        shape: const CircleBorder(),
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: _showAddTaskModal,
+          child: const Icon(Icons.add, color: Colors.white, size: 28),
+        ),
       ),
     );
   }
@@ -498,17 +787,14 @@ class _TasksScreenState extends State<TasksScreen>
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
             child: ElevatedButton.icon(
               onPressed: _deleteSelectedTasks,
               icon: const Icon(Icons.delete, color: Colors.white),
-              label: Text(
-                'Delete Selected',
-                style: GoogleFonts.poppins(
-                    color: Colors.white, fontWeight: FontWeight.w600),
-              ),
+              label: Text('Delete Selected',
+                  style: GoogleFonts.poppins(
+                      color: Colors.white, fontWeight: FontWeight.w600)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
                 padding: const EdgeInsets.symmetric(vertical: 14),
@@ -524,91 +810,86 @@ class _TasksScreenState extends State<TasksScreen>
 
   void _showAddTaskModal() {
     final isDark = context.read<ThemeProvider>().isDark;
-    final cardColor = isDark ? _cardDark : _cardLight;
+    final cardColor = isDark ? _cardDark : Colors.white;
     final textPrimary = isDark ? _textPrimaryDark : _textPrimaryLight;
 
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: cardColor,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-          title: Text(
-            'Add New Task',
+      builder: (context) => AlertDialog(
+        backgroundColor: cardColor,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        title: Text('Add New Task',
             style: GoogleFonts.poppins(
-                fontWeight: FontWeight.bold, color: textPrimary),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _taskNameController,
-                style: GoogleFonts.poppins(color: textPrimary),
-                decoration: InputDecoration(
-                  labelText: 'Task Name',
-                  labelStyle: GoogleFonts.poppins(
-                      color: const Color(0xFF4DB6AC)),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                          color: _borderLight)),
-                  focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          const BorderSide(color: _primary, width: 2)),
-                ),
+                fontWeight: FontWeight.bold, color: textPrimary)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _taskNameController,
+              style: GoogleFonts.poppins(color: textPrimary),
+              decoration: InputDecoration(
+                labelText: 'Task Name',
+                labelStyle:
+                    GoogleFonts.poppins(color: _textSecondaryLight),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: _borderLight)),
+                focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide:
+                        const BorderSide(color: _primary, width: 2)),
               ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _taskDescriptionController,
-                style: GoogleFonts.poppins(color: textPrimary),
-                decoration: InputDecoration(
-                  labelText: 'Description',
-                  labelStyle: GoogleFonts.poppins(
-                      color: const Color(0xFF4DB6AC)),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                          color: _borderLight)),
-                  focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          const BorderSide(color: _primary, width: 2)),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Cancel',
-                  style: GoogleFonts.poppins(
-                      color: const Color(0xFF4DB6AC))),
             ),
-            ElevatedButton(
-              onPressed: _addNewTask,
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: _primary,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10))),
-              child: Text('Add',
-                  style: GoogleFonts.poppins(color: Colors.white)),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _taskDescriptionController,
+              style: GoogleFonts.poppins(color: textPrimary),
+              decoration: InputDecoration(
+                labelText: 'Description',
+                labelStyle:
+                    GoogleFonts.poppins(color: _textSecondaryLight),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: _borderLight)),
+                focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide:
+                        const BorderSide(color: _primary, width: 2)),
+              ),
             ),
           ],
-        );
-      },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel',
+                style:
+                    GoogleFonts.poppins(color: _textSecondaryLight)),
+          ),
+          ElevatedButton(
+            onPressed: _addNewTask,
+            style: ElevatedButton.styleFrom(
+                backgroundColor: _primary,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10))),
+            child: Text('Add',
+                style: GoogleFonts.poppins(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 
+  // ─── Task List ──────────────────────────────────────────────────────────────
   Widget _buildTaskList(
     List<TaskItem> tasks,
     bool isDark,
     Color textPrimary,
-    Color textSecondary,
-    Color borderColor,
+    Color textSec,
+    Color border,
   ) {
-    final cardColor = isDark ? _cardDark : _cardLight;
+    final cardColor = isDark ? _cardDark : Colors.white;
 
     if (tasks.isEmpty) {
       return Center(
@@ -617,32 +898,39 @@ class _TasksScreenState extends State<TasksScreen>
           children: [
             Icon(Icons.task_alt,
                 size: 60,
-                color: const Color(0xFF4DB6AC).withOpacity(0.45)),
+                color:
+                    const Color(0xFF4DB6AC).withValues(alpha: 0.45)),
             const SizedBox(height: 16),
-            Text(
-              'No tasks in this section!',
-              style: GoogleFonts.poppins(color: textSecondary),
-            ),
+            Text('No tasks in this section!',
+                style: GoogleFonts.poppins(color: textSec)),
           ],
         ),
       );
     }
 
     return ListView.builder(
-      padding:
-          const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 80),
+      padding: const EdgeInsets.only(
+          left: 16, right: 16, top: 8, bottom: 88),
       itemCount: tasks.length,
       itemBuilder: (context, index) {
         final task = tasks[index];
         final dotColor = _statusDotColor(task.status);
         final isSelected = _isDeleteMode && task.isSelectedToDelete;
 
+        // Border color based on state
+        final cardBorder = task.isWaitingApproval
+            ? const Color(0xFF1E88E5)
+            : task.isRejected
+                ? const Color(0xFFE53935)
+                : border;
+        final cardBorderWidth =
+            (task.isWaitingApproval || task.isRejected) ? 2.0 : 1.0;
+
         return GestureDetector(
           onTap: () {
             if (_isDeleteMode) {
-              setState(() {
-                task.isSelectedToDelete = !task.isSelectedToDelete;
-              });
+              setState(
+                  () => task.isSelectedToDelete = !task.isSelectedToDelete);
             }
           },
           child: Container(
@@ -650,18 +938,18 @@ class _TasksScreenState extends State<TasksScreen>
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: isSelected
-                  ? Colors.red.withOpacity(0.08)
+                  ? Colors.red.withValues(alpha: 0.08)
                   : cardColor,
               borderRadius: BorderRadius.circular(18),
               border: Border.all(
-                color: isSelected ? Colors.red : borderColor,
-                width: isSelected ? 2 : 1,
+                color: isSelected ? Colors.red : cardBorder,
+                width: isSelected ? 2 : cardBorderWidth,
               ),
               boxShadow: isDark
                   ? []
                   : [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -670,10 +958,10 @@ class _TasksScreenState extends State<TasksScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // ── Title row ───────────────────────────────────────
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Colored status dot
                     Padding(
                       padding: const EdgeInsets.only(top: 5),
                       child: Container(
@@ -686,8 +974,6 @@ class _TasksScreenState extends State<TasksScreen>
                       ),
                     ),
                     const SizedBox(width: 10),
-
-                    // Title + description + reward
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -705,7 +991,7 @@ class _TasksScreenState extends State<TasksScreen>
                             Text(
                               task.description,
                               style: GoogleFonts.poppins(
-                                  fontSize: 10, color: textSecondary),
+                                  fontSize: 10, color: textSec),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -715,18 +1001,18 @@ class _TasksScreenState extends State<TasksScreen>
                             children: [
                               if (task.deadline != null) ...[
                                 Icon(Icons.schedule,
-                                    size: 10, color: textSecondary),
+                                    size: 10, color: textSec),
                                 const SizedBox(width: 3),
                                 Text(
                                   _formatDeadlineShort(task.deadline),
                                   style: GoogleFonts.poppins(
-                                      fontSize: 9,
-                                      color: textSecondary),
+                                      fontSize: 9, color: textSec),
                                 ),
                                 const SizedBox(width: 8),
                               ],
                               Text(task.rewardEmoji,
-                                  style: const TextStyle(fontSize: 11)),
+                                  style:
+                                      const TextStyle(fontSize: 11)),
                               const SizedBox(width: 4),
                               Text(
                                 task.rewardLabel,
@@ -741,15 +1027,14 @@ class _TasksScreenState extends State<TasksScreen>
                         ],
                       ),
                     ),
-
-                    // Right: delete icon or status badge
                     const SizedBox(width: 8),
                     if (_isDeleteMode)
                       Icon(
                         isSelected
                             ? Icons.check_circle
                             : Icons.circle_outlined,
-                        color: isSelected ? Colors.red : textSecondary,
+                        color:
+                            isSelected ? Colors.red : textSec,
                         size: 22,
                       )
                     else
@@ -757,7 +1042,7 @@ class _TasksScreenState extends State<TasksScreen>
                   ],
                 ),
 
-                // Progress bar
+                // ── Progress bar ─────────────────────────────────────
                 const SizedBox(height: 10),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(3),
@@ -780,11 +1065,158 @@ class _TasksScreenState extends State<TasksScreen>
                     fontWeight: FontWeight.w500,
                   ),
                 ),
+
+                // ── Notes / reason box ───────────────────────────────
+                if (task.notes.isNotEmpty && !_isDeleteMode) ...[
+                  const SizedBox(height: 8),
+                  if (task.isRejected) ...[
+                    // Red rejection reason box
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFEBEE),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                            color: const Color(0xFFFFCDD2)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Rejected by parent:',
+                            style: GoogleFonts.poppins(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFFC62828),
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            task.notes,
+                            style: GoogleFonts.poppins(
+                              fontSize: 10,
+                              color: const Color(0xFFE53935),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ] else ...[
+                    // Amber notes box for other states
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.amber[50],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.amber[200]!),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.note,
+                              size: 13, color: Colors.amber[700]),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              task.notes,
+                              style: GoogleFonts.poppins(
+                                  fontSize: 10,
+                                  color: Colors.amber[900]),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+
+                // ── Waiting approval info box ────────────────────────
+                if (task.isWaitingApproval && !_isDeleteMode) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(9),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE3F2FD),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                          color: const Color(0xFF90CAF9)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.hourglass_top,
+                            size: 14,
+                            color: Color(0xFF1E88E5)),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            'Submitted for approval — waiting for parent',
+                            style: GoogleFonts.poppins(
+                              fontSize: 10,
+                              color: const Color(0xFF1565C0),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+
+                // ── Mark Complete button ─────────────────────────────
+                if (task.canComplete && !_isDeleteMode) ...[
+                  const SizedBox(height: 10),
+                  _buildCompleteButton('Mark Complete', task),
+                ],
+
+                // ── Mark Complete Again (rejected) ───────────────────
+                if (task.isRejected && !_isDeleteMode) ...[
+                  const SizedBox(height: 10),
+                  _buildCompleteButton('Mark Complete Again', task),
+                ],
               ],
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildCompleteButton(String label, TaskItem task) {
+    return GestureDetector(
+      onTap: () => _completeTask(task),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF00897B), Color(0xFF00ACC1)],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: _primary.withValues(alpha: 0.25),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: GoogleFonts.poppins(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
+      ),
     );
   }
 }

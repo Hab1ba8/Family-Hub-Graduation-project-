@@ -43,6 +43,9 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
   List<dynamic> _tasksWaitingApproval = [];
   List<dynamic> _myTasks = []; // Current member's assigned tasks
 
+  // Tracks just-approved completion results for the success card
+  final Map<String, Map<String, dynamic>> _justApproved = {};
+
   @override
   void initState() {
     super.initState();
@@ -2131,79 +2134,326 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
     final cardColor = isDark ? _tmCardDark : Colors.white;
     final borderColor = isDark ? _tmBorderDark : _tmBorderLight;
 
-    if (_tasksWaitingApproval.isEmpty) {
+    if (_tasksWaitingApproval.isEmpty && _justApproved.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.check_circle, size: 60, color: Color(0xFF80CBC4)),
+            const Icon(Icons.task_alt, size: 60, color: Color(0xFF80CBC4)),
             const SizedBox(height: 16),
+            Text('All caught up!',
+                style: GoogleFonts.poppins(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: textPrimary)),
+            const SizedBox(height: 4),
             Text('No tasks waiting for approval',
-                style: GoogleFonts.poppins(color: textSec)),
+                style: GoogleFonts.poppins(fontSize: 12, color: textSec)),
           ],
         ),
       );
     }
 
+    // Build the list: pending tasks + already-approved success cards
+    final allIds = {
+      ..._tasksWaitingApproval.map((t) => t['_id'].toString()),
+      ..._justApproved.keys,
+    }.toList();
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: _tasksWaitingApproval.length,
+      itemCount: allIds.length,
       itemBuilder: (context, index) {
-        final taskDetail = _tasksWaitingApproval[index];
+        final id = allIds[index];
+
+        // Show success card for just-approved tasks
+        if (_justApproved.containsKey(id)) {
+          final result = _justApproved[id]!;
+          return _buildApprovalSuccessCard(
+            result['member_name'] as String,
+            result['points_awarded'] as int,
+            result['new_total'] as int,
+            isDark,
+          );
+        }
+
+        final taskDetail = _tasksWaitingApproval
+            .firstWhere((t) => t['_id'].toString() == id,
+                orElse: () => <String, dynamic>{});
+        if ((taskDetail as Map).isEmpty) return const SizedBox.shrink();
+
         final task = taskDetail['task_id'];
         final memberMail = taskDetail['member_mail'];
+        final assignedPoints = taskDetail['assigned_points'] ?? 0;
+        final completedAt = taskDetail['completed_at'];
 
         String getMemberName(dynamic email) {
           if (email == null) return 'Unknown';
           if (email is String) return email.split('@').first;
-          if (email is Map && email['username'] != null) return email['username'];
+          if (email is Map && email['username'] != null) {
+            return email['username'].toString();
+          }
           return 'Unknown';
         }
 
+        String formatSubmitted(dynamic dt) {
+          if (dt == null) return 'Just now';
+          try {
+            final date = DateTime.parse(dt.toString());
+            final diff = DateTime.now().difference(date);
+            if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+            if (diff.inHours < 24) return '${diff.inHours}h ago';
+            return '${date.day}/${date.month}/${date.year}';
+          } catch (_) {
+            return 'Recently';
+          }
+        }
+
         final memberName = getMemberName(memberMail);
+        final submittedLabel = formatSubmitted(completedAt);
 
         return Container(
-          margin: const EdgeInsets.only(bottom: 12),
+          margin: const EdgeInsets.only(bottom: 14),
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: cardColor,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(color: borderColor),
-            boxShadow: isDark ? [] : [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 6, offset: const Offset(0, 2))],
-          ),
-          child: Row(
-            children: [
-              _buildAvatarWithDot(memberName, size: 40),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(task?['title'] ?? 'Unknown Task',
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13, color: textPrimary)),
-                    Text('Completed by: $memberName',
-                        style: GoogleFonts.poppins(fontSize: 10, color: textSec)),
-                    const SizedBox(height: 3),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE0F2F1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text('+${taskDetail['assigned_points']} pts',
-                          style: GoogleFonts.poppins(fontSize: 11, color: _tmPrimary, fontWeight: FontWeight.w600)),
-                    ),
+            boxShadow: isDark
+                ? []
+                : [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    )
                   ],
-                ),
+          ),
+          child: Column(
+            children: [
+              // ── Card header: avatar + info + points ───────────────
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildAvatarWithDot(memberName, size: 42),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          task?['title'] ?? 'Unknown Task',
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13,
+                            color: textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Row(
+                          children: [
+                            Icon(Icons.person_outline,
+                                size: 11, color: textSec),
+                            const SizedBox(width: 4),
+                            Text(memberName,
+                                style: GoogleFonts.poppins(
+                                    fontSize: 11, color: textSec)),
+                            const SizedBox(width: 10),
+                            Icon(Icons.schedule,
+                                size: 11, color: textSec),
+                            const SizedBox(width: 4),
+                            Text(submittedLabel,
+                                style: GoogleFonts.poppins(
+                                    fontSize: 11, color: textSec)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Points badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE0F2F1),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: _tmBorderLight),
+                    ),
+                    child: Text(
+                      '+$assignedPoints pts',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: _tmPrimary,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
-              _buildApproveBtn(() => _approveCompletion(taskDetail['_id'], true)),
-              const SizedBox(width: 6),
-              _buildRejectBtn(() => _approveCompletion(taskDetail['_id'], false)),
+
+              const SizedBox(height: 14),
+
+              // ── Action buttons ────────────────────────────────────
+              Row(
+                children: [
+                  // Approve — teal gradient
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () =>
+                          _approveCompletion(taskDetail['_id'], true),
+                      child: Container(
+                        padding:
+                            const EdgeInsets.symmetric(vertical: 11),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF00897B), Color(0xFF00ACC1)],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: _tmPrimary.withValues(alpha: 0.25),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.check,
+                                color: Colors.white, size: 17),
+                            const SizedBox(width: 6),
+                            Text('Approve',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13,
+                                )),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  // Reject — red outlined
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () =>
+                          _showRejectReasonDialog(taskDetail['_id']),
+                      child: Container(
+                        padding:
+                            const EdgeInsets.symmetric(vertical: 11),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFEBEE),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                              color: const Color(0xFFFFCDD2),
+                              width: 1.5),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.close,
+                                color: Color(0xFFE53935), size: 17),
+                            const SizedBox(width: 6),
+                            Text('Reject',
+                                style: GoogleFonts.poppins(
+                                  color: const Color(0xFFE53935),
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13,
+                                )),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildApprovalSuccessCard(
+    String memberName,
+    int pointsAwarded,
+    int newTotal,
+    bool isDark,
+  ) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: isDark
+              ? [const Color(0xFF0A2A1A), const Color(0xFF0A2030)]
+              : [const Color(0xFFE8F5E9), const Color(0xFFE0F2F1)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFA5D6A7)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: const Color(0xFF00897B),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF00897B).withValues(alpha: 0.35),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: const Center(
+              child: Text('🎉', style: TextStyle(fontSize: 22)),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Task Approved!',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF2E7D32),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '$memberName received +$pointsAwarded pts'
+                  '${newTotal > 0 ? ' → now $newTotal pts total' : ''}',
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    color: const Color(0xFF388E3C),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: Color(0xFF00897B),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -2259,27 +2509,152 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
     }
   }
 
-  Future<void> _approveCompletion(String taskDetailId, bool approved) async {
+  void _showRejectReasonDialog(String taskDetailId) {
+    final reasonController = TextEditingController();
+    final isDark = context.read<ThemeProvider>().isDark;
+    final cardColor = isDark ? _tmCardDark : Colors.white;
+    final textPrimary = isDark ? _tmTextPrimaryDark : _tmTextPrimaryLight;
+    final textSec = isDark ? _tmTextSecDark : _tmTextSecLight;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: cardColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        title: Row(
+          children: [
+            const Icon(Icons.close, color: Color(0xFFE53935)),
+            const SizedBox(width: 8),
+            Text('Reject Task',
+                style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFFE53935))),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Reason for rejection:',
+                style: GoogleFonts.poppins(fontSize: 12, color: textSec)),
+            const SizedBox(height: 8),
+            TextField(
+              controller: reasonController,
+              maxLines: 3,
+              style: GoogleFonts.poppins(fontSize: 12, color: textPrimary),
+              decoration: InputDecoration(
+                hintText: '"The floor is still dirty, please redo."',
+                hintStyle: GoogleFonts.poppins(
+                    fontSize: 11,
+                    color: textSec),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide:
+                        const BorderSide(color: _tmBorderLight)),
+                focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                        color: Color(0xFFE53935), width: 2)),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Cancel',
+                style: GoogleFonts.poppins(
+                    color: isDark ? _tmTextSecDark : _tmTextSecLight)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final reason = reasonController.text.trim();
+              Navigator.pop(ctx);
+              _approveCompletion(
+                taskDetailId,
+                false,
+                rejectionReason: reason.isNotEmpty ? reason : null,
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFE53935),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            child: Text('Confirm Reject',
+                style: GoogleFonts.poppins(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _approveCompletion(
+    String taskDetailId,
+    bool approved, {
+    String? rejectionReason,
+  }) async {
     try {
-      await _apiService.approveTaskCompletion(taskDetailId, approved);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(approved
-              ? 'Task approved! Points awarded.'
-              : 'Task completion rejected'),
-          backgroundColor: approved ? Colors.green : Colors.orange,
-        ),
+      final response = await _apiService.approveTaskCompletion(
+        taskDetailId,
+        approved,
+        notes: rejectionReason,
       );
-      _loadData();
+
+      if (approved) {
+        final rewardSummary = response['data']?['rewardSummary'];
+        final pointsAwarded =
+            ((rewardSummary?['points_awarded'] ?? 0) as num).toInt();
+        final newTotal =
+            ((rewardSummary?['point_wallet']?['total_points'] ?? 0) as num)
+                .toInt();
+        final raw = _tasksWaitingApproval.firstWhere(
+          (t) => t['_id'] == taskDetailId,
+          orElse: () => <String, dynamic>{},
+        );
+        final mail = raw['member_mail'];
+        final memberName = mail is String ? mail.split('@').first : 'Member';
+
+        setState(() {
+          _justApproved[taskDetailId] = {
+            'points_awarded': pointsAwarded,
+            'new_total': newTotal,
+            'member_name': memberName,
+          };
+        });
+
+        Future.delayed(const Duration(milliseconds: 1200), () {
+          if (mounted) {
+            setState(() => _justApproved.remove(taskDetailId));
+            _loadData();
+          }
+        });
+      } else {
+        _loadData();
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(approved
+                ? 'Task approved! Points awarded.'
+                : 'Task completion rejected'),
+            backgroundColor: approved
+                ? const Color(0xFF00897B)
+                : Colors.orange,
+          ),
+        );
+      }
     } catch (e) {
-      // Refresh data to sync with database
       _loadData();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e. Data refreshed - please try again.'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e. Data refreshed - please try again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -2410,7 +2785,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
             itemCount: allTasks.length,
             itemBuilder: (context, index) {
               final taskDetail = allTasks[index];
-              return _buildHistoryCard(taskDetail);
+              return _buildCompactCard(taskDetail);
             },
           ),
         ),
@@ -2469,6 +2844,469 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
     );
   }
 
+  // ─── Compact history card (current) ──────────────────────────────────────
+  Widget _buildCompactCard(Map<String, dynamic> taskDetail) {
+    final task = taskDetail['task_id'];
+    final memberMail = taskDetail['member_mail'];
+    final assignedByMail = taskDetail['assigned_by'];
+    final status = taskDetail['status'] ?? 'assigned';
+    final notes = taskDetail['notes'] ?? '';
+    final createdAt = taskDetail['createdAt'];
+    final completedAt = taskDetail['completed_at'];
+    final approvedAt = taskDetail['approved_at'];
+    final penaltyPoints = taskDetail['penalty_points'] ?? 0;
+    final assignedPoints = taskDetail['assigned_points'] ?? 0;
+    final deadline = taskDetail['deadline'];
+    final isPendingAssignment = taskDetail['_isPendingAssignment'] == true ||
+        taskDetail['assignment_approved'] == false;
+
+    String getMemberName(dynamic email) {
+      if (email == null) return 'Unknown';
+      if (email is String) return email.split('@').first;
+      if (email is Map && email['username'] != null) {
+        return email['username'].toString();
+      }
+      return 'Unknown';
+    }
+
+    final memberName = getMemberName(memberMail);
+    final assignedByName = getMemberName(assignedByMail);
+    final approvedByName = getMemberName(taskDetail['approved_by']);
+
+    Color statusColor;
+    String statusLabel;
+    if (isPendingAssignment) {
+      statusColor = Colors.purple;
+      statusLabel = 'Pending';
+    } else {
+      switch (status) {
+        case 'approved':
+          statusColor = const Color(0xFF00BFA5);
+          statusLabel = 'Approved';
+          break;
+        case 'completed':
+          statusColor = const Color(0xFF1E88E5);
+          statusLabel = 'Waiting';
+          break;
+        case 'in_progress':
+          statusColor = const Color(0xFF1E88E5);
+          statusLabel = 'Active';
+          break;
+        case 'rejected':
+          statusColor = const Color(0xFFFF5252);
+          statusLabel = 'Rejected';
+          break;
+        case 'late':
+          statusColor = const Color(0xFFFF5252);
+          statusLabel = 'Late';
+          break;
+        default:
+          statusColor = const Color(0xFFFB8C00);
+          statusLabel = 'Assigned';
+      }
+    }
+
+    // Late detection
+    bool isLate = status == 'late';
+    int daysLate = 0;
+    if (!isLate && completedAt != null && deadline != null) {
+      try {
+        final cd = DateTime.parse(completedAt.toString());
+        final dl = DateTime.parse(deadline.toString());
+        if (cd.isAfter(dl)) {
+          isLate = true;
+          daysLate = cd.difference(dl).inDays.clamp(1, 999);
+        }
+      } catch (_) {}
+    } else if (isLate && daysLate == 0) {
+      daysLate = 1;
+    }
+
+    // Date label (newest date shown)
+    String dateLabel = '';
+    final dateSource = approvedAt ?? completedAt ?? createdAt;
+    if (dateSource != null) {
+      try {
+        final date = DateTime.parse(dateSource.toString());
+        final diff = DateTime.now().difference(date);
+        if (diff.inDays == 0) {
+          dateLabel = 'Today';
+        } else if (diff.inDays == 1) {
+          dateLabel = 'Yesterday';
+        } else if (diff.inDays < 30) {
+          dateLabel = '${diff.inDays}d ago';
+        } else {
+          dateLabel = '${date.day}/${date.month}/${date.year}';
+        }
+      } catch (_) {}
+    }
+
+    final isDark = context.read<ThemeProvider>().isDark;
+    final textPrimary = isDark ? _tmTextPrimaryDark : _tmTextPrimaryLight;
+    final textSec = isDark ? _tmTextSecDark : _tmTextSecLight;
+    final cardColor = isDark ? _tmCardDark : Colors.white;
+    Color cardBorder = isDark ? _tmBorderDark : _tmBorderLight;
+    if (status == 'approved') cardBorder = const Color(0xFFA5D6A7);
+    if (status == 'rejected' || status == 'late') {
+      cardBorder = const Color(0xFFFFCDD2);
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(13),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: cardBorder),
+        boxShadow: isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                )
+              ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildAvatar(memberName, size: 36),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  task?['title'] ?? 'Unknown Task',
+                  style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                      color: textPrimary),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    Text(memberName,
+                        style: GoogleFonts.poppins(
+                            fontSize: 11, color: textSec)),
+                    if (dateLabel.isNotEmpty) ...[
+                      Text(' · ',
+                          style: GoogleFonts.poppins(
+                              fontSize: 11, color: textSec)),
+                      Text(dateLabel,
+                          style: GoogleFonts.poppins(
+                              fontSize: 11, color: textSec)),
+                    ],
+                  ],
+                ),
+                if (isLate) ...[
+                  const SizedBox(height: 3),
+                  Row(
+                    children: [
+                      const Icon(Icons.warning_amber,
+                          size: 11, color: Color(0xFFE53935)),
+                      const SizedBox(width: 3),
+                      Text(
+                        daysLate > 0
+                            ? 'Submitted $daysLate day${daysLate > 1 ? "s" : ""} late'
+                            : 'Submitted late',
+                        style: GoogleFonts.poppins(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFFE53935)),
+                      ),
+                    ],
+                  ),
+                ],
+                const SizedBox(height: 5),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: status == 'approved'
+                            ? const Color(0xFFE0F2F1)
+                            : isDark
+                                ? const Color(0xFF1A2F42)
+                                : const Color(0xFFF5F5F5),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text('+$assignedPoints pts',
+                          style: GoogleFonts.poppins(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: status == 'approved'
+                                  ? _tmPrimary
+                                  : textSec)),
+                    ),
+                    if (penaltyPoints > 0) ...[
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFEBEE),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text('-$penaltyPoints pts',
+                            style: GoogleFonts.poppins(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFFE53935))),
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+            ),
+          ),
+          // Status badge + 3-dot menu
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 7, vertical: 3),
+                decoration: BoxDecoration(
+                  color: statusColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(7),
+                  border: Border.all(
+                      color: statusColor.withValues(alpha: 0.3)),
+                ),
+                child: Text(statusLabel,
+                    style: GoogleFonts.poppins(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        color: statusColor)),
+              ),
+              if (_isParent) ...[
+                const SizedBox(height: 2),
+                PopupMenuButton<String>(
+                  icon: Icon(Icons.more_horiz,
+                      color: textSec, size: 20),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                  onSelected: (value) {
+                    if (value == 'penalty') {
+                      _showPenaltyDialog(taskDetail['_id']);
+                    } else if (value == 'details') {
+                      _showTaskDetailsDialog(
+                        taskDetail,
+                        memberName,
+                        assignedByName,
+                        approvedByName,
+                        notes,
+                      );
+                    }
+                  },
+                  itemBuilder: (_) => [
+                    PopupMenuItem<String>(
+                      value: 'penalty',
+                      child: Row(children: [
+                        const Icon(Icons.warning_amber,
+                            color: Color(0xFFE65100), size: 18),
+                        const SizedBox(width: 10),
+                        Text('Apply Penalty',
+                            style: GoogleFonts.poppins(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: const Color(0xFFE65100))),
+                      ]),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'details',
+                      child: Row(children: [
+                        const Icon(Icons.visibility_outlined,
+                            color: _tmPrimary, size: 18),
+                        const SizedBox(width: 10),
+                        Text('View Details',
+                            style: GoogleFonts.poppins(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: _tmPrimary)),
+                      ]),
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showTaskDetailsDialog(
+    Map<String, dynamic> taskDetail,
+    String memberName,
+    String assignedByName,
+    String approvedByName,
+    String notes,
+  ) {
+    final isDark = context.read<ThemeProvider>().isDark;
+    final cardColor = isDark ? _tmCardDark : Colors.white;
+    final textPrimary = isDark ? _tmTextPrimaryDark : _tmTextPrimaryLight;
+    final textSec = isDark ? _tmTextSecDark : _tmTextSecLight;
+    final task = taskDetail['task_id'];
+    final status = taskDetail['status'] ?? 'assigned';
+    final assignedPoints = taskDetail['assigned_points'] ?? 0;
+    final penaltyPoints = taskDetail['penalty_points'] ?? 0;
+
+    Widget detailRow(String label, String value, {Color? valueColor}) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 9),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 95,
+              child: Text(label,
+                  style: GoogleFonts.poppins(
+                      fontSize: 11, color: textSec)),
+            ),
+            Expanded(
+              child: Text(value,
+                  style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: valueColor ?? textPrimary)),
+            ),
+          ],
+        ),
+      );
+    }
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: cardColor,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18)),
+        contentPadding:
+            const EdgeInsets.fromLTRB(20, 16, 20, 8),
+        title: Row(
+          children: [
+            _buildAvatar(memberName, size: 34),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(task?['title'] ?? 'Task Details',
+                      style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: textPrimary)),
+                  Text(memberName,
+                      style: GoogleFonts.poppins(
+                          fontSize: 11, color: textSec)),
+                ],
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Divider(
+                  color: isDark
+                      ? _tmBorderDark
+                      : _tmBorderLight),
+              const SizedBox(height: 6),
+              detailRow(
+                'Status',
+                status.toUpperCase(),
+                valueColor: status == 'approved'
+                    ? _tmPrimary
+                    : (status == 'rejected' || status == 'late')
+                        ? Colors.red
+                        : textPrimary,
+              ),
+              detailRow('Assigned By', assignedByName),
+              if (approvedByName.isNotEmpty &&
+                  status == 'approved')
+                detailRow('Approved By', approvedByName,
+                    valueColor: _tmPrimary),
+              detailRow('Reward', '+$assignedPoints pts'),
+              if (penaltyPoints > 0)
+                detailRow('Penalty', '-$penaltyPoints pts',
+                    valueColor: Colors.red),
+              detailRow(
+                  'Priority',
+                  _getPriorityText(
+                      taskDetail['priority'] ?? 0)),
+              if (taskDetail['deadline'] != null)
+                detailRow(
+                    'Deadline',
+                    _formatDeadlineDetailed(
+                        taskDetail['deadline'].toString())),
+              if (taskDetail['createdAt'] != null)
+                detailRow(
+                    'Assigned',
+                    _formatDateTime(
+                        taskDetail['createdAt'].toString())),
+              if (taskDetail['completed_at'] != null)
+                detailRow(
+                    'Completed',
+                    _formatDateTime(taskDetail['completed_at']
+                        .toString())),
+              if (taskDetail['approved_at'] != null)
+                detailRow(
+                    'Reviewed',
+                    _formatDateTime(
+                        taskDetail['approved_at'].toString())),
+              if (task?['category_id'] != null)
+                detailRow(
+                    'Category',
+                    (task['category_id']['title'] ?? '')
+                        .toString()),
+              if (notes.isNotEmpty) ...[
+                Divider(
+                    color: isDark
+                        ? _tmBorderDark
+                        : _tmBorderLight),
+                const SizedBox(height: 4),
+                Text('Notes',
+                    style: GoogleFonts.poppins(
+                        fontSize: 11, color: textSec)),
+                const SizedBox(height: 6),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF1A2F42)
+                        : const Color(0xFFFFF8E1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(notes,
+                      style: GoogleFonts.poppins(
+                          fontSize: 12, color: textPrimary)),
+                ),
+              ],
+              const SizedBox(height: 4),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Close',
+                style: GoogleFonts.poppins(color: _tmPrimary)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── Old detailed card (kept for reference, not used) ─────────────────────
+  // ignore: unused_element
   Widget _buildHistoryCard(Map<String, dynamic> taskDetail) {
     final task = taskDetail['task_id'];
     final memberMail = taskDetail['member_mail'];
@@ -2595,6 +3433,38 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                     ),
                   ),
                 ),
+                // ── 3-dot menu (parent only) ──────────────────────────
+                if (_isParent) ...[
+                  const SizedBox(width: 4),
+                  PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_vert,
+                        color: Colors.white70, size: 20),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
+                    onSelected: (value) {
+                      if (value == 'penalty') {
+                        _showPenaltyDialog(taskDetail['_id']);
+                      }
+                    },
+                    itemBuilder: (_) => [
+                      PopupMenuItem<String>(
+                        value: 'penalty',
+                        child: Row(
+                          children: [
+                            const Icon(Icons.warning_amber,
+                                color: Color(0xFFE65100), size: 18),
+                            const SizedBox(width: 10),
+                            Text('Apply Penalty',
+                                style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                    color: const Color(0xFFE65100))),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
@@ -2863,82 +3733,267 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
   void _showPenaltyDialog(String taskDetailId) {
     int penaltyPoints = 5;
     final notesController = TextEditingController();
+    int currentPoints = 0;
+    bool pointsLoaded = false;
+
+    // Resolve member name + mail from history or taskHistory
+    final taskDetail = _taskHistory.firstWhere(
+      (t) => t['_id'] == taskDetailId,
+      orElse: () => <String, dynamic>{},
+    );
+    final memberMail = (taskDetail as Map).isNotEmpty
+        ? (taskDetail['member_mail'] ?? '')
+        : '';
+    final memberName =
+        memberMail is String && memberMail.isNotEmpty
+            ? memberMail.split('@').first
+            : 'Member';
 
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: Row(
-            children: [
-              Icon(Icons.remove_circle, color: Colors.red[700]),
-              const SizedBox(width: 8),
-              Text('Apply Penalty',
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Penalty Points',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  prefixIcon: Icon(Icons.remove_circle, color: Colors.red[400]),
-                ),
-                onChanged: (v) => penaltyPoints = int.tryParse(v) ?? 5,
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: notesController,
-                maxLines: 2,
-                decoration: InputDecoration(
-                  labelText: 'Reason (optional)',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Cancel', style: GoogleFonts.poppins()),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                try {
-                  await _apiService.applyPenalty(
-                    taskDetailId,
-                    penaltyPoints,
-                    notes: notesController.text.isNotEmpty
-                        ? notesController.text
-                        : null,
-                  );
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Penalty of $penaltyPoints pts applied'),
-                      backgroundColor: Colors.orange,
-                    ),
-                  );
-                  _loadData();
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text('Error: $e'),
-                        backgroundColor: Colors.red),
-                  );
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            // Fetch current points once
+            if (!pointsLoaded) {
+              pointsLoaded = true;
+              _apiService.getPointsRanking().then((ranking) {
+                for (final m in ranking) {
+                  final mail = (m['member_mail'] ?? m['mail'] ?? '').toString();
+                  if (mail == memberMail) {
+                    if (ctx.mounted) {
+                      setDialogState(() {
+                        currentPoints =
+                            ((m['total_points'] ?? 0) as num).toInt();
+                      });
+                    }
+                    break;
+                  }
                 }
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red[700]),
-              child: Text('Apply Penalty',
-                  style: GoogleFonts.poppins(color: Colors.white)),
-            ),
-          ],
+              }).catchError((_) {});
+            }
+
+            final afterPenalty =
+                (currentPoints - penaltyPoints).clamp(0, 999999);
+            final isDark = context.read<ThemeProvider>().isDark;
+            final cardColor = isDark ? _tmCardDark : Colors.white;
+            final textPrimary =
+                isDark ? _tmTextPrimaryDark : _tmTextPrimaryLight;
+            final textSec = isDark ? _tmTextSecDark : _tmTextSecLight;
+
+            return AlertDialog(
+              backgroundColor: cardColor,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18)),
+              title: Row(
+                children: [
+                  const Text('⚠️', style: TextStyle(fontSize: 20)),
+                  const SizedBox(width: 8),
+                  Text('Apply Penalty',
+                      style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFFE65100))),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ── Penalty points input ──────────────────────────
+                  Text('Penalty Points',
+                      style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: textSec)),
+                  const SizedBox(height: 6),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? const Color(0xFF1A1200)
+                          : const Color(0xFFFFF3E0),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                          color: const Color(0xFFFFCC80)),
+                    ),
+                    child: TextFormField(
+                      initialValue: penaltyPoints.toString(),
+                      keyboardType: TextInputType.number,
+                      style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                          color: const Color(0xFFE65100)),
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 10),
+                        prefixIcon: const Padding(
+                          padding:
+                              EdgeInsets.only(left: 12, right: 6),
+                          child:
+                              Text('⭐', style: TextStyle(fontSize: 20)),
+                        ),
+                        prefixIconConstraints:
+                            const BoxConstraints(minWidth: 0),
+                        suffixText: 'pts to deduct',
+                        suffixStyle: GoogleFonts.poppins(
+                            fontSize: 10,
+                            color: const Color(0xFFFB8C00)),
+                      ),
+                      onChanged: (v) => setDialogState(
+                          () => penaltyPoints = int.tryParse(v) ?? 5),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // ── Reason input ──────────────────────────────────
+                  Text('Reason',
+                      style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: textSec)),
+                  const SizedBox(height: 6),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? const Color(0xFF1A1200)
+                          : const Color(0xFFFFF3E0),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                          color: const Color(0xFFFFCC80)),
+                    ),
+                    child: TextField(
+                      controller: notesController,
+                      maxLines: 2,
+                      style: GoogleFonts.poppins(
+                          fontSize: 12, color: textPrimary),
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.all(12),
+                        hintText: '"Task was submitted 2 days late."',
+                        hintStyle: GoogleFonts.poppins(
+                            fontSize: 11,
+                            color: const Color(0xFFFFB300)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // ── Preview box (dark bg) ─────────────────────────
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? const Color(0xFF050A14)
+                          : const Color(0xFF1A1A2E),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: currentPoints == 0
+                        ? Row(
+                            children: [
+                              const SizedBox(
+                                width: 14,
+                                height: 14,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Color(0xFF4DB6AC)),
+                              ),
+                              const SizedBox(width: 8),
+                              Text('Loading balance...',
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 11,
+                                      color: const Color(0xFF4DB6AC))),
+                            ],
+                          )
+                        : Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              Text('$memberName: $currentPoints',
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 12,
+                                      color: const Color(0xFF4DB6AC),
+                                      fontWeight: FontWeight.w500)),
+                              const Text(' → ',
+                                  style: TextStyle(
+                                      color: Color(0xFF4DB6AC),
+                                      fontWeight: FontWeight.bold)),
+                              Text('$afterPenalty pts',
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      color: const Color(0xFFE53935))),
+                              Text(' after penalty',
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 10,
+                                      color: Colors.white54)),
+                            ],
+                          ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: Text('Cancel',
+                      style: GoogleFonts.poppins(
+                          color: Colors.grey[600])),
+                ),
+                GestureDetector(
+                  onTap: () async {
+                    try {
+                      await _apiService.applyPenalty(
+                        taskDetailId,
+                        penaltyPoints,
+                        notes: notesController.text.isNotEmpty
+                            ? notesController.text
+                            : null,
+                      );
+                      if (ctx.mounted) Navigator.pop(ctx);
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                'Penalty of $penaltyPoints pts applied to $memberName'),
+                            backgroundColor:
+                                const Color(0xFFE65100),
+                          ),
+                        );
+                        _loadData();
+                      }
+                    } catch (e) {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text('Error: $e'),
+                              backgroundColor: Colors.red),
+                        );
+                      }
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xFFE65100),
+                          Color(0xFFFF8F00)
+                        ],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text('Apply Penalty',
+                        style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13)),
+                  ),
+                ),
+              ],
+            );
+          },
         );
       },
     );

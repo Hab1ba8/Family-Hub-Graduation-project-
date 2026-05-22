@@ -614,12 +614,20 @@ class ApiService {
   }
 
   // Approve task completion (Parent only)
-  Future<Map<String, dynamic>> approveTaskCompletion(String taskDetailId, bool approved) async {
+  Future<Map<String, dynamic>> approveTaskCompletion(
+    String taskDetailId,
+    bool approved, {
+    String? notes,
+  }) async {
     final headers = await _getHeaders();
+    final body = <String, dynamic>{'approved': approved};
+    if (notes != null && notes.trim().isNotEmpty) {
+      body['notes'] = notes.trim();
+    }
     final response = await http.patch(
       Uri.parse('$baseUrl/tasks/assignments/$taskDetailId/approve-completion'),
       headers: headers,
-      body: jsonEncode({'approved': approved}),
+      body: jsonEncode(body),
     );
     
     if (response.statusCode == 200) {
