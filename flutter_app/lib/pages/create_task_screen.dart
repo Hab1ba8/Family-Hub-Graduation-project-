@@ -794,7 +794,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF0A2010) : const Color(0xFFE8F5E9),
+        color: isDark ? const Color(0xFF0A2010) : const Color(0xFFE8F5F5),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFA5D6A7)),
       ),
@@ -808,7 +808,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
               style: GoogleFonts.poppins(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
-                color: const Color(0xFF2E7D32),
+                color: const Color(0xFF00897B),
               ),
             ),
           ),

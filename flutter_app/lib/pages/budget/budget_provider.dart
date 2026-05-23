@@ -76,7 +76,7 @@ class FamilyBudgetProvider extends ChangeNotifier {
           'allocated_amount': allocation['allocated_amount'] ?? 0,
           'spent_amount': allocation['spent_amount'] ?? 0,
           'threshold_percentage': allocation['threshold_percentage'] ?? 15,
-          'color': '#4CAF50',
+          'color': '#00897B',
         };
       }).toList(),
     };

@@ -177,7 +177,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // ── Module config ──────────────────────────────────────────────────────────
   static const _modules = [
     {'label': 'Tasks',      'icon': Icons.checklist_rounded,            'route': '/tasks',                'bg': Color(0xFFE0F2F1), 'fg': Color(0xFF00897B)},
-    {'label': 'Budget',     'icon': Icons.account_balance_wallet_outlined,'route': '/budget',              'bg': Color(0xFFE8F5E9), 'fg': Color(0xFF2E7D32)},
+    {'label': 'Budget',     'icon': Icons.account_balance_wallet_outlined,'route': '/budget',              'bg': Color(0xFFE8F5F5), 'fg': Color(0xFF00897B)},
     {'label': 'Events',     'icon': Icons.event_outlined,                 'route': '/future-events',       'bg': Color(0xFFFFF3E0), 'fg': Color(0xFFE65100)},
     {'label': 'Wallet',     'icon': Icons.credit_card_outlined,           'route': '/combined-wallet',     'bg': Color(0xFFE0F2F1), 'fg': Color(0xFF00695C)},
     {'label': 'Rewards',    'icon': Icons.emoji_events_outlined,        'route': '/rewards',              'bg': Color(0xFFFFF8E1), 'fg': Color(0xFFF9A825)},
@@ -186,7 +186,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     {'label': 'Points',     'icon': Icons.stars_rounded,                'route': '/family-points',        'bg': Color(0xFFFCE4EC), 'fg': Color(0xFFAD1457)},
     {'label': 'Food Hub',   'icon': Icons.restaurant_outlined,          'route': '/food-hub',             'bg': Color(0xFFFFF3E0), 'fg': Color(0xFFE65100)},
     {'label': 'Inventory',  'icon': Icons.inventory_2_outlined,         'route': '/inventory',            'bg': Color(0xFFEDE7F6), 'fg': Color(0xFF6A1B9A)},
-    {'label': 'Recipes',    'icon': Icons.menu_book_outlined,           'route': '/recipes',              'bg': Color(0xFFE8F5E9), 'fg': Color(0xFF2E7D32)},
+    {'label': 'Recipes',    'icon': Icons.menu_book_outlined,           'route': '/recipes',              'bg': Color(0xFFE8F5F5), 'fg': Color(0xFF00897B)},
     {'label': 'Meals',      'icon': Icons.restaurant_menu_outlined,     'route': '/meals',                'bg': Color(0xFFE0F7FA), 'fg': Color(0xFF00838F)},
     {'label': 'Leftovers',  'icon': Icons.takeout_dining_outlined,      'route': '/leftovers',            'bg': Color(0xFFFBE9E7), 'fg': Color(0xFFBF360C)},
     {'label': 'Receipts',   'icon': Icons.receipt_long_outlined,        'route': '/receipts',             'bg': Color(0xFFE8EAF6), 'fg': Color(0xFF283593)},
@@ -264,7 +264,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
         Container(
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.08),
+            color: AppColors.primary.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(14),
           ),
           child: IconButton(
@@ -562,13 +562,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
           image: NetworkImage(event.imageUrl),
           fit: BoxFit.cover,
           colorFilter: ColorFilter.mode(
-            AppColors.textDark.withOpacity(0.45),
+            AppColors.textDark.withValues(alpha: 0.45),
             BlendMode.darken,
           ),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),

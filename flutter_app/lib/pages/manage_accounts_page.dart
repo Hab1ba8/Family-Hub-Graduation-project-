@@ -125,11 +125,11 @@ class _ManageAccountsPageState extends State<ManageAccountsPage> {
                       margin: const EdgeInsets.only(bottom: 10),
                       child: ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: const Color(0xFFE8F5E9),
+                          backgroundColor: const Color(0xFFE0F2F1),
                           child: Text(
                             (username.isNotEmpty ? username[0] : 'A').toUpperCase(),
                             style: const TextStyle(
-                              color: Color(0xFF2E7D32),
+                              color: Color(0xFF00897B),
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -142,7 +142,7 @@ class _ManageAccountsPageState extends State<ManageAccountsPage> {
                             if (isActive)
                               const Padding(
                                 padding: EdgeInsets.only(right: 6),
-                                child: Icon(Icons.check_circle, color: Color(0xFF4CAF50)),
+                                child: Icon(Icons.check_circle, color: Color(0xFF00897B)),
                               ),
                             IconButton(
                               tooltip: _t('Switch account', 'تبديل الحساب'),

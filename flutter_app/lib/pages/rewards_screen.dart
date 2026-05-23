@@ -155,7 +155,7 @@ class _RewardsScreenState extends State<RewardsScreen> {
     {'bg': Color(0xFFFCE4EC), 'text': Color(0xFFC2185B), 'border': Color(0xFFF48FB1)},
     {'bg': Color(0xFFE0F2F1), 'text': Color(0xFF00695C), 'border': Color(0xFF80CBC4)},
     {'bg': Color(0xFFF3E5F5), 'text': Color(0xFF7B1FA2), 'border': Color(0xFFCE93D8)},
-    {'bg': Color(0xFFE8F5E9), 'text': Color(0xFF2E7D32), 'border': Color(0xFFA5D6A7)},
+    {'bg': Color(0xFFE8F5F5), 'text': Color(0xFF00897B), 'border': Color(0xFFB2DFDB)},
   ];
 
   Widget _buildAvatar(String name, {double size = 38}) {

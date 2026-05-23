@@ -101,7 +101,7 @@ class FutureEventCard extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: progress,
                 backgroundColor: Colors.grey.shade200,
-                valueColor: AlwaysStoppedAnimation<Color>(isCompleted ? Colors.green : const Color(0xFF388E3C)),
+                valueColor: AlwaysStoppedAnimation<Color>(isCompleted ? Colors.green : const Color(0xFF00897B)),
                 minHeight: 10,
               ),
             ),
@@ -111,7 +111,7 @@ class FutureEventCard extends StatelessWidget {
               Text(
                 '${(progress * 100).toStringAsFixed(0)}%',
                 style: TextStyle(
-                  color: progress >= 1.0 ? Colors.green : const Color(0xFF388E3C),
+                  color: progress >= 1.0 ? Colors.green : const Color(0xFF00897B),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -120,14 +120,14 @@ class FutureEventCard extends StatelessWidget {
               const SizedBox(height: 10),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                decoration: BoxDecoration(color: const Color(0xFFE8F5E9), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: const Color(0xFFE8F5F5), borderRadius: BorderRadius.circular(8)),
                 child: Row(children: [
-                  const Icon(Icons.lightbulb_outline, color: Color(0xFF388E3C), size: 18),
+                  const Icon(Icons.lightbulb_outline, color: Color(0xFF00897B), size: 18),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'Suggest saving \$${suggestedSaving.toStringAsFixed(2)} per ${event['saving_frequency'] ?? 'month'}',
-                      style: const TextStyle(color: Color(0xFF388E3C), fontWeight: FontWeight.w500, fontSize: 13),
+                      style: const TextStyle(color: Color(0xFF00897B), fontWeight: FontWeight.w500, fontSize: 13),
                     ),
                   ),
                 ]),

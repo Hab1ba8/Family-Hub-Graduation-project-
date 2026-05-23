@@ -25,7 +25,7 @@ class BudgetProgressIndicatorWidget extends StatelessWidget {
     } else if (progress >= 0.8) {
       barColor = Colors.orange;
     } else {
-      barColor = const Color(0xFF388E3C);
+      barColor = const Color(0xFF00897B);
     }
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

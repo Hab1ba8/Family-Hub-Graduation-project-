@@ -763,7 +763,7 @@ class _SettingPageState extends State<SettingPage> {
                         title: _t('Edit Profile', 'تعديل الملف الشخصي'),
                         subtitle: _currentUsername.isNotEmpty ? _currentUsername : null,
                         onTap: _showEditProfileDialog),
-                    _buildRow(icon: Icons.group_outlined, iconBg: const Color(0xFFE8F5E9), iconColor: const Color(0xFF2E7D32),
+                    _buildRow(icon: Icons.group_outlined, iconBg: const Color(0xFFE8F5F5), iconColor: const Color(0xFF00897B),
                         title: _t('Family Members', 'أفراد العائلة'),
                         subtitle: _membersLoading ? null : '${_familyMembers.length} ${_t('members', 'أعضاء')}',
                         onTap: _showFamilyMembersSheet),
@@ -780,7 +780,7 @@ class _SettingPageState extends State<SettingPage> {
                     _buildSection(label: _t('FAMILY SETTINGS', 'إعدادات العائلة'), rows: [
                       _buildRow(
                         icon: Icons.currency_exchange,
-                        iconBg: const Color(0xFFE8F5E9), iconColor: const Color(0xFF2E7D32),
+                        iconBg: const Color(0xFFE8F5F5), iconColor: const Color(0xFF00897B),
                         title: _t('Conversion Rates', 'أسعار التحويل'),
                         subtitle: '1 EGP = ${_moneyToPointsRate.toStringAsFixed(0)} pts  •  100 pts = ${(_pointsToMoneyRate * 100).toStringAsFixed(0)} EGP',
                         onTap: _showConversionRateDialog,

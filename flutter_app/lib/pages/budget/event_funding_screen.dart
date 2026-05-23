@@ -276,7 +276,7 @@ class _EventFundingScreenState extends State<EventFundingScreen>
                                 }
                               },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2E7D32),
+                          backgroundColor: const Color(0xFF00897B),
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                         ),
@@ -458,12 +458,12 @@ class _EventFundingScreenState extends State<EventFundingScreen>
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6F8),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF2E7D32),
+        backgroundColor: const Color(0xFF00897B),
         foregroundColor: Colors.white,
         title: Text('Event Funding', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF2E7D32)))
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFF00897B)))
           : (_eventId == null || _eventId!.isEmpty)
               ? _buildErrorState('Missing event ID')
               : _buildContent(),
@@ -499,9 +499,9 @@ class _EventFundingScreenState extends State<EventFundingScreen>
               ),
               child: TabBar(
                 controller: _tabController,
-                labelColor: const Color(0xFF2E7D32),
+                labelColor: const Color(0xFF00897B),
                 unselectedLabelColor: Colors.grey[700],
-                indicatorColor: const Color(0xFF2E7D32),
+                indicatorColor: const Color(0xFF00897B),
                 tabs: _tabs.map((t) => Tab(text: t.title)).toList(),
               ),
             ),
@@ -653,7 +653,7 @@ class _EventFundingScreenState extends State<EventFundingScreen>
                   icon: Icon(_isAutoSaveEnabled ? Icons.check_circle : Icons.savings),
                   label: Text(_isAutoSaveEnabled ? 'Auto-Save Enabled' : 'Set Auto-Save'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2E7D32),
+                    backgroundColor: const Color(0xFF00897B),
                     foregroundColor: Colors.white,
                   ),
                 ),
@@ -684,7 +684,7 @@ class _EventFundingScreenState extends State<EventFundingScreen>
               icon: const Icon(Icons.add),
               label: const Text('Add Contribution'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2E7D32),
+                backgroundColor: const Color(0xFF00897B),
                 foregroundColor: Colors.white,
               ),
             ),
@@ -742,7 +742,7 @@ class _EventFundingScreenState extends State<EventFundingScreen>
             minHeight: 8,
             borderRadius: BorderRadius.circular(999),
             backgroundColor: Colors.grey.shade200,
-            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF2E7D32)),
+            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF00897B)),
           ),
           const SizedBox(height: 6),
           Text(
@@ -790,7 +790,7 @@ class _EventFundingScreenState extends State<EventFundingScreen>
                 child: ElevatedButton(
                   onPressed: _myPoints >= cost ? _redeemSpot : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2E7D32),
+                    backgroundColor: const Color(0xFF00897B),
                     foregroundColor: Colors.white,
                   ),
                   child: const Text('Redeem Spot'),
@@ -818,8 +818,8 @@ class _EventFundingScreenState extends State<EventFundingScreen>
                   return ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const CircleAvatar(
-                      backgroundColor: Color(0xFFE8F5E9),
-                      child: Icon(Icons.person, color: Color(0xFF2E7D32)),
+                      backgroundColor: Color(0xFFE8F5F5),
+                      child: Icon(Icons.person, color: Color(0xFF00897B)),
                     ),
                     title: Text(mail, style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
                     subtitle: Text(
@@ -860,7 +860,7 @@ class _EventFundingScreenState extends State<EventFundingScreen>
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.08),
+            color: Colors.grey.withValues(alpha: 0.08),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),

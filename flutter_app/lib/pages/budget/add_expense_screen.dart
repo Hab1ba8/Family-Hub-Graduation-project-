@@ -266,7 +266,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                               style: GoogleFonts.poppins(
                                 fontSize: _sp(9),
                                 color: isActive
-                                    ? Colors.white.withOpacity(0.75)
+                                    ? Colors.white.withValues(alpha: 0.75)
                                     : AppColors.textHint,
                               ),
                             ),
@@ -320,7 +320,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         Container(
                           width: 20, height: 20,
                           decoration: BoxDecoration(
-                              color: color.withOpacity(0.15),
+                              color: color.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(6)),
                           child: Center(
                             child: Container(
@@ -536,7 +536,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       ? null
                       : [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.3),
+                            color: AppColors.primary.withValues(alpha: 0.3),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),

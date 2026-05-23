@@ -39,7 +39,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE8F5E9),
+      backgroundColor: const Color(0xFFE8F5F5),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -48,7 +48,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
             child: Text(
               'Skip',
-              style: GoogleFonts.poppins(color: const Color(0xFF388E3C), fontSize: 16),
+              style: GoogleFonts.poppins(color: const Color(0xFF00897B), fontSize: 16),
             ),
           ),
           const SizedBox(width: 16),
@@ -78,7 +78,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.green.withOpacity(0.1),
+                              color: const Color(0xFF00897B).withOpacity(0.1),
                               blurRadius: 30,
                               spreadRadius: 10,
                             ),
@@ -87,7 +87,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         child: Icon(
                           _pages[index]['icon'] as IconData,
                           size: 80,
-                          color: const Color(0xFF388E3C),
+                          color: const Color(0xFF00897B),
                         ),
                       ),
                       const SizedBox(height: 40),
@@ -97,7 +97,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         style: GoogleFonts.poppins(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF2E3E33),
+                          color: const Color(0xFF00352E),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -128,7 +128,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 width: _currentIndex == index ? 40 : 20,
                 decoration: BoxDecoration(
                   color: _currentIndex == index
-                      ? const Color(0xFF388E3C)
+                      ? const Color(0xFF00897B)
                       : Colors.grey[300],
                   borderRadius: BorderRadius.circular(2),
                 ),
@@ -153,10 +153,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF4CAF50),
+                  backgroundColor: const Color(0xFF00897B),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                   ),
                 ),
                 child: Text(

@@ -31,12 +31,12 @@ class ExpenseListTile extends StatelessWidget {
         leading: Container(
           width: 44, height: 44,
           decoration: BoxDecoration(
-            color: isEmergency ? Colors.orange.shade100 : const Color(0xFFE8F5E9),
+            color: isEmergency ? Colors.orange.shade100 : const Color(0xFFE8F5F5),
             shape: BoxShape.circle,
           ),
           child: Icon(
             isEmergency ? Icons.emergency : Icons.receipt_long,
-            color: isEmergency ? Colors.orange : const Color(0xFF388E3C),
+            color: isEmergency ? Colors.orange : const Color(0xFF00897B),
             size: 22,
           ),
         ),

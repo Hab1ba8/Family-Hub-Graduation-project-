@@ -24,12 +24,12 @@ class AppColors {
 
   // ── Status / Badge ────────────────────────────
   static const Color success        = Color(0xFF43A047);
-  static const Color successSurface = Color(0xFFE8F5E9);
+  static const Color successSurface = Color(0xFFE8F5F5);
   static const Color warning        = Color(0xFFFB8C00);
   static const Color warningSurface = Color(0xFFFFF3E0);
   static const Color error          = Color(0xFFE53935);
   static const Color errorSurface   = Color(0xFFFFEBEE);
-  static const Color onlineDot      = Color(0xFF4CAF50);
+  static const Color onlineDot      = Color(0xFF00897B);
 
   // ── Member Ring Colors ────────────────────────
   static const Color ring1          = Color(0xFFCE93D8);

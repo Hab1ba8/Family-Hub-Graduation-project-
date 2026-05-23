@@ -5,16 +5,16 @@ class Appcolor {
   static const Color primaryColor = Color.fromARGB(255, 76, 175, 175);
   static const Color secondaryColor = Color.fromARGB(255, 204, 189, 123);
 
-  // ── Food‑module greens (the palette used across all food screens) ──
-  static const Color foodPrimary = Color(0xFF388E3C);
-  static const Color foodPrimaryLight = Color(0xFF4CAF50);
-  static const Color foodPrimaryDark = Color(0xFF1B5E20);
-  static const Color foodBg = Color(0xFFE8F5E9);
-  static const Color foodCardBg = Color(0xFFC8E6C9);
-  static const Color foodAccent = Color(0xFF66BB6A);
+  // ── Food‑module teal (aligned with app theme) ──
+  static const Color foodPrimary = Color(0xFF00897B);
+  static const Color foodPrimaryLight = Color(0xFF00ACC1);
+  static const Color foodPrimaryDark = Color(0xFF00695C);
+  static const Color foodBg = Color(0xFFE8F5F5);
+  static const Color foodCardBg = Color(0xFFE0F2F1);
+  static const Color foodAccent = Color(0xFF4DB6AC);
 
   // ── Neutral text ──
-  static const Color textDark = Color(0xFF2E3E33);
+  static const Color textDark = Color(0xFF00352E);
   static const Color textMedium = Color(0xFF616161);
   static const Color textLight = Color(0xFF9E9E9E);
 
@@ -22,11 +22,11 @@ class Appcolor {
   static const Color error = Color(0xFFF44336);
   static const Color warning = Color(0xFFFF9800);
   static const Color info = Color(0xFF2196F3);
-  static const Color success = Color(0xFF4CAF50);
+  static const Color success = Color(0xFF00897B);
 
   // ── Category card palette (10 colours, indexed) ──
   static const List<Color> categoryColors = [
-    Color(0xFF4CAF50),
+    Color(0xFF00897B),
     Color(0xFFFF9800),
     Color(0xFF2196F3),
     Color(0xFF9C27B0),

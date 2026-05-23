@@ -151,7 +151,7 @@ class _BalanceWalletDetailsScreenState extends State<BalanceWalletDetailsScreen>
       runSpacing: 10,
       children: [
         _summaryCard('Money Wallet', '${moneyCredits.toDouble().toStringAsFixed(2)} in / ${moneyDebits.toDouble().toStringAsFixed(2)} out', const Color(0xFF1565C0)),
-        _summaryCard('Personal Budget', '${personalCredits.toDouble().toStringAsFixed(2)} in / ${personalDebits.toDouble().toStringAsFixed(2)} out', const Color(0xFF2E7D32)),
+        _summaryCard('Personal Budget', '${personalCredits.toDouble().toStringAsFixed(2)} in / ${personalDebits.toDouble().toStringAsFixed(2)} out', const Color(0xFF00897B)),
         _summaryCard('Shared Budget', '${sharedCredits.toDouble().toStringAsFixed(2)} in / ${sharedDebits.toDouble().toStringAsFixed(2)} out', const Color(0xFFF57C00)),
       ],
     );
@@ -165,7 +165,7 @@ class _BalanceWalletDetailsScreenState extends State<BalanceWalletDetailsScreen>
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withOpacity(0.18)),
+          border: Border.all(color: color.withValues(alpha: 0.18)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,7 +197,7 @@ class _BalanceWalletDetailsScreenState extends State<BalanceWalletDetailsScreen>
       label: Text(label),
       selected: selected,
       onSelected: (_) => setState(() => _selectedScope = value),
-      selectedColor: const Color(0xFF1B5E20).withOpacity(0.14),
+      selectedColor: const Color(0xFF1B5E20).withValues(alpha: 0.14),
       labelStyle: TextStyle(
         color: selected ? const Color(0xFF1B5E20) : Colors.black87,
         fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
@@ -223,7 +223,7 @@ class _BalanceWalletDetailsScreenState extends State<BalanceWalletDetailsScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isCredit ? const Color(0xFF4CAF50).withOpacity(0.25) : Colors.red.withOpacity(0.22)),
+        border: Border.all(color: isCredit ? const Color(0xFF00897B).withValues(alpha: 0.25) : Colors.red.withValues(alpha: 0.22)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,14 +233,14 @@ class _BalanceWalletDetailsScreenState extends State<BalanceWalletDetailsScreen>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: (isCredit ? const Color(0xFF4CAF50) : Colors.red).withOpacity(0.12),
+                  color: (isCredit ? const Color(0xFF00897B) : Colors.red).withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
                   '${isCredit ? '+' : '-'}${amount.toStringAsFixed(2)}',
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w700,
-                    color: isCredit ? const Color(0xFF2E7D32) : Colors.red.shade700,
+                    color: isCredit ? const Color(0xFF00897B) : Colors.red.shade700,
                   ),
                 ),
               ),

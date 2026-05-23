@@ -348,7 +348,7 @@ class _CombinedAnalyticsScreenState extends State<CombinedAnalyticsScreen> {
           'Money as Allowance/Rewards',
           '${_money(overview['total_money_given_as_allowance_rewards'])} EGP',
           Icons.volunteer_activism,
-          const Color(0xFF2E7D32),
+          const Color(0xFF00897B),
         ),
       ],
     );
@@ -367,7 +367,7 @@ class _CombinedAnalyticsScreenState extends State<CombinedAnalyticsScreen> {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.12),
+                color: color.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(9),
               ),
               child: Icon(icon, color: color, size: 17),
@@ -495,7 +495,7 @@ class _CombinedAnalyticsScreenState extends State<CombinedAnalyticsScreen> {
           x: i,
           barsSpace: 4,
           barRods: [
-            BarChartRodData(toY: earned, width: 10, color: const Color(0xFF2E7D32), borderRadius: BorderRadius.circular(3)),
+            BarChartRodData(toY: earned, width: 10, color: const Color(0xFF00897B), borderRadius: BorderRadius.circular(3)),
             BarChartRodData(toY: redeemed, width: 10, color: const Color(0xFFEF6C00), borderRadius: BorderRadius.circular(3)),
           ],
         ),
@@ -586,7 +586,7 @@ class _CombinedAnalyticsScreenState extends State<CombinedAnalyticsScreen> {
             dotData: const FlDotData(show: false),
             belowBarData: BarAreaData(
               show: true,
-              color: const Color(0xFF1565C0).withOpacity(0.15),
+              color: const Color(0xFF1565C0).withValues(alpha: 0.15),
             ),
           ),
         ],
@@ -620,7 +620,7 @@ class _CombinedAnalyticsScreenState extends State<CombinedAnalyticsScreen> {
                   decoration: BoxDecoration(
                     color: const Color(0xFFF9FBFF),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.blueGrey.withOpacity(0.2)),
+                    border: Border.all(color: Colors.blueGrey.withValues(alpha: 0.2)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -664,7 +664,7 @@ class _CombinedAnalyticsScreenState extends State<CombinedAnalyticsScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: over ? Colors.red : color.withOpacity(0.4)),
+          border: Border.all(color: over ? Colors.red : color.withValues(alpha: 0.4)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

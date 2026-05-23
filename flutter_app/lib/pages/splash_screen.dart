@@ -76,7 +76,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE8F5E9),
+      backgroundColor: const Color(0xFFE8F5F5),
       body: Center(
         child: ContentContainer(
           child: Column(
@@ -103,14 +103,14 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF2E7D32).withOpacity(0.25),
+                        color: const Color(0xFF00897B).withOpacity(0.25),
                         blurRadius: 28,
                         spreadRadius: 4,
                         offset: const Offset(0, 6),
                       ),
                     ],
                   ),
-                  child: const Icon(Icons.family_restroom, size: 56, color: Color(0xFF2E7D32)),
+                  child: const Icon(Icons.family_restroom, size: 56, color: Color(0xFF00897B)),
                 ),
               ),
               const SizedBox(height: 24),
@@ -120,7 +120,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                 style: GoogleFonts.poppins(
                   fontSize: 30,
                   fontWeight: FontWeight.w700,
-                  color: const Color(0xFF2E7D32),
+                  color: const Color(0xFF00352E),
                 ),
               ),
               const SizedBox(height: 6),
@@ -128,7 +128,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                 'Connecting Families Together',
                 style: GoogleFonts.poppins(
                   fontSize: 13,
-                  color: const Color(0xFF4CAF50),
+                  color: const Color(0xFF4DB6AC),
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -149,7 +149,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                             width: 9,
                             height: 9,
                             decoration: BoxDecoration(
-                              color: const Color(0xFF2E7D32).withOpacity(0.4 + 0.6 * (t < 0.5 ? t * 2 : (1 - t) * 2)),
+                              color: const Color(0xFF00897B).withOpacity(0.4 + 0.6 * (t < 0.5 ? t * 2 : (1 - t) * 2)),
                               shape: BoxShape.circle,
                             ),
                           ),

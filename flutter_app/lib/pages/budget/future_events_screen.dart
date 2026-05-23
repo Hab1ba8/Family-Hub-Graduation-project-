@@ -26,7 +26,7 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
 
   // ── Color / icon palette per event index ─────────────────────────────────
   static const _eventBg = [
-    Color(0xFFE0F2F1), Color(0xFFFFF8E1), Color(0xFFE8F5E9),
+    Color(0xFFE0F2F1), Color(0xFFFFF8E1), Color(0xFFE8F5F5),
     Color(0xFFE3F2FD), Color(0xFFFCE4EC), Color(0xFFF3E5F5),
   ];
   static const _eventColors = [
@@ -214,7 +214,7 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
                     activeTrackColor: AppColors.primary,
                     thumbColor: AppColors.primary,
                     inactiveTrackColor: AppColors.border,
-                    overlayColor: AppColors.primary.withOpacity(0.12),
+                    overlayColor: AppColors.primary.withValues(alpha: 0.12),
                   ),
                   child: Slider(
                     value: reminderMonths.toDouble(),
@@ -311,7 +311,7 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
                           ? null
                           : [
                               BoxShadow(
-                                  color: AppColors.primary.withOpacity(0.3),
+                                  color: AppColors.primary.withValues(alpha: 0.3),
                                   blurRadius: 10,
                                   offset: const Offset(0, 4))
                             ],
@@ -419,7 +419,7 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.35),
+                    color: AppColors.primary.withValues(alpha: 0.35),
                     blurRadius: 12, offset: const Offset(0, 4),
                   ),
                 ],
@@ -502,7 +502,7 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: borderColor, width: isFunded ? 1.5 : 0.8),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 8, offset: const Offset(0, 2)),
         ],
       ),
@@ -544,13 +544,13 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE8F5E9),
+                    color: const Color(0xFFE8F5F5),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text('✓ Funded',
                       style: GoogleFonts.poppins(
                           fontSize: _sp(9), fontWeight: FontWeight.w700,
-                          color: const Color(0xFF2E7D32))),
+                          color: const Color(0xFF00897B))),
                 )
               else ...[
                 GestureDetector(
@@ -739,7 +739,7 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                            color: AppColors.primary.withOpacity(0.3),
+                            color: AppColors.primary.withValues(alpha: 0.3),
                             blurRadius: 10, offset: const Offset(0, 4))
                       ],
                     ),

@@ -550,22 +550,22 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 8, vertical: 4),
                                     decoration: BoxDecoration(
-                                        color: Colors.green[50],
+                                        color: const Color(0xFFE0F2F1),
                                         borderRadius:
                                             BorderRadius.circular(6),
                                         border: Border.all(
-                                            color: Colors.green[300]!)),
+                                            color: const Color(0xFF80CBC4))),
                                     child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Icon(Icons.add,
                                               size: 14,
-                                              color: Colors.green[800]),
+                                              color: const Color(0xFF00897B)),
                                           const SizedBox(width: 2),
                                           Text('Add',
                                               style: GoogleFonts.poppins(
                                                   fontSize: 11,
-                                                  color: Colors.green[800],
+                                                  color: const Color(0xFF00897B),
                                                   fontWeight:
                                                       FontWeight.w500)),
                                         ]),
@@ -629,13 +629,13 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                   color: adjustedQty <=
                                           (num.tryParse(minCtrl.text) ?? 1)
                                       ? Colors.red[50]
-                                      : Colors.green[50],
+                                      : const Color(0xFFE0F2F1),
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
                                       color: adjustedQty <=
                                               (num.tryParse(minCtrl.text) ?? 1)
                                           ? Colors.red[300]!
-                                          : Colors.green[300]!)),
+                                          : const Color(0xFF80CBC4))),
                               child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,

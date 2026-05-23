@@ -37,11 +37,11 @@ class _RedeemScreenState extends State<RedeemScreen> {
 
   static const _itemBgColors = [
     Color(0xFFE0F2F1), Color(0xFFFFF8E1), Color(0xFFFCE4EC),
-    Color(0xFFE3F2FD), Color(0xFFE8F5E9), Color(0xFFF3E5F5),
+    Color(0xFFE3F2FD), Color(0xFFE8F5F5), Color(0xFFF3E5F5),
   ];
   static const _itemIconColors = [
     AppColors.primary, Color(0xFFF9A825), Color(0xFFE91E63),
-    Color(0xFF1565C0), Color(0xFF2E7D32), Color(0xFF7B1FA2),
+    Color(0xFF1565C0), Color(0xFF00897B), Color(0xFF7B1FA2),
   ];
   static const _memberColors = [
     {'bg': Color(0xFFE3F2FD), 'text': Color(0xFF1565C0), 'border': Color(0xFF90CAF9)},

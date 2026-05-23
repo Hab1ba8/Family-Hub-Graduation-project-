@@ -222,7 +222,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.green[200]!, width: 1),
+        border: Border.all(color: const Color(0xFFB2DFDB), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -266,7 +266,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.white.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(Icons.settings_outlined,
@@ -279,7 +279,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.white.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(Icons.close, color: Colors.grey[700], size: 20),
@@ -347,7 +347,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
                           child: Text(
                             '$qty $unitStr$name',
                             style: GoogleFonts.poppins(
-                                fontSize: 13, color: const Color(0xFF2E3E33)),
+                                fontSize: 13, color: const Color(0xFF00352E)),
                           ),
                         ),
                         Text(
@@ -682,7 +682,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
                                     style: GoogleFonts.poppins(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15,
-                                        color: const Color(0xFF2E3E33))),
+                                        color: const Color(0xFF00352E))),
                                 GestureDetector(
                                   onTap: () {
                                     setDialogState(() {
@@ -697,19 +697,19 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                     decoration: BoxDecoration(
-                                      color: Colors.green[50],
+                                      color: const Color(0xFFE0F2F1),
                                       borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: Colors.green[300]!),
+                                      border: Border.all(color: const Color(0xFFB2DFDB)),
                                     ),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Icon(Icons.add, size: 14, color: Colors.green[800]),
+                                        const Icon(Icons.add, size: 14, color: Color(0xFF00897B)),
                                         const SizedBox(width: 4),
                                         Text('Add Item',
                                             style: GoogleFonts.poppins(
                                                 fontSize: 12,
-                                                color: Colors.green[800],
+                                                color: const Color(0xFF00897B),
                                                 fontWeight: FontWeight.w500)),
                                       ],
                                     ),

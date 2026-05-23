@@ -173,7 +173,7 @@ class _GroceryListDetailScreenState extends State<GroceryListDetailScreen> {
     final checked = _items.where((i) => i['is_checked'] == true).toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFE8F5E9),
+      backgroundColor: const Color(0xFFE8F5F5),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -185,7 +185,7 @@ class _GroceryListDetailScreenState extends State<GroceryListDetailScreen> {
                   const Expanded(
                     child: Center(
                       child: CircularProgressIndicator(
-                          color: Color(0xFF388E3C)),
+                          color: Color(0xFF00897B)),
                     ),
                   )
                 else
@@ -252,7 +252,7 @@ class _GroceryListDetailScreenState extends State<GroceryListDetailScreen> {
         children: [
           IconButton(
             onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF2E3E33)),
+            icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF00352E)),
           ),
           Expanded(
             child: _isEditing
@@ -262,7 +262,7 @@ class _GroceryListDetailScreenState extends State<GroceryListDetailScreen> {
                     style: GoogleFonts.poppins(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF2E3E33),
+                      color: const Color(0xFF00352E),
                     ),
                     decoration: const InputDecoration(
                       border: InputBorder.none,
@@ -279,7 +279,7 @@ class _GroceryListDetailScreenState extends State<GroceryListDetailScreen> {
                             style: GoogleFonts.poppins(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: const Color(0xFF2E3E33),
+                              color: const Color(0xFF00352E),
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -294,7 +294,7 @@ class _GroceryListDetailScreenState extends State<GroceryListDetailScreen> {
           if (_isEditing)
             IconButton(
               onPressed: _updateTitle,
-              icon: const Icon(Icons.check, color: Color(0xFF388E3C)),
+              icon: const Icon(Icons.check, color: Color(0xFF00897B)),
             )
           else
             IconButton(
@@ -314,7 +314,7 @@ class _GroceryListDetailScreenState extends State<GroceryListDetailScreen> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -337,7 +337,7 @@ class _GroceryListDetailScreenState extends State<GroceryListDetailScreen> {
           IconButton(
             onPressed: _addItem,
             icon: const Icon(Icons.add_circle,
-                color: Color(0xFF388E3C), size: 28),
+                color: Color(0xFF00897B), size: 28),
           ),
         ],
       ),
@@ -398,7 +398,7 @@ class _GroceryListDetailScreenState extends State<GroceryListDetailScreen> {
           borderRadius: BorderRadius.circular(12),
           border: isChecked
               ? null
-              : Border.all(color: Colors.grey.withOpacity(0.15)),
+              : Border.all(color: Colors.grey.withValues(alpha: 0.15)),
         ),
         child: Row(
           children: [
@@ -409,10 +409,10 @@ class _GroceryListDetailScreenState extends State<GroceryListDetailScreen> {
                 height: 24,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isChecked ? const Color(0xFF388E3C) : Colors.transparent,
+                  color: isChecked ? const Color(0xFF00897B) : Colors.transparent,
                   border: Border.all(
                     color: isChecked
-                        ? const Color(0xFF388E3C)
+                        ? const Color(0xFF00897B)
                         : Colors.grey[400]!,
                     width: 2,
                   ),
@@ -429,7 +429,7 @@ class _GroceryListDetailScreenState extends State<GroceryListDetailScreen> {
                 style: GoogleFonts.poppins(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
-                  color: isChecked ? Colors.grey[400] : const Color(0xFF2E3E33),
+                  color: isChecked ? Colors.grey[400] : const Color(0xFF00352E),
                   decoration:
                       isChecked ? TextDecoration.lineThrough : null,
                 ),

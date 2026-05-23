@@ -43,13 +43,13 @@ class LanguageSwitchChip extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 1),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: active ? const Color(0xFF4CAF50) : Colors.transparent,
+          color: active ? const Color(0xFF00897B) : Colors.transparent,
           borderRadius: BorderRadius.circular(100),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: active ? Colors.white : const Color(0xFF2E7D32),
+            color: active ? Colors.white : const Color(0xFF00897B),
             fontWeight: FontWeight.w700,
             fontSize: 12,
           ),

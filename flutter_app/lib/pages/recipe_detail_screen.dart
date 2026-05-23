@@ -386,7 +386,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: const Color(0xFFE8F5E9),
+                color: const Color(0xFFE8F5F5),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text('${scale.toStringAsFixed(1)}x',
@@ -424,7 +424,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE8F5E9),
+                    color: const Color(0xFFE8F5F5),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
@@ -750,7 +750,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
-                          color: isAvailable ? Colors.green[50] : Colors.orange[50],
+                          color: isAvailable ? const Color(0xFFE0F2F1) : Colors.orange[50],
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(

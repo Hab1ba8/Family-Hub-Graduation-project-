@@ -319,7 +319,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00897B).withOpacity(0.3),
+            color: const Color(0xFF00897B).withValues(alpha: 0.3),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -334,7 +334,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
               width: 80, height: 80,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.07),
+                color: Colors.white.withValues(alpha: 0.07),
               ),
             ),
           ),
@@ -345,13 +345,13 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
                 children: [
                   Text('$periodLabel Budget',
                       style: GoogleFonts.poppins(
-                          fontSize: _sp(10), color: Colors.white.withOpacity(0.7))),
+                          fontSize: _sp(10), color: Colors.white.withValues(alpha: 0.7))),
                   const Spacer(),
                   if (isOverBudget)
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.25),
+                          color: Colors.red.withValues(alpha: 0.25),
                           borderRadius: BorderRadius.circular(8)),
                       child: Text('Over Budget',
                           style: GoogleFonts.poppins(
@@ -362,7 +362,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
               const SizedBox(height: 2),
               Text(title,
                   style: GoogleFonts.poppins(
-                      fontSize: _sp(13), color: Colors.white.withOpacity(0.85),
+                      fontSize: _sp(13), color: Colors.white.withValues(alpha: 0.85),
                       fontWeight: FontWeight.w500)),
               const SizedBox(height: 4),
               Text(
@@ -376,7 +376,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
                 children: [
                   Text('Spent: ',
                       style: GoogleFonts.poppins(
-                          fontSize: _sp(10), color: Colors.white.withOpacity(0.7))),
+                          fontSize: _sp(10), color: Colors.white.withValues(alpha: 0.7))),
                   Text(
                     '${NumberFormat.currency(symbol: '', decimalDigits: 0).format(spent)} EGP',
                     style: GoogleFonts.poppins(
@@ -385,7 +385,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
                   const Spacer(),
                   Text('Left: ',
                       style: GoogleFonts.poppins(
-                          fontSize: _sp(10), color: Colors.white.withOpacity(0.7))),
+                          fontSize: _sp(10), color: Colors.white.withValues(alpha: 0.7))),
                   Text(
                     '${NumberFormat.currency(symbol: '', decimalDigits: 0).format(remaining)} EGP',
                     style: GoogleFonts.poppins(
@@ -399,7 +399,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
                 borderRadius: BorderRadius.circular(3),
                 child: LinearProgressIndicator(
                   value: progress,
-                  backgroundColor: Colors.white.withOpacity(0.2),
+                  backgroundColor: Colors.white.withValues(alpha: 0.2),
                   valueColor: AlwaysStoppedAnimation<Color>(
                       isOverBudget ? Colors.redAccent : Colors.white),
                   minHeight: 5,
@@ -410,7 +410,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
                 '${(progress * 100).toStringAsFixed(0)}% used'
                 '${emergencyTotal > 0 ? ' · Emergency: ${NumberFormat.currency(symbol: '', decimalDigits: 0).format(emergencyTotal)} EGP' : ''}',
                 style: GoogleFonts.poppins(
-                    fontSize: _sp(9), color: Colors.white.withOpacity(0.7)),
+                    fontSize: _sp(9), color: Colors.white.withValues(alpha: 0.7)),
               ),
             ],
           ),
@@ -432,7 +432,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: borderColor, width: 0.8),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2)),
         ],
       ),
       child: Column(
@@ -516,7 +516,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: borderColor, width: 0.8),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2)),
         ],
       ),
       child: Column(
@@ -659,7 +659,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
               borderRadius: BorderRadius.circular(18),
               border: Border.all(color: borderColor, width: 0.8),
               boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.05),
+                BoxShadow(color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 8, offset: const Offset(0, 2)),
               ],
             ),
@@ -879,7 +879,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.35),
+              color: AppColors.primary.withValues(alpha: 0.35),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -923,7 +923,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
     try {
       return Color(int.parse(hex.replaceFirst('#', '0xFF')));
     } catch (_) {
-      return const Color(0xFF4CAF50);
+      return const Color(0xFF00897B);
     }
   }
 
@@ -942,7 +942,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
         'name': (category['title'] ?? 'Uncategorized').toString(),
         'allocated_amount': 0.0,
         'threshold_percentage': 15.0,
-        'color': '#4CAF50',
+        'color': '#00897B',
       };
     }).toList();
 
@@ -1030,7 +1030,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
               Slider(
                 value: emergencyPct,
                 min: 0, max: 30, divisions: 30,
-                activeColor: const Color(0xFF388E3C),
+                activeColor: const Color(0xFF00897B),
                 label: '${emergencyPct.toStringAsFixed(0)}%',
                 onChanged: (v) => setSheet(() => emergencyPct = v),
               ),
@@ -1050,7 +1050,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
                     Container(
                       width: 16, height: 16,
                       decoration: const BoxDecoration(
-                        color: Color(0xFF4CAF50),
+                        color: Color(0xFF00897B),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -1107,7 +1107,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.inventory_2_outlined, size: 18, color: Color(0xFF4CAF50)),
+                          const Icon(Icons.inventory_2_outlined, size: 18, color: Color(0xFF00897B)),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Column(
@@ -1209,7 +1209,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Budget created!'),
-                            backgroundColor: Color(0xFF388E3C),
+                            backgroundColor: Color(0xFF00897B),
                           ));
                       }
                     } catch (e) {
@@ -1223,7 +1223,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF388E3C),
+                    backgroundColor: const Color(0xFF00897B),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: isLoading
@@ -1247,10 +1247,10 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF388E3C) : Colors.grey.shade100,
+          color: selected ? const Color(0xFF00897B) : Colors.grey.shade100,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-              color: selected ? const Color(0xFF388E3C) : Colors.grey.shade300),
+              color: selected ? const Color(0xFF00897B) : Colors.grey.shade300),
         ),
         child: Center(
           child: Text(label,

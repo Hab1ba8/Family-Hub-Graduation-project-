@@ -265,7 +265,7 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
                       activeTrackColor: AppColors.primary,
                       thumbColor: AppColors.primary,
                       inactiveTrackColor: AppColors.border,
-                      overlayColor: AppColors.primary.withOpacity(0.12),
+                      overlayColor: AppColors.primary.withValues(alpha: 0.12),
                     ),
                     child: Slider(
                       value: sliderValue,
@@ -344,7 +344,7 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
                         borderRadius: BorderRadius.circular(13),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.3),
+                            color: AppColors.primary.withValues(alpha: 0.3),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -552,7 +552,7 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00897B).withOpacity(0.3),
+            color: const Color(0xFF00897B).withValues(alpha: 0.3),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -566,7 +566,7 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
               width: 80, height: 80,
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.07)),
+                  color: Colors.white.withValues(alpha: 0.07)),
             ),
           ),
           Column(
@@ -574,7 +574,7 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
             children: [
               Text('💵 Money Wallet',
                   style: GoogleFonts.poppins(
-                      fontSize: _sp(11), color: Colors.white.withOpacity(0.75))),
+                      fontSize: _sp(11), color: Colors.white.withValues(alpha: 0.75))),
               const SizedBox(height: 4),
               Text(
                 '${moneyBalance.toStringAsFixed(2)} EGP',
@@ -585,15 +585,15 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
               Text(
                 'Saved lifetime: ${lifetimeMoneySaved.toStringAsFixed(2)} EGP',
                 style: GoogleFonts.poppins(
-                    fontSize: _sp(10), color: Colors.white.withOpacity(0.65)),
+                    fontSize: _sp(10), color: Colors.white.withValues(alpha: 0.65)),
               ),
-              const Spacer(),
+              const SizedBox(height: 16),
               GestureDetector(
                 onTap: () => _openConversionSheet(moneyToPoints: true),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text('Convert to Points →',
@@ -627,7 +627,7 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00ACC1).withOpacity(0.3),
+            color: const Color(0xFF00ACC1).withValues(alpha: 0.3),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -641,7 +641,7 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
               width: 80, height: 80,
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.07)),
+                  color: Colors.white.withValues(alpha: 0.07)),
             ),
           ),
           Column(
@@ -649,7 +649,7 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
             children: [
               Text('⭐ Points Wallet',
                   style: GoogleFonts.poppins(
-                      fontSize: _sp(11), color: Colors.white.withOpacity(0.75))),
+                      fontSize: _sp(11), color: Colors.white.withValues(alpha: 0.75))),
               const SizedBox(height: 4),
               Text(
                 '${pointsBalance.toStringAsFixed(0)} pts',
@@ -660,15 +660,15 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
               Text(
                 'Rate: ${m2p.toStringAsFixed(0)} EGP = 100 pts  ·  1 pt = ${p2m.toStringAsFixed(2)} EGP',
                 style: GoogleFonts.poppins(
-                    fontSize: _sp(9), color: Colors.white.withOpacity(0.65)),
+                    fontSize: _sp(9), color: Colors.white.withValues(alpha: 0.65)),
               ),
-              const Spacer(),
+              const SizedBox(height: 16),
               GestureDetector(
                 onTap: () => _openConversionSheet(moneyToPoints: false),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text('Convert to Money →',
@@ -695,7 +695,7 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
         border: Border.all(color: border, width: 0.8),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 8, offset: const Offset(0, 2)),
         ],
       ),
@@ -757,7 +757,7 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: border, width: 0.8),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 8, offset: const Offset(0, 2)),
         ],
       ),
@@ -862,7 +862,7 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: border, width: 0.8),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 8, offset: const Offset(0, 2)),
         ],
       ),
@@ -898,7 +898,7 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                            color: AppColors.primary.withOpacity(0.25),
+                            color: AppColors.primary.withValues(alpha: 0.25),
                             blurRadius: 8, offset: const Offset(0, 3)),
                       ],
                     ),
@@ -931,7 +931,7 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                            color: const Color(0xFF00ACC1).withOpacity(0.25),
+                            color: const Color(0xFF00ACC1).withValues(alpha: 0.25),
                             blurRadius: 8, offset: const Offset(0, 3)),
                       ],
                     ),

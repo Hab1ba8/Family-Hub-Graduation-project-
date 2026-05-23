@@ -54,7 +54,7 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Generated ${_suggestions.length} suggestions!'),
-            backgroundColor: const Color(0xFF388E3C),
+            backgroundColor: const Color(0xFF00897B),
           ),
         );
       }
@@ -102,13 +102,13 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE8F5E9),
+      backgroundColor: const Color(0xFFE8F5F5),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 700),
             child: _loading
-                ? const Center(child: CircularProgressIndicator(color: Color(0xFF388E3C)))
+                ? const Center(child: CircularProgressIndicator(color: Color(0xFF00897B)))
                 : Column(
                     children: [
                       // Header
@@ -125,7 +125,7 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: const Icon(Icons.arrow_back_ios_new,
-                                    size: 18, color: Color(0xFF388E3C)),
+                                    size: 18, color: Color(0xFF00897B)),
                               ),
                             ),
                             const SizedBox(width: 14),
@@ -137,7 +137,7 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
                                       style: GoogleFonts.poppins(
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold,
-                                          color: const Color(0xFF2E3E33))),
+                                          color: const Color(0xFF00352E))),
                                   Text('Based on your inventory',
                                       style: GoogleFonts.poppins(
                                           fontSize: 12, color: Colors.grey[600])),
@@ -225,7 +225,7 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
             const SizedBox(height: 20),
             Text('No Suggestions Yet',
                 style: GoogleFonts.poppins(
-                    fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF2E3E33))),
+                    fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF00352E))),
             const SizedBox(height: 8),
             Text(
               'Tap "Generate Smart Suggestions" to get meal ideas based on what\'s in your inventory',
@@ -248,14 +248,14 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
 
     final matchValue = matchPct is num ? matchPct.toDouble() : 0.0;
     final matchColor = matchValue >= 80
-        ? const Color(0xFF388E3C)
+        ? const Color(0xFF00897B)
         : matchValue >= 50
             ? Colors.orange
             : Colors.red;
 
     final mealTypeColor = {
           'Breakfast': const Color(0xFFFF9800),
-          'Lunch': const Color(0xFF4CAF50),
+          'Lunch': const Color(0xFF00897B),
           'Dinner': const Color(0xFF2196F3),
           'Snack': const Color(0xFFE91E63),
         }[mealType] ??
@@ -268,7 +268,7 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 8,
               offset: const Offset(0, 2)),
         ],
@@ -286,7 +286,7 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [const Color(0xFFE91E63).withOpacity(0.1), Colors.orange.withOpacity(0.1)],
+                      colors: [const Color(0xFFE91E63).withValues(alpha: 0.1), Colors.orange.withValues(alpha: 0.1)],
                     ),
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -299,13 +299,13 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
                     children: [
                       Text(name,
                           style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold, fontSize: 16, color: const Color(0xFF2E3E33))),
+                              fontWeight: FontWeight.bold, fontSize: 16, color: const Color(0xFF00352E))),
                       if (mealType.isNotEmpty) ...[
                         const SizedBox(height: 4),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: mealTypeColor.withOpacity(0.1),
+                            color: mealTypeColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(mealType,
@@ -351,7 +351,7 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
               const SizedBox(height: 12),
               Text('Available Ingredients',
                   style: GoogleFonts.poppins(
-                      fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0xFF388E3C))),
+                      fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0xFF00897B))),
               const SizedBox(height: 6),
               Wrap(
                 spacing: 6,
@@ -361,16 +361,16 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
                   return Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE8F5E9),
+                      color: const Color(0xFFE0F2F1),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.check_circle, size: 12, color: Color(0xFF388E3C)),
+                        const Icon(Icons.check_circle, size: 12, color: Color(0xFF00897B)),
                         const SizedBox(width: 4),
                         Text(ingName,
-                            style: GoogleFonts.poppins(fontSize: 11, color: const Color(0xFF388E3C))),
+                            style: GoogleFonts.poppins(fontSize: 11, color: const Color(0xFF00897B))),
                       ],
                     ),
                   );
@@ -422,8 +422,8 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
                 label: Text('Plan This Meal',
                     style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13)),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF388E3C),
-                  side: const BorderSide(color: Color(0xFF388E3C)),
+                  foregroundColor: const Color(0xFF00897B),
+                  side: const BorderSide(color: Color(0xFF00897B)),
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),

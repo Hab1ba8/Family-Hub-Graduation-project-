@@ -11,7 +11,7 @@ class FamilyPointsScreen extends StatefulWidget {
 
 class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
   final ApiService _apiService = ApiService();
-  
+
   bool _isLoading = true;
   List<dynamic> _familyMembers = [];
   String? _errorMessage;
@@ -27,7 +27,7 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
       _isLoading = true;
       _errorMessage = null;
     });
-    
+
     try {
       final ranking = await _apiService.getPointsRanking();
       setState(() {
@@ -45,13 +45,13 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: const Color(0xFFE8F5F5),
       appBar: AppBar(
         title: Text(
           'Family Points',
           style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
         ),
-        backgroundColor: Colors.green[700],
+        backgroundColor: const Color(0xFF00897B),
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
@@ -65,7 +65,8 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 600),
           child: _isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? const Center(
+                  child: CircularProgressIndicator(color: Color(0xFF00897B)))
               : _errorMessage != null
                   ? _buildErrorView()
                   : _buildContent(),
@@ -94,7 +95,7 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
               icon: const Icon(Icons.refresh),
               label: const Text('Retry'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[700],
+                backgroundColor: const Color(0xFF00897B),
                 foregroundColor: Colors.white,
               ),
             ),
@@ -126,6 +127,7 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
 
     return RefreshIndicator(
       onRefresh: _loadFamilyPoints,
+      color: const Color(0xFF00897B),
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -133,15 +135,15 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.green[600]!, Colors.green[800]!],
+              gradient: const LinearGradient(
+                colors: [Color(0xFF00695C), Color(0xFF00ACC1)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.green.withOpacity(0.3),
+                  color: const Color(0xFF00897B).withValues(alpha: 0.3),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -181,6 +183,7 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
             final member = _familyMembers[index];
             return _buildMemberCard(member, index + 1);
           }),
+          const SizedBox(height: 20),
         ],
       ),
     );
@@ -192,8 +195,6 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
     final points = member['total_points'] ?? 0;
     final mail = member['mail'] ?? '';
 
-    // Medal styling for top 3
-    Color cardColor = Colors.white;
     Color? borderColor;
     IconData? medalIcon;
     Color? medalColor;
@@ -215,26 +216,28 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: cardColor,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: borderColor != null
             ? Border.all(color: borderColor, width: 2)
-            : null,
+            : Border.all(color: const Color(0xFFB2DFDB)),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
         ],
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: Container(
           width: 50,
           height: 50,
           decoration: BoxDecoration(
-            color: medalColor?.withOpacity(0.2) ?? Colors.green[100],
+            color: medalColor?.withValues(alpha: 0.15) ??
+                const Color(0xFFE0F2F1),
             shape: BoxShape.circle,
           ),
           child: Center(
@@ -244,7 +247,7 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
                     '#$rank',
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.bold,
-                      color: Colors.green[700],
+                      color: const Color(0xFF00897B),
                       fontSize: 16,
                     ),
                   ),
@@ -255,6 +258,7 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w600,
             fontSize: 16,
+            color: const Color(0xFF00352E),
           ),
         ),
         subtitle: Column(
@@ -264,7 +268,7 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
               memberType,
               style: GoogleFonts.poppins(
                 fontSize: 12,
-                color: Colors.grey[600],
+                color: const Color(0xFF4DB6AC),
               ),
             ),
             Text(
@@ -279,8 +283,8 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
         trailing: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.green[400]!, Colors.green[600]!],
+            gradient: const LinearGradient(
+              colors: [Color(0xFF00897B), Color(0xFF00ACC1)],
             ),
             borderRadius: BorderRadius.circular(20),
           ),

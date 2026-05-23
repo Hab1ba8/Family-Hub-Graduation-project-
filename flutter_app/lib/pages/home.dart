@@ -41,11 +41,11 @@ class _HomePageState extends State<HomePage> {
 
   static const _avatarColors = [
     Color(0xFF1565C0), Color(0xFF6A1B9A), Color(0xFFAD1457),
-    Color(0xFFE65100), Color(0xFF00695C), Color(0xFF2E7D32),
+    Color(0xFFE65100), Color(0xFF00695C), Color(0xFF00897B),
   ];
   static const _avatarBgs = [
     Color(0xFFE3F2FD), Color(0xFFF3E5F5), Color(0xFFFCE4EC),
-    Color(0xFFFFF3E0), Color(0xFFE0F2F1), Color(0xFFE8F5E9),
+    Color(0xFFFFF3E0), Color(0xFFE0F2F1), Color(0xFFE8F5F5),
   ];
   bool _protectionSetting = false;
   List<Member> _familyMembers = [];
@@ -247,11 +247,11 @@ class _HomePageState extends State<HomePage> {
                       child: Row(
                         children: [
                           CircleAvatar(
-                            backgroundColor: const Color(0xFFE8F5E9),
+                            backgroundColor: const Color(0xFFE8F5F5),
                             child: Text(
                               initial,
                               style: const TextStyle(
-                                color: Color(0xFF2E7D32),
+                                color: Color(0xFF00897B),
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -265,7 +265,7 @@ class _HomePageState extends State<HomePage> {
                                   _t('Current account', 'الحساب الحالي'),
                                   style: const TextStyle(
                                     fontSize: 12,
-                                    color: Color(0xFF2E7D32),
+                                    color: Color(0xFF00897B),
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -297,11 +297,11 @@ class _HomePageState extends State<HomePage> {
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
                       leading: CircleAvatar(
-                        backgroundColor: const Color(0xFFE8F5E9),
+                        backgroundColor: const Color(0xFFE8F5F5),
                         child: Text(
                           (username.isNotEmpty ? username[0] : 'A').toUpperCase(),
                           style: const TextStyle(
-                            color: Color(0xFF2E7D32),
+                            color: Color(0xFF00897B),
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -309,7 +309,7 @@ class _HomePageState extends State<HomePage> {
                       title: Text('$familyTitle ($username)'),
                       subtitle: Text(mail),
                       trailing: isActive
-                          ? const Icon(Icons.check_circle, color: Color(0xFF4CAF50))
+                          ? const Icon(Icons.check_circle, color: Color(0xFF00897B))
                           : null,
                       onTap: () async {
                         Navigator.of(sheetContext).pop();
@@ -334,8 +334,8 @@ class _HomePageState extends State<HomePage> {
                         icon: const Icon(Icons.add),
                         label: Text(_t('Add New Account', 'إضافة حساب جديد')),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF2E7D32),
-                          side: const BorderSide(color: Color(0xFF4CAF50)),
+                          foregroundColor: const Color(0xFF00897B),
+                          side: const BorderSide(color: Color(0xFF00897B)),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -541,7 +541,7 @@ class _HomePageState extends State<HomePage> {
                         ? Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              border: Border.all(color: const Color(0xFF4CAF50), width: 2),
+                              border: Border.all(color: const Color(0xFF00897B), width: 2),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Row(
@@ -551,7 +551,7 @@ class _HomePageState extends State<HomePage> {
                                   height: 16,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: Color(0xFF4CAF50),
+                                    color: Color(0xFF00897B),
                                   ),
                                 ),
                                 SizedBox(width: 12),
@@ -578,14 +578,14 @@ class _HomePageState extends State<HomePage> {
                                     value: selectedMemberType,
                                     decoration: InputDecoration(
                                       hintText: 'Select Type',
-                                      hintStyle: const TextStyle(color: Color(0xFF4CAF50)),
+                                      hintStyle: const TextStyle(color: Color(0xFF00897B)),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(color: Color(0xFF4CAF50), width: 2),
+                                        borderSide: const BorderSide(color: Color(0xFF00897B), width: 2),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(color: Color(0xFF4CAF50), width: 2),
+                                        borderSide: const BorderSide(color: Color(0xFF00897B), width: 2),
                                       ),
                                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                                     ),
@@ -598,12 +598,12 @@ class _HomePageState extends State<HomePage> {
                                         value: '__CREATE_NEW__',
                                         child: Row(
                                           children: [
-                                            Icon(Icons.add_circle_outline, color: Color(0xFF4CAF50), size: 20),
+                                            Icon(Icons.add_circle_outline, color: Color(0xFF00897B), size: 20),
                                             SizedBox(width: 8),
                                             Text(
                                               'Create new member type +',
                                               style: TextStyle(
-                                                color: Color(0xFF4CAF50),
+                                                color: Color(0xFF00897B),
                                                 fontWeight: FontWeight.w600,
                                               ),
                                             ),
@@ -634,7 +634,7 @@ class _HomePageState extends State<HomePage> {
                                           borderRadius: BorderRadius.circular(8),
                                         ),
                                         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                        prefixIcon: const Icon(Icons.person_add, color: Color(0xFF4CAF50)),
+                                        prefixIcon: const Icon(Icons.person_add, color: Color(0xFF00897B)),
                                       ),
                                       onChanged: (value) {
                                         setDialogState(() {});
@@ -857,7 +857,7 @@ class _HomePageState extends State<HomePage> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   blurRadius: 10,
                   offset: const Offset(0, 3),
                 ),
@@ -909,7 +909,7 @@ class _HomePageState extends State<HomePage> {
         ),
         Container(
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.08),
+            color: AppColors.primary.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(14),
           ),
           child: IconButton(
@@ -1229,7 +1229,7 @@ class _HomePageState extends State<HomePage> {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Center(child: Text('🤖', style: TextStyle(fontSize: 15))),
@@ -1246,14 +1246,14 @@ class _HomePageState extends State<HomePage> {
                   ),
                   Text(
                     _t('Budget, meals, tasks — ask anything', 'الميزانية، الطعام، المهام — اسأل أي شيء'),
-                    style: GoogleFonts.poppins(color: Colors.white.withOpacity(0.7), fontSize: _sp(10)),
+                    style: GoogleFonts.poppins(color: Colors.white.withValues(alpha: 0.7), fontSize: _sp(10)),
                   ),
                 ],
               ),
             ),
             Text('›',
                 style: TextStyle(
-                    color: Colors.white.withOpacity(0.5), fontSize: 22, fontWeight: FontWeight.w300)),
+                    color: Colors.white.withValues(alpha: 0.5), fontSize: 22, fontWeight: FontWeight.w300)),
           ],
         ),
       ),
@@ -1504,7 +1504,7 @@ class _HomePageState extends State<HomePage> {
                   decoration: BoxDecoration(
                     color: avatarBg,
                     shape: BoxShape.circle,
-                    border: Border.all(color: avatarColor.withOpacity(0.3), width: 2),
+                    border: Border.all(color: avatarColor.withValues(alpha: 0.3), width: 2),
                   ),
                   child: Center(
                     child: Text(
@@ -1520,7 +1520,7 @@ class _HomePageState extends State<HomePage> {
                     width: 9,
                     height: 9,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF4CAF50),
+                      color: const Color(0xFF00897B),
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 1.5),
                     ),
@@ -1574,7 +1574,7 @@ class _HomePageState extends State<HomePage> {
                   decoration: BoxDecoration(
                     color: avatarBg,
                     shape: BoxShape.circle,
-                    border: Border.all(color: avatarColor.withOpacity(0.3), width: 2),
+                    border: Border.all(color: avatarColor.withValues(alpha: 0.3), width: 2),
                   ),
                   child: Center(
                     child: Text(
@@ -1599,13 +1599,13 @@ class _HomePageState extends State<HomePage> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF4CAF50).withOpacity(0.1),
+                    color: const Color(0xFF00897B).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     member.memberType?.type ?? _t('Member', 'عضو'),
                     style: const TextStyle(
-                      color: Color(0xFF4CAF50),
+                      color: Color(0xFF00897B),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -1631,14 +1631,14 @@ class _HomePageState extends State<HomePage> {
                         onPressed: () => Navigator.pop(dialogContext),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
-                          side: const BorderSide(color: Color(0xFF4CAF50)),
+                          side: const BorderSide(color: Color(0xFF00897B)),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                         child: const Text(
                           'Close',
-                          style: TextStyle(color: Color(0xFF4CAF50)),
+                          style: TextStyle(color: Color(0xFF00897B)),
                         ),
                       ),
                     ),
@@ -1712,7 +1712,7 @@ class _HomePageState extends State<HomePage> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.1),
+                      color: Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Row(

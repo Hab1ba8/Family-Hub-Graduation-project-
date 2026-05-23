@@ -766,11 +766,11 @@ class _FamilyMapScreenState extends State<FamilyMapScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.95),
+        color: Colors.white.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.10),
+            color: Colors.black.withValues(alpha: 0.10),
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),
@@ -832,7 +832,7 @@ class _FamilyMapScreenState extends State<FamilyMapScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.94),
+                    color: Colors.white.withValues(alpha: 0.94),
                     borderRadius: BorderRadius.circular(18),
                   ),
                   child: Text(
@@ -884,7 +884,7 @@ class _FamilyMapScreenState extends State<FamilyMapScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.94),
+                  color: Colors.white.withValues(alpha: 0.94),
                   borderRadius: BorderRadius.circular(18),
                 ),
                 child: Row(
@@ -894,7 +894,7 @@ class _FamilyMapScreenState extends State<FamilyMapScreen> {
                       width: 7,
                       height: 7,
                       decoration: BoxDecoration(
-                        color: isOnline ? const Color(0xFF2E7D32) : Colors.grey,
+                        color: isOnline ? const Color(0xFF00897B) : Colors.grey,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -914,8 +914,8 @@ class _FamilyMapScreenState extends State<FamilyMapScreen> {
               _buildAvatarBubble(
                 label: _initials(name),
                 colors: isOnline
-                    ? [color, color.withOpacity(0.72)]
-                    : [Colors.blueGrey, Colors.blueGrey.withOpacity(0.72)],
+                    ? [color, color.withValues(alpha: 0.72)]
+                    : [Colors.blueGrey, Colors.blueGrey.withValues(alpha: 0.72)],
                 size: 48,
                 borderColor: Colors.white,
               ),
@@ -961,11 +961,11 @@ class _FamilyMapScreenState extends State<FamilyMapScreen> {
               child: _buildAvatarBubble(
                 label: _initials(name),
                 colors: isOnline
-                    ? [color, color.withOpacity(0.72)]
-                    : [Colors.blueGrey, Colors.blueGrey.withOpacity(0.72)],
+                    ? [color, color.withValues(alpha: 0.72)]
+                    : [Colors.blueGrey, Colors.blueGrey.withValues(alpha: 0.72)],
                 size: 52,
                 borderColor: isSelected ? Colors.white : Colors.transparent,
-                shadowColor: isSelected ? color.withOpacity(0.42) : null,
+                shadowColor: isSelected ? color.withValues(alpha: 0.42) : null,
               ),
             ),
             const SizedBox(height: 4),
@@ -976,7 +976,7 @@ class _FamilyMapScreenState extends State<FamilyMapScreen> {
                   width: 7,
                   height: 7,
                   decoration: BoxDecoration(
-                    color: isOnline ? const Color(0xFF2E7D32) : Colors.grey,
+                    color: isOnline ? const Color(0xFF00897B) : Colors.grey,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -1028,7 +1028,7 @@ class _FamilyMapScreenState extends State<FamilyMapScreen> {
           children: [
             _buildAvatarBubble(
               label: _initials(name),
-              colors: [color, color.withOpacity(0.72)],
+              colors: [color, color.withValues(alpha: 0.72)],
               size: 52,
             ),
             const SizedBox(width: 14),
@@ -1048,7 +1048,7 @@ class _FamilyMapScreenState extends State<FamilyMapScreen> {
                         width: 8,
                         height: 8,
                         decoration: BoxDecoration(
-                          color: isOnline ? const Color(0xFF2E7D32) : Colors.grey,
+                          color: isOnline ? const Color(0xFF00897B) : Colors.grey,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -1139,7 +1139,7 @@ class _FamilyMapScreenState extends State<FamilyMapScreen> {
         border: Border.all(color: borderColor, width: 3),
         boxShadow: [
           BoxShadow(
-            color: (shadowColor ?? colors.first).withOpacity(0.28),
+            color: (shadowColor ?? colors.first).withValues(alpha: 0.28),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
