@@ -11,20 +11,24 @@ const mealSuggestionSchema = new mongoose.Schema({
     ref: 'Recipe',
     required: [true, 'Please provide the recipe ID']
   },
+  meal_type: {
+    type: String,
+    enum: ['Breakfast', 'Lunch', 'Dinner', 'Snack', 'Any'],
+    default: 'Any'
+  },
   match_percentage: {
     type: Number,
     required: [true, 'Please provide the match percentage'],
     min: 0,
     max: 100
   },
+  // Stored as plain strings so no populate needed
   missing_ingredients: [{
     ingredient_name: String,
     quantity: Number,
-    unit_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Unit'
-    }
+    unit_name: String
   }],
+  available_ingredients: [String],
   suggested_date: {
     type: Date,
     default: Date.now
@@ -41,10 +45,8 @@ const mealSuggestionSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Indexes
 mealSuggestionSchema.index({ family_id: 1, createdAt: -1 });
 mealSuggestionSchema.index({ match_percentage: -1 });
 
 const MealSuggestion = mongoose.model('MealSuggestion', mealSuggestionSchema);
-
 module.exports = MealSuggestion;

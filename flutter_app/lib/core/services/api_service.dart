@@ -1895,11 +1895,12 @@ class ApiService {
 
   // ==================== MEAL SUGGESTION APIs ====================
 
-  Future<Map<String, dynamic>> generateMealSuggestions() async {
+  Future<Map<String, dynamic>> generateMealSuggestions({String mealType = 'Any'}) async {
     final headers = await _getHeaders();
     final response = await http.post(
       Uri.parse('$baseUrl/meal-suggestions/generate'),
       headers: headers,
+      body: jsonEncode({'meal_type': mealType}),
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
