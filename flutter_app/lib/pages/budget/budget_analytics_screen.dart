@@ -20,8 +20,8 @@ class _BudgetAnalyticsScreenState extends State<BudgetAnalyticsScreen>
   int _touchedIndex = -1;
 
   static final _pieColors = [
-    Color(0xFF00897B), Color(0xFF00ACC1), Color(0xFFFB8C00),
-    Color(0xFF4DB6AC), Color(0xFF7B1FA2), Color(0xFFE91E63),
+    AppColors.primary, AppColors.primaryLight, Color(0xFFFB8C00),
+    AppColors.textSecondary, Color(0xFF7B1FA2), Color(0xFFE91E63),
   ];
 
   double _sp(double size) {
@@ -50,7 +50,7 @@ class _BudgetAnalyticsScreenState extends State<BudgetAnalyticsScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = context.watch<ThemeProvider>().isDark;
-    final bg = isDark ? const Color(0xFF0A1628) : const Color(0xFFE8F5F5);
+    final bg = isDark ? Color(0xFF0A1628) : AppColors.background;
 
     return Consumer<FamilyBudgetProvider>(builder: (context, provider, _) {
       final analytics = provider.analyticsData;
@@ -77,7 +77,7 @@ class _BudgetAnalyticsScreenState extends State<BudgetAnalyticsScreen>
             Expanded(
               child: provider.isLoading || analytics == null
                   ? Center(
-                      child: CircularProgressIndicator(color: Color(0xFF00897B)))
+                      child: CircularProgressIndicator(color: AppColors.primary))
                   : TabBarView(
                       controller: _tabCtrl,
                       children: [
@@ -176,7 +176,7 @@ class _BudgetAnalyticsScreenState extends State<BudgetAnalyticsScreen>
             style: GoogleFonts.poppins(
               fontSize: _sp(10),
               fontWeight: FontWeight.w600,
-              color: isActive ? const Color(0xFF00897B) : Colors.white,
+              color: isActive ? AppColors.primary : Colors.white,
             ),
           ),
         ),
@@ -201,10 +201,10 @@ class _BudgetAnalyticsScreenState extends State<BudgetAnalyticsScreen>
 
     final cardBg = isDark ? const Color(0xFF122030) : Colors.white;
     final cardBorder =
-        isDark ? const Color(0xFF1E3A4A) : const Color(0xFFB2DFDB);
+        isDark ? Color(0xFF1E3A4A) : AppColors.border;
     final textPrimary =
-        isDark ? const Color(0xFFE0F2F1) : const Color(0xFF00352E);
-    const textSec = Color(0xFF4DB6AC);
+        isDark ? AppColors.primarySurface : Color(0xFF00352E);
+    final textSec = AppColors.textSecondary;
 
     return Align(
       alignment: Alignment.topCenter,
@@ -220,7 +220,7 @@ class _BudgetAnalyticsScreenState extends State<BudgetAnalyticsScreen>
                 _summaryCard('Spent', totalSpent, const Color(0xFFE53935),
                     cardBg, cardBorder, textSec),
                 const SizedBox(width: 8),
-                _summaryCard('Left', totalRemaining, const Color(0xFF00897B),
+                _summaryCard('Left', totalRemaining, AppColors.primary,
                     cardBg, cardBorder, textSec),
                 const SizedBox(width: 8),
                 _summaryCard('Total', totalBudget, textPrimary,
@@ -397,7 +397,7 @@ class _BudgetAnalyticsScreenState extends State<BudgetAnalyticsScreen>
                                     fontWeight: FontWeight.w700,
                                     color: isOver
                                         ? const Color(0xFFE65100)
-                                        : const Color(0xFF00695C)),
+                                        : AppColors.dark),
                               ),
                             ]),
                           );
@@ -543,14 +543,14 @@ class _BudgetAnalyticsScreenState extends State<BudgetAnalyticsScreen>
         analytics['daily_trend_data'] ?? []);
     final cardBg = isDark ? const Color(0xFF122030) : Colors.white;
     final cardBorder =
-        isDark ? const Color(0xFF1E3A4A) : const Color(0xFFB2DFDB);
+        isDark ? Color(0xFF1E3A4A) : AppColors.border;
     final textPrimary =
-        isDark ? const Color(0xFFE0F2F1) : const Color(0xFF00352E);
+        isDark ? AppColors.primarySurface : Color(0xFF00352E);
 
     if (trend.isEmpty) {
       return Center(
         child: Text('No spending data yet',
-            style: GoogleFonts.poppins(color: const Color(0xFF4DB6AC))),
+            style: GoogleFonts.poppins(color: AppColors.textSecondary)),
       );
     }
 
@@ -596,8 +596,8 @@ class _BudgetAnalyticsScreenState extends State<BudgetAnalyticsScreen>
                       gridData: FlGridData(
                         show: true,
                         drawVerticalLine: false,
-                        getDrawingHorizontalLine: (_) => const FlLine(
-                            color: Color(0xFFE0F2F1), strokeWidth: 1),
+                        getDrawingHorizontalLine: (_) => FlLine(
+                            color: AppColors.primarySurface, strokeWidth: 1),
                       ),
                       borderData: FlBorderData(show: false),
                       titlesData: FlTitlesData(
@@ -609,7 +609,7 @@ class _BudgetAnalyticsScreenState extends State<BudgetAnalyticsScreen>
                               v.toInt().toString(),
                               style: GoogleFonts.poppins(
                                   fontSize: _sp(9),
-                                  color: const Color(0xFF4DB6AC)),
+                                  color: AppColors.textSecondary),
                             ),
                           ),
                         ),
@@ -630,7 +630,7 @@ class _BudgetAnalyticsScreenState extends State<BudgetAnalyticsScreen>
                                 return Text(label,
                                     style: GoogleFonts.poppins(
                                         fontSize: _sp(9),
-                                        color: const Color(0xFF4DB6AC)));
+                                        color: AppColors.textSecondary));
                               }
                               return const SizedBox.shrink();
                             },
@@ -645,11 +645,11 @@ class _BudgetAnalyticsScreenState extends State<BudgetAnalyticsScreen>
                         LineChartBarData(
                           spots: spots,
                           isCurved: true,
-                          color: const Color(0xFF00897B),
+                          color: AppColors.primary,
                           barWidth: 2.5,
                           belowBarData: BarAreaData(
                             show: true,
-                            color: const Color(0xFF00897B)
+                            color: AppColors.primary
                                 .withValues(alpha: 0.10),
                           ),
                           dotData: const FlDotData(show: false),
@@ -671,14 +671,14 @@ class _BudgetAnalyticsScreenState extends State<BudgetAnalyticsScreen>
     final expenses = provider.expenses;
     final cardBg = isDark ? const Color(0xFF122030) : Colors.white;
     final cardBorder =
-        isDark ? const Color(0xFF1E3A4A) : const Color(0xFFB2DFDB);
+        isDark ? Color(0xFF1E3A4A) : AppColors.border;
     final textPrimary =
-        isDark ? const Color(0xFFE0F2F1) : const Color(0xFF00352E);
+        isDark ? AppColors.primarySurface : Color(0xFF00352E);
 
     if (expenses.isEmpty) {
       return Center(
         child: Text('No expenses found for this budget period',
-            style: GoogleFonts.poppins(color: const Color(0xFF4DB6AC))),
+            style: GoogleFonts.poppins(color: AppColors.textSecondary)),
       );
     }
 
@@ -745,7 +745,7 @@ class _BudgetAnalyticsScreenState extends State<BudgetAnalyticsScreen>
                     width: 36,
                     height: 36,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE0F2F1),
+                      color: AppColors.primarySurface,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Center(
@@ -770,27 +770,27 @@ class _BudgetAnalyticsScreenState extends State<BudgetAnalyticsScreen>
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFE0F2F1),
+                              color: AppColors.primarySurface,
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(category,
                                 style: GoogleFonts.poppins(
                                     fontSize: _sp(8),
                                     fontWeight: FontWeight.w600,
-                                    color: const Color(0xFF00695C))),
+                                    color: AppColors.dark)),
                           ),
                           const SizedBox(width: 4),
                           Text('• $source',
                               style: GoogleFonts.poppins(
                                   fontSize: _sp(8),
-                                  color: const Color(0xFF4DB6AC))),
+                                  color: AppColors.textSecondary)),
                         ]),
                         if (memberMail.isNotEmpty) ...[
                           const SizedBox(height: 2),
                           Text(memberMail,
                               style: GoogleFonts.poppins(
                                   fontSize: _sp(8),
-                                  color: const Color(0xFF4DB6AC))),
+                                  color: AppColors.textSecondary)),
                         ],
                         if (description.isNotEmpty) ...[
                           const SizedBox(height: 2),
@@ -804,7 +804,7 @@ class _BudgetAnalyticsScreenState extends State<BudgetAnalyticsScreen>
                         Text(formattedDate,
                             style: GoogleFonts.poppins(
                                 fontSize: _sp(8),
-                                color: const Color(0xFF4DB6AC))),
+                                color: AppColors.textSecondary)),
                       ],
                     ),
                   ),

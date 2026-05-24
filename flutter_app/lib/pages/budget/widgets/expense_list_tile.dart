@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:app_frontend/core/theme/app_theme.dart';
 
 class ExpenseListTile extends StatelessWidget {
   final Map<String, dynamic> expense;
@@ -31,12 +32,12 @@ class ExpenseListTile extends StatelessWidget {
         leading: Container(
           width: 44, height: 44,
           decoration: BoxDecoration(
-            color: isEmergency ? Colors.orange.shade100 : const Color(0xFFE8F5F5),
+            color: isEmergency ? Colors.orange.shade100 : AppColors.background,
             shape: BoxShape.circle,
           ),
           child: Icon(
             isEmergency ? Icons.emergency : Icons.receipt_long,
-            color: isEmergency ? Colors.orange : const Color(0xFF00897B),
+            color: isEmergency ? Colors.orange : AppColors.primary,
             size: 22,
           ),
         ),

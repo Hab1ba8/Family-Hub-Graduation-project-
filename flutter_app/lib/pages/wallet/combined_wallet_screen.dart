@@ -337,7 +337,7 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
                       height: 50,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Color(0xFF00897B), Color(0xFF00ACC1)],
+                          colors: [AppColors.primary, AppColors.primaryLight],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -393,9 +393,9 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = context.watch<ThemeProvider>().isDark;
-    final bg     = isDark ? const Color(0xFF0A1628) : AppColors.background;
+    final bg     = isDark ? Color(0xFF0A1628) : AppColors.background;
     final cardBg = isDark ? const Color(0xFF122030) : Colors.white;
-    final border = isDark ? const Color(0xFF1E3A4A) : AppColors.border;
+    final border = isDark ? Color(0xFF1E3A4A) : AppColors.border;
 
     final moneyBalance    = (_balance['money_balance']     ?? 0).toDouble();
     final pointsBalance   = (_balance['points_balance']    ?? 0).toDouble();
@@ -517,7 +517,7 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
                 style: GoogleFonts.poppins(
                     fontSize: _sp(13),
                     color: isDark
-                        ? const Color(0xFFE0F2F1)
+                        ? AppColors.primarySurface
                         : AppColors.textPrimary),
               ),
             );
@@ -545,14 +545,14 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF00695C), Color(0xFF00897B)],
+          colors: [AppColors.dark, AppColors.primary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00897B).withValues(alpha: 0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -620,14 +620,14 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF00838F), Color(0xFF00ACC1)],
+          colors: [Color(0xFF00838F), AppColors.primaryLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00ACC1).withValues(alpha: 0.3),
+            color: AppColors.primaryLight.withValues(alpha: 0.3),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -749,7 +749,7 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
       );
     }
 
-    final divider = isDark ? const Color(0xFF1E3A4A) : AppColors.borderLight;
+    final divider = isDark ? Color(0xFF1E3A4A) : AppColors.borderLight;
 
     return Container(
       decoration: BoxDecoration(
@@ -822,7 +822,7 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
                         style: GoogleFonts.poppins(
                             fontSize: _sp(12), fontWeight: FontWeight.w600,
                             color: isDark
-                                ? const Color(0xFFE0F2F1)
+                                ? AppColors.primarySurface
                                 : AppColors.textPrimary),
                         maxLines: 1, overflow: TextOverflow.ellipsis,
                       ),
@@ -891,7 +891,7 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Color(0xFF00695C), Color(0xFF00897B)],
+                        colors: [AppColors.dark, AppColors.primary],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -924,14 +924,14 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Color(0xFF00838F), Color(0xFF00ACC1)],
+                        colors: [Color(0xFF00838F), AppColors.primaryLight],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                            color: const Color(0xFF00ACC1).withValues(alpha: 0.25),
+                            color: AppColors.primaryLight.withValues(alpha: 0.25),
                             blurRadius: 8, offset: const Offset(0, 3)),
                       ],
                     ),

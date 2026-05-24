@@ -1,6 +1,9 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../core/services/api_service.dart';
+import '../core/theme/app_theme.dart';
+import 'package:provider/provider.dart';
+import '../core/theme/theme_provider.dart';
 
 class GroceryListDetailScreen extends StatefulWidget {
   const GroceryListDetailScreen({super.key});
@@ -169,11 +172,12 @@ class _GroceryListDetailScreenState extends State<GroceryListDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<ThemeProvider>(); // rebuild on palette change
     final unchecked = _items.where((i) => i['is_checked'] != true).toList();
     final checked = _items.where((i) => i['is_checked'] == true).toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFE8F5F5),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -182,10 +186,10 @@ class _GroceryListDetailScreenState extends State<GroceryListDetailScreen> {
               children: [
                 _buildTopBar(),
                 if (_loading)
-                  const Expanded(
+                  Expanded(
                     child: Center(
                       child: CircularProgressIndicator(
-                          color: Color(0xFF00897B)),
+                          color: AppColors.primary),
                     ),
                   )
                 else
@@ -294,7 +298,7 @@ class _GroceryListDetailScreenState extends State<GroceryListDetailScreen> {
           if (_isEditing)
             IconButton(
               onPressed: _updateTitle,
-              icon: Icon(Icons.check, color: Color(0xFF00897B)),
+              icon: Icon(Icons.check, color: AppColors.primary),
             )
           else
             IconButton(
@@ -337,7 +341,7 @@ class _GroceryListDetailScreenState extends State<GroceryListDetailScreen> {
           IconButton(
             onPressed: _addItem,
             icon: Icon(Icons.add_circle,
-                color: Color(0xFF00897B), size: 28),
+                color: AppColors.primary, size: 28),
           ),
         ],
       ),
@@ -409,10 +413,10 @@ class _GroceryListDetailScreenState extends State<GroceryListDetailScreen> {
                 height: 24,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isChecked ? const Color(0xFF00897B) : Colors.transparent,
+                  color: isChecked ? AppColors.primary : Colors.transparent,
                   border: Border.all(
                     color: isChecked
-                        ? const Color(0xFF00897B)
+                        ? AppColors.primary
                         : Colors.grey[400]!,
                     width: 2,
                   ),

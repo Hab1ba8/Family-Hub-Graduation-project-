@@ -19,8 +19,8 @@ class AppColors {
   // ── Text ─────────────────────────────────────────────────────────────────
   // textPrimary stays const (near-black) so it works in const contexts.
   static const Color textPrimary  = Color(0xFF00352E);
-  static const Color textSecondary = Color(0xFF4DB6AC);
-  static const Color textHint     = Color(0xFF80CBC4);
+  static Color get textSecondary  => Color.lerp(primary, Colors.white, 0.35)!;
+  static Color get textHint       => Color.lerp(primary, Colors.white, 0.54)!;
 
   // ── Borders ──────────────────────────────────────────────────────────────
   static Color get border         => Color.lerp(primary, Colors.white, 0.65)!;
@@ -157,7 +157,7 @@ class AppDecorations {
     gradient: AppColors.primaryGradient,
     borderRadius: BorderRadius.circular(AppRadius.card),
     boxShadow: [
-      BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 4)),
+      BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 12, offset: Offset(0, 4)),
     ],
   );
 
@@ -240,7 +240,7 @@ ThemeData appLightTheme = ThemeData(
   appBarTheme: AppBarTheme(
     backgroundColor: AppColors.background,
     elevation: 0,
-    iconTheme: const IconThemeData(color: AppColors.textPrimary),
+    iconTheme: IconThemeData(color: AppColors.textPrimary),
     titleTextStyle: GoogleFonts.poppins(
       fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textPrimary,
     ),
@@ -275,13 +275,13 @@ ThemeData appDarkTheme = ThemeData(
     elevation: 0,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(AppRadius.card),
-      side: const BorderSide(color: AppColors.darkBorder, width: 0.8),
+      side: BorderSide(color: AppColors.darkBorder, width: 0.8),
     ),
   ),
   appBarTheme: AppBarTheme(
     backgroundColor: AppColors.darkBg,
     elevation: 0,
-    iconTheme: const IconThemeData(color: AppColors.darkText),
+    iconTheme: IconThemeData(color: AppColors.darkText),
     titleTextStyle: GoogleFonts.poppins(
       fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.darkText,
     ),
@@ -323,7 +323,7 @@ ThemeData buildLightTheme(Color seed) {
     appBarTheme: AppBarTheme(
       backgroundColor: bg,
       elevation: 0,
-      iconTheme: const IconThemeData(color: AppColors.textPrimary),
+      iconTheme: IconThemeData(color: AppColors.textPrimary),
       titleTextStyle: GoogleFonts.poppins(
         fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textPrimary,
       ),
@@ -374,13 +374,13 @@ ThemeData buildDarkTheme(Color seed) {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.card),
-        side: const BorderSide(color: AppColors.darkBorder, width: 0.8),
+        side: BorderSide(color: AppColors.darkBorder, width: 0.8),
       ),
     ),
     appBarTheme: AppBarTheme(
       backgroundColor: AppColors.darkBg,
       elevation: 0,
-      iconTheme: const IconThemeData(color: AppColors.darkText),
+      iconTheme: IconThemeData(color: AppColors.darkText),
       titleTextStyle: GoogleFonts.poppins(
         fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.darkText,
       ),

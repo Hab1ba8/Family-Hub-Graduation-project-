@@ -9,6 +9,8 @@ import 'setting.dart';
 import 'signup_login.dart';
 import 'manage_accounts_page.dart';
 import '../core/widgets/guarded_button.dart';
+import 'package:provider/provider.dart';
+import '../core/theme/theme_provider.dart';
 
 class HomePage extends StatefulWidget {
   final String? userName;
@@ -42,11 +44,11 @@ class _HomePageState extends State<HomePage> {
 
   static final _avatarColors = [
     Color(0xFF1565C0), Color(0xFF6A1B9A), Color(0xFFAD1457),
-    Color(0xFFE65100), Color(0xFF00695C), Color(0xFF00897B),
+    Color(0xFFE65100), AppColors.dark, AppColors.primary,
   ];
-  static const _avatarBgs = [
+  static final _avatarBgs = [
     Color(0xFFE3F2FD), Color(0xFFF3E5F5), Color(0xFFFCE4EC),
-    Color(0xFFFFF3E0), Color(0xFFE0F2F1), Color(0xFFE8F5F5),
+    Color(0xFFFFF3E0), AppColors.primarySurface, AppColors.background,
   ];
   bool _protectionSetting = false;
   List<Member> _familyMembers = [];
@@ -248,11 +250,11 @@ class _HomePageState extends State<HomePage> {
                       child: Row(
                         children: [
                           CircleAvatar(
-                            backgroundColor: const Color(0xFFE8F5F5),
+                            backgroundColor: AppColors.background,
                             child: Text(
                               initial,
-                              style: const TextStyle(
-                                color: Color(0xFF00897B),
+                              style: TextStyle(
+                                color: AppColors.primary,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -264,9 +266,9 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 Text(
                                   _t('Current account', 'الحساب الحالي'),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 12,
-                                    color: Color(0xFF00897B),
+                                    color: AppColors.primary,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -298,11 +300,11 @@ class _HomePageState extends State<HomePage> {
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
                       leading: CircleAvatar(
-                        backgroundColor: const Color(0xFFE8F5F5),
+                        backgroundColor: AppColors.background,
                         child: Text(
                           (username.isNotEmpty ? username[0] : 'A').toUpperCase(),
-                          style: const TextStyle(
-                            color: Color(0xFF00897B),
+                          style: TextStyle(
+                            color: AppColors.primary,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -310,7 +312,7 @@ class _HomePageState extends State<HomePage> {
                       title: Text('$familyTitle ($username)'),
                       subtitle: Text(mail),
                       trailing: isActive
-                          ? Icon(Icons.check_circle, color: Color(0xFF00897B))
+                          ? Icon(Icons.check_circle, color: AppColors.primary)
                           : null,
                       onTap: () async {
                         Navigator.of(sheetContext).pop();
@@ -335,8 +337,8 @@ class _HomePageState extends State<HomePage> {
                         icon: Icon(Icons.add),
                         label: Text(_t('Add New Account', 'إضافة حساب جديد')),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF00897B),
-                          side: const BorderSide(color: Color(0xFF00897B)),
+                          foregroundColor: AppColors.primary,
+                          side: BorderSide(color: AppColors.primary),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -541,17 +543,17 @@ class _HomePageState extends State<HomePage> {
                         ? Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              border: Border.all(color: const Color(0xFF00897B), width: 2),
+                              border: Border.all(color: AppColors.primary, width: 2),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Row(
+                            child: Row(
                               children: [
                                 SizedBox(
                                   width: 16,
                                   height: 16,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: Color(0xFF00897B),
+                                    color: AppColors.primary,
                                   ),
                                 ),
                                 SizedBox(width: 12),
@@ -578,14 +580,14 @@ class _HomePageState extends State<HomePage> {
                                     value: selectedMemberType,
                                     decoration: InputDecoration(
                                       hintText: 'Select Type',
-                                      hintStyle: const TextStyle(color: Color(0xFF00897B)),
+                                      hintStyle: TextStyle(color: AppColors.primary),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(color: Color(0xFF00897B), width: 2),
+                                        borderSide: BorderSide(color: AppColors.primary, width: 2),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(color: Color(0xFF00897B), width: 2),
+                                        borderSide: BorderSide(color: AppColors.primary, width: 2),
                                       ),
                                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                                     ),
@@ -594,16 +596,16 @@ class _HomePageState extends State<HomePage> {
                                             value: typeObj['type'].toString(),
                                             child: Text(typeObj['type'].toString()),
                                           )),
-                                      const DropdownMenuItem(
+                                      DropdownMenuItem(
                                         value: '__CREATE_NEW__',
                                         child: Row(
                                           children: [
-                                            Icon(Icons.add_circle_outline, color: Color(0xFF00897B), size: 20),
+                                            Icon(Icons.add_circle_outline, color: AppColors.primary, size: 20),
                                             SizedBox(width: 8),
                                             Text(
                                               'Create new member type +',
                                               style: TextStyle(
-                                                color: Color(0xFF00897B),
+                                                color: AppColors.primary,
                                                 fontWeight: FontWeight.w600,
                                               ),
                                             ),
@@ -634,7 +636,7 @@ class _HomePageState extends State<HomePage> {
                                           borderRadius: BorderRadius.circular(8),
                                         ),
                                         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                        prefixIcon: Icon(Icons.person_add, color: Color(0xFF00897B)),
+                                        prefixIcon: Icon(Icons.person_add, color: AppColors.primary),
                                       ),
                                       onChanged: (value) {
                                         setDialogState(() {});
@@ -755,6 +757,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<ThemeProvider>(); // rebuild on palette change
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -870,7 +873,7 @@ class _HomePageState extends State<HomePage> {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: AppColors.white,
-                    border: Border.all(color: const Color(0xFF80CBC4)),
+                    border: Border.all(color: AppColors.textHint),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(
@@ -1162,7 +1165,7 @@ class _HomePageState extends State<HomePage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
       decoration: BoxDecoration(
-        border: isLast ? null : const Border(bottom: BorderSide(color: Color(0xFFE0F2F1))),
+        border: isLast ? null : Border(bottom: BorderSide(color: AppColors.primarySurface)),
       ),
       child: Row(
         children: [
@@ -1243,8 +1246,8 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildEventsCard() {
     final eventIcons = ['✈️', '🎁', '🎉', '🛍️', '🏖️', '🎂'];
-    final eventColors = [AppColors.light, const Color(0xFFFB8C00), AppColors.primary,
-                         const Color(0xFFAD1457), const Color(0xFF6A1B9A), AppColors.dark];
+    final eventColors = [AppColors.light, Color(0xFFFB8C00), AppColors.primary,
+                         Color(0xFFAD1457), Color(0xFF6A1B9A), AppColors.dark];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1309,7 +1312,7 @@ class _HomePageState extends State<HomePage> {
                         return Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                           decoration: BoxDecoration(
-                            border: isLast ? null : const Border(bottom: BorderSide(color: Color(0xFFE0F2F1))),
+                            border: isLast ? null : Border(bottom: BorderSide(color: AppColors.primarySurface)),
                           ),
                           child: Row(
                             children: [
@@ -1413,7 +1416,7 @@ class _HomePageState extends State<HomePage> {
                         return Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
                           decoration: BoxDecoration(
-                            border: isLast ? null : const Border(bottom: BorderSide(color: Color(0xFFE0F2F1))),
+                            border: isLast ? null : Border(bottom: BorderSide(color: AppColors.primarySurface)),
                           ),
                           child: Row(
                             children: [
@@ -1499,7 +1502,7 @@ class _HomePageState extends State<HomePage> {
                     width: 9,
                     height: 9,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF00897B),
+                      color: AppColors.primary,
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 1.5),
                     ),
@@ -1578,13 +1581,13 @@ class _HomePageState extends State<HomePage> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF00897B).withValues(alpha: 0.1),
+                    color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     member.memberType?.type ?? _t('Member', 'عضو'),
-                    style: const TextStyle(
-                      color: Color(0xFF00897B),
+                    style: TextStyle(
+                      color: AppColors.primary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -1610,14 +1613,14 @@ class _HomePageState extends State<HomePage> {
                         onPressed: () => Navigator.pop(dialogContext),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
-                          side: const BorderSide(color: Color(0xFF00897B)),
+                          side: BorderSide(color: AppColors.primary),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Close',
-                          style: TextStyle(color: Color(0xFF00897B)),
+                          style: TextStyle(color: AppColors.primary),
                         ),
                       ),
                     ),
@@ -1835,7 +1838,7 @@ class _HomePageState extends State<HomePage> {
             label,
             style: GoogleFonts.poppins(
               fontSize: _sp(10),
-              color: isActive ? AppColors.primary : const Color(0xFF9E9E9E),
+              color: isActive ? AppColors.primary : Color(0xFF9E9E9E),
               fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
             ),
           ),

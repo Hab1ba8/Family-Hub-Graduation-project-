@@ -8,12 +8,13 @@ import '../core/theme/theme_provider.dart';
 import '../core/utils/food_utils.dart';
 import '../core/widgets/app_bottom_nav.dart';
 import '../core/widgets/guarded_button.dart';
+import '../core/theme/app_theme.dart';
 
 // ── Teal category colour palette ──────────────────────────────────────────────
-const List<Color> _kCatColors = [
-  Color(0xFF00897B), Color(0xFF00ACC1), Color(0xFFFB8C00),
-  Color(0xFF4DB6AC), Color(0xFF7B1FA2), Color(0xFFE91E63),
-  Color(0xFF1565C0), Color(0xFF6D4C41), Color(0xFF00695C),
+List<Color> get _kCatColors => [
+  AppColors.primary, AppColors.primaryLight, Color(0xFFFB8C00),
+  AppColors.textSecondary, Color(0xFF7B1FA2), Color(0xFFE91E63),
+  Color(0xFF1565C0), Color(0xFF6D4C41), AppColors.dark,
 ];
 
 class InventoryScreen extends StatefulWidget {
@@ -243,7 +244,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             const EdgeInsets.symmetric(vertical: 10),
                         decoration: BoxDecoration(
                             color: isSel
-                                ? const Color(0xFF00897B)
+                                ? AppColors.primary
                                 : Colors.grey[200],
                             borderRadius: BorderRadius.circular(8)),
                         child: Center(
@@ -279,7 +280,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00897B)),
+                    backgroundColor: AppColors.primary),
                 child:
                     const Text('Add', style: TextStyle(color: Colors.white)),
               ),
@@ -337,7 +338,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             const EdgeInsets.symmetric(vertical: 10),
                         decoration: BoxDecoration(
                             color: isSel
-                                ? const Color(0xFF00897B)
+                                ? AppColors.primary
                                 : Colors.grey[200],
                             borderRadius: BorderRadius.circular(8)),
                         child: Center(
@@ -374,7 +375,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00897B)),
+                    backgroundColor: AppColors.primary),
                 child:
                     const Text('Save', style: TextStyle(color: Colors.white)),
               ),
@@ -451,7 +452,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                   decoration: BoxDecoration(
-                      color: const Color(0xFF00897B),
+                      color: AppColors.primary,
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(20),
                           topRight: Radius.circular(20))),
@@ -531,7 +532,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                     'No categories \u2014 tap to create one',
                                     style: GoogleFonts.poppins(
                                         fontSize: 12,
-                                        color: const Color(0xFF00897B),
+                                        color: AppColors.primary,
                                         decoration:
                                             TextDecoration.underline)),
                               ),
@@ -551,22 +552,22 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 8, vertical: 4),
                                     decoration: BoxDecoration(
-                                        color: const Color(0xFFE0F2F1),
+                                        color: AppColors.primarySurface,
                                         borderRadius:
                                             BorderRadius.circular(6),
                                         border: Border.all(
-                                            color: const Color(0xFF80CBC4))),
+                                            color: AppColors.textHint)),
                                     child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Icon(Icons.add,
                                               size: 14,
-                                              color: const Color(0xFF00897B)),
+                                              color: AppColors.primary),
                                           const SizedBox(width: 2),
                                           Text('Add',
                                               style: GoogleFonts.poppins(
                                                   fontSize: 11,
-                                                  color: const Color(0xFF00897B),
+                                                  color: AppColors.primary,
                                                   fontWeight:
                                                       FontWeight.w500)),
                                         ]),
@@ -606,7 +607,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                             horizontal: 14, vertical: 8),
                                         decoration: BoxDecoration(
                                             color: isSel
-                                                ? const Color(0xFF00897B)
+                                                ? AppColors.primary
                                                 : Colors.grey[200],
                                             borderRadius:
                                                 BorderRadius.circular(20)),
@@ -630,13 +631,13 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                   color: adjustedQty <=
                                           (num.tryParse(minCtrl.text) ?? 1)
                                       ? Colors.red[50]
-                                      : const Color(0xFFE0F2F1),
+                                      : AppColors.primarySurface,
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
                                       color: adjustedQty <=
                                               (num.tryParse(minCtrl.text) ?? 1)
                                           ? Colors.red[300]!
-                                          : const Color(0xFF80CBC4))),
+                                          : AppColors.textHint)),
                               child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -659,7 +660,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                                                       .text) ??
                                                               1)
                                                       ? Colors.red[700]
-                                                      : const Color(0xFF00897B))),
+                                                      : AppColors.primary)),
                                         ]),
                                     if (adjustedQty <=
                                         (num.tryParse(minCtrl.text) ?? 1))
@@ -711,7 +712,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                             ? Icons.add
                                             : Icons.remove,
                                         color: isAdding
-                                            ? const Color(0xFF00897B)
+                                            ? AppColors.primary
                                             : Colors.red))),
                             const SizedBox(height: 8),
                             Container(
@@ -890,7 +891,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                       expiryDate: expiryDate);
                                 },
                                 style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF00897B),
+                                    backgroundColor: AppColors.primary,
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 14),
                                     shape: RoundedRectangleBorder(
@@ -968,7 +969,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           color: active
-              ? (left ? const Color(0xFF00897B) : Colors.red)
+              ? (left ? AppColors.primary : Colors.red)
               : Colors.grey[200],
           borderRadius: BorderRadius.only(
             topLeft: left ? const Radius.circular(10) : Radius.zero,
@@ -1100,7 +1101,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                         horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                         color:
-                            isSel ? const Color(0xFF00897B) : Colors.grey[200],
+                            isSel ? AppColors.primary : Colors.grey[200],
                         borderRadius: BorderRadius.circular(20)),
                     child: Text(type,
                         style: GoogleFonts.poppins(
@@ -1133,7 +1134,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF00897B)),
+                  backgroundColor: AppColors.primary),
               child: const Text('Create',
                   style: TextStyle(color: Colors.white)),
             ),
@@ -1151,7 +1152,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
   Widget build(BuildContext context) {
     _isDark = context.watch<ThemeProvider>().isDark;
     return Scaffold(
-      backgroundColor: _isDark ? const Color(0xFF0A1628) : const Color(0xFFE8F5F5),
+      backgroundColor: _isDark ? Color(0xFF0A1628) : AppColors.background,
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -1159,7 +1160,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
             child: _loading
                 ? Center(
                     child: CircularProgressIndicator(
-                        color: const Color(0xFF00897B)))
+                        color: AppColors.primary))
                 : Column(children: [
                     _buildHeader(),
                     _buildInventorySelector(),
@@ -1179,7 +1180,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddEditItemDialog(),
-        backgroundColor: const Color(0xFF00897B),
+        backgroundColor: AppColors.primary,
         icon: Icon(Icons.add, color: Colors.white),
         label: Text('Add Item',
             style: GoogleFonts.poppins(
@@ -1215,14 +1216,14 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       color: const Color(0xFF00352E))),
               Text(subtitle,
                   style: GoogleFonts.poppins(
-                      fontSize: 12, color: const Color(0xFF80CBC4))),
+                      fontSize: 12, color: AppColors.textHint)),
             ])),
         Stack(children: [
           IconButton(
               onPressed: () =>
                   Navigator.pushNamed(context, '/inventory-alerts'),
               icon: Icon(Icons.notifications_outlined,
-                  color: const Color(0xFF00897B))),
+                  color: AppColors.primary)),
           if (_unreadAlerts > 0)
             Positioned(
                 right: 6,
@@ -1244,7 +1245,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
               _loadData();
             },
             icon: Icon(Icons.account_tree_outlined,
-                color: const Color(0xFF00897B)),
+                color: AppColors.primary),
             tooltip: 'Manage Categories'),
       ]),
     );
@@ -1311,7 +1312,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
               }
             },
             style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF00897B)),
+                backgroundColor: AppColors.primary),
             child:
                 const Text('Save', style: TextStyle(color: Colors.white)),
           ),
@@ -1344,11 +1345,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
             Text(
                 '${_getItemCountForInventory(invId)} items \u2022 ${inventory['type'] ?? 'Other'}',
                 style: GoogleFonts.poppins(
-                    fontSize: 12, color: const Color(0xFF80CBC4))),
+                    fontSize: 12, color: AppColors.textHint)),
             const SizedBox(height: 8),
             ListTile(
               leading: Icon(Icons.edit_outlined,
-                  color: const Color(0xFF00897B)),
+                  color: AppColors.primary),
               title: Text('Rename Inventory',
                   style: GoogleFonts.poppins()),
               onTap: () {
@@ -1415,17 +1416,17 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       horizontal: 16, vertical: 10),
                   decoration: BoxDecoration(
                       color: isSel
-                          ? const Color(0xFF00897B)
+                          ? AppColors.primary
                           : Colors.white,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
                           color: isSel
-                              ? const Color(0xFF00897B)
+                              ? AppColors.primary
                               : Colors.grey[300]!),
                       boxShadow: isSel
                           ? [
                               BoxShadow(
-                                  color: const Color(0xFF00897B)
+                                  color: AppColors.primary
                                       .withOpacity(0.3),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2))
@@ -1438,7 +1439,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                         size: 18,
                         color: isSel
                             ? Colors.white
-                            : const Color(0xFF4DB6AC)),
+                            : AppColors.textSecondary),
                     const SizedBox(width: 8),
                     Text('All',
                         style: GoogleFonts.poppins(
@@ -1463,7 +1464,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                 fontWeight: FontWeight.w600,
                                 color: isSel
                                     ? Colors.white
-                                    : const Color(0xFF4DB6AC)))),
+                                    : AppColors.textSecondary))),
                   ]),
                 ),
               );
@@ -1480,19 +1481,19 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                          color: const Color(0xFF00897B),
+                          color: AppColors.primary,
                           style: BorderStyle.solid)),
                   child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                     Icon(Icons.add,
-                        size: 18, color: const Color(0xFF00897B)),
+                        size: 18, color: AppColors.primary),
                     const SizedBox(width: 4),
                     Text('New',
                         style: GoogleFonts.poppins(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: const Color(0xFF00897B))),
+                            color: AppColors.primary)),
                   ]),
                 ),
               );
@@ -1512,17 +1513,17 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     left: 14, top: 6, bottom: 6, right: 4),
                 decoration: BoxDecoration(
                     color: isSel
-                        ? const Color(0xFF00897B)
+                        ? AppColors.primary
                         : Colors.white,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
                         color: isSel
-                            ? const Color(0xFF00897B)
+                            ? AppColors.primary
                             : Colors.grey[300]!),
                     boxShadow: isSel
                         ? [
                             BoxShadow(
-                                color: const Color(0xFF00897B)
+                                color: AppColors.primary
                                     .withOpacity(0.3),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2))
@@ -1535,7 +1536,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       size: 18,
                       color: isSel
                           ? Colors.white
-                          : const Color(0xFF4DB6AC)),
+                          : AppColors.textSecondary),
                   const SizedBox(width: 8),
                   Text(inv['title'] ?? '',
                       style: GoogleFonts.poppins(
@@ -1560,7 +1561,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                               fontWeight: FontWeight.w600,
                               color: isSel
                                   ? Colors.white
-                                  : const Color(0xFF4DB6AC)))),
+                                  : AppColors.textSecondary))),
                   SizedBox(
                     width: 28,
                     height: 28,
@@ -1605,7 +1606,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
               hintText: 'Search items...',
               hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
               prefixIcon:
-                  Icon(Icons.search, color: const Color(0xFF00897B)),
+                  Icon(Icons.search, color: AppColors.primary),
               suffixIcon: PopupMenuButton<String>(
                 icon: Icon(Icons.sort, color: Colors.grey[600]),
                 tooltip: 'Sort by',
@@ -1634,7 +1635,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
           Icon(icon,
               size: 18,
               color:
-                  _sortBy == value ? const Color(0xFF00897B) : Colors.grey),
+                  _sortBy == value ? AppColors.primary : Colors.grey),
           const SizedBox(width: 8),
           Text(label,
               style: TextStyle(
@@ -1711,12 +1712,12 @@ class _InventoryScreenState extends State<InventoryScreen> {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.white, const Color(0xFF00897B).withOpacity(0.06)],
+            colors: [Colors.white, AppColors.primary.withOpacity(0.06)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const Color(0xFF00897B).withOpacity(0.12)),
+          border: Border.all(color: AppColors.primary.withOpacity(0.12)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1726,10 +1727,10 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF00897B).withOpacity(0.12),
+                    color: AppColors.primary.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(Icons.savings_outlined, color: const Color(0xFF00897B), size: 18),
+                  child: Icon(Icons.savings_outlined, color: AppColors.primary, size: 18),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -1743,7 +1744,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                               color: const Color(0xFF00352E))),
                       Text('Source: $periodSubtitle',
                           style: GoogleFonts.poppins(
-                              fontSize: 11, color: const Color(0xFF80CBC4))),
+                              fontSize: 11, color: AppColors.textHint)),
                     ],
                   ),
                 ),
@@ -1751,7 +1752,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     style: GoogleFonts.poppins(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFF00897B))),
+                        color: AppColors.primary)),
               ],
             ),
             const SizedBox(height: 12),
@@ -1771,10 +1772,10 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       label: Text(chipLabel, overflow: TextOverflow.ellipsis),
                       selected: isSelected,
                       onSelected: (_) => _loadInventoryBudgetSummary(periodBudgetId: periodId),
-                      selectedColor: const Color(0xFF00897B).withOpacity(0.15),
+                      selectedColor: AppColors.primary.withOpacity(0.15),
                       labelStyle: GoogleFonts.poppins(
                         fontSize: 11,
-                        color: isSelected ? const Color(0xFF00897B) : const Color(0xFF00352E),
+                        color: isSelected ? AppColors.primary : Color(0xFF00352E),
                         fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                       ),
                     );
@@ -1836,7 +1837,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
       children: [
         Text(label,
             style: GoogleFonts.poppins(
-                fontSize: 9, color: const Color(0xFF80CBC4))),
+                fontSize: 9, color: AppColors.textHint)),
         const SizedBox(width: 6),
         Flexible(
           child: Text(value,
@@ -1859,11 +1860,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF00897B) : Colors.white,
+            color: isSelected ? AppColors.primary : Colors.white,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
                 color: isSelected
-                    ? const Color(0xFF00897B)
+                    ? AppColors.primary
                     : Colors.grey[300]!)),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
           Text(label,
@@ -1886,7 +1887,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       fontWeight: FontWeight.w600,
                       color: isSelected
                           ? Colors.white
-                          : const Color(0xFF4DB6AC)))),
+                          : AppColors.textSecondary))),
         ]),
       ),
     );
@@ -1909,7 +1910,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
         const Spacer(),
         Text('${_categories.length} categories',
             style: GoogleFonts.poppins(
-                fontSize: 11, color: const Color(0xFF80CBC4))),
+                fontSize: 11, color: AppColors.textHint)),
       ]),
     );
   }
@@ -1920,12 +1921,12 @@ class _InventoryScreenState extends State<InventoryScreen> {
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(20)),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Icon(icon, size: 14, color: color ?? const Color(0xFF00897B)),
+        Icon(icon, size: 14, color: color ?? AppColors.primary),
         const SizedBox(width: 4),
         Text(label,
             style: GoogleFonts.poppins(
                 fontSize: 11,
-                color: color ?? const Color(0xFF4DB6AC),
+                color: color ?? AppColors.textSecondary,
                 fontWeight:
                     color != null ? FontWeight.w600 : FontWeight.normal)),
       ]),
@@ -1956,7 +1957,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
     if (_selectedCategoryId != null || _sortBy != 'name') {
       return RefreshIndicator(
           onRefresh: _loadData,
-          color: const Color(0xFF00897B),
+          color: AppColors.primary,
           child: ListView.builder(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 90),
               itemCount: items.length,
@@ -1968,7 +1969,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
     final categoryNames = grouped.keys.toList()..sort();
     return RefreshIndicator(
       onRefresh: _loadData,
-      color: const Color(0xFF00897B),
+      color: AppColors.primary,
       child: ListView.builder(
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 90),
           itemCount: categoryNames.length,
@@ -2042,7 +2043,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
     if (diff < 0) return Colors.red[700]!;
     if (diff <= 3) return Colors.orange[700]!;
     if (diff <= 7) return Colors.amber[700]!;
-    return const Color(0xFF80CBC4);
+    return AppColors.textHint;
   }
 
   Widget _buildItemTile(dynamic item) {
@@ -2078,7 +2079,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       ? Colors.red
                       : lowStk
                           ? const Color(0xFFFB8C00)
-                          : const Color(0xFF00897B),
+                          : AppColors.primary,
                   width: 3.5)),
           boxShadow: [
             BoxShadow(
@@ -2109,11 +2110,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   Wrap(spacing: 6, runSpacing: 4, children: [
                     if (_selectedCategoryId == null)
                       _infoBadge(catName,
-                          color: const Color(0xFF00897B),
-                          bgColor: const Color(0xFFE0F2F1)),
+                          color: AppColors.primary,
+                          bgColor: AppColors.primarySurface),
                     if (inventoryName.isNotEmpty)
                       _infoBadge(inventoryName,
-                          color: const Color(0xFF80CBC4),
+                          color: AppColors.textHint,
                           bgColor: Colors.grey[100]!),
                     if (purchaseDate != null)
                       _infoBadge(
@@ -2149,11 +2150,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       child: Text(unitName,
                           style: GoogleFonts.poppins(
                               fontSize: 11,
-                              color: const Color(0xFF80CBC4)))),
+                              color: AppColors.textHint))),
               ]),
               Text('min: $threshold',
                   style: GoogleFonts.poppins(
-                      fontSize: 10, color: const Color(0xFF80CBC4))),
+                      fontSize: 10, color: AppColors.textHint)),
             ]),
             const SizedBox(width: 4),
             IconButton(

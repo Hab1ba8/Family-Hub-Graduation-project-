@@ -105,15 +105,15 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
 
   Color _categoryColor(String name, int index) {
     final n = name.toLowerCase();
-    if (n.contains('grocer') || n.contains('food')) return const Color(0xFF00897B);
-    if (n.contains('util')) return const Color(0xFF00ACC1);
+    if (n.contains('grocer') || n.contains('food')) return AppColors.primary;
+    if (n.contains('util')) return AppColors.primaryLight;
     if (n.contains('entertain')) return const Color(0xFFFB8C00);
-    if (n.contains('educ')) return const Color(0xFF4DB6AC);
+    if (n.contains('educ')) return AppColors.textSecondary;
     if (n.contains('transport') || n.contains('travel')) return const Color(0xFF7B1FA2);
     if (n.contains('health') || n.contains('medical')) return const Color(0xFFE91E63);
-    const fallback = [
-      Color(0xFF00897B), Color(0xFF00ACC1), Color(0xFFFB8C00),
-      Color(0xFF4DB6AC), Color(0xFF7B1FA2), Color(0xFFE91E63),
+    final fallback = [
+      AppColors.primary, AppColors.primaryLight, Color(0xFFFB8C00),
+      AppColors.textSecondary, Color(0xFF7B1FA2), Color(0xFFE91E63),
     ];
     return fallback[index % fallback.length];
   }
@@ -122,7 +122,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
     {'bg': Color(0xFFE3F2FD), 'text': Color(0xFF1565C0), 'border': Color(0xFF90CAF9)},
     {'bg': Color(0xFFFFF3E0), 'text': Color(0xFFE65100), 'border': Color(0xFFFFCC80)},
     {'bg': Color(0xFFFCE4EC), 'text': Color(0xFFC2185B), 'border': Color(0xFFF48FB1)},
-    {'bg': Color(0xFFE0F2F1), 'text': Color(0xFF00695C), 'border': Color(0xFF80CBC4)},
+    {'bg': AppColors.primarySurface, 'text': AppColors.dark, 'border': AppColors.textHint},
   ];
 
   // ── BUILD ──────────────────────────────────────────────────────────────────
@@ -130,7 +130,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = context.watch<ThemeProvider>().isDark;
-    final bg = isDark ? const Color(0xFF0A1628) : AppColors.background;
+    final bg = isDark ? Color(0xFF0A1628) : AppColors.background;
 
     return Consumer<FamilyBudgetProvider>(
       builder: (context, provider, _) {
@@ -166,8 +166,8 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
   // ── Header ─────────────────────────────────────────────────────────────────
 
   Widget _buildHeader(BuildContext context, FamilyBudgetProvider provider, bool isDark) {
-    final textColor = isDark ? const Color(0xFFE0F2F1) : AppColors.textPrimary;
-    final headerBg = isDark ? const Color(0xFF122030) : AppColors.background;
+    final textColor = isDark ? AppColors.primarySurface : AppColors.textPrimary;
+    final headerBg = isDark ? Color(0xFF122030) : AppColors.background;
     final reminders = provider.activeReminders;
 
     return Container(
@@ -313,14 +313,14 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF00695C), Color(0xFF00ACC1)],
+          colors: [AppColors.dark, AppColors.primaryLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00897B).withValues(alpha: 0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -424,8 +424,8 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
 
   Widget _buildCategoryCard(List<Map<String, dynamic>> categories, bool isDark) {
     final cardColor = isDark ? const Color(0xFF122030) : Colors.white;
-    final borderColor = isDark ? const Color(0xFF1E3A4A) : AppColors.border;
-    final dividerColor = isDark ? const Color(0xFF1E3A4A) : AppColors.borderLight;
+    final borderColor = isDark ? Color(0xFF1E3A4A) : AppColors.border;
+    final dividerColor = isDark ? Color(0xFF1E3A4A) : AppColors.borderLight;
 
     return Container(
       decoration: BoxDecoration(
@@ -468,7 +468,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
                       Text(name,
                           style: GoogleFonts.poppins(
                               fontSize: _sp(11), fontWeight: FontWeight.w600,
-                              color: isDark ? const Color(0xFFE0F2F1) : AppColors.textPrimary)),
+                              color: isDark ? AppColors.primarySurface : AppColors.textPrimary)),
                       const SizedBox(height: 4),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(3),
@@ -490,7 +490,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
                   '${NumberFormat.currency(symbol: '', decimalDigits: 0).format(spent)}/${NumberFormat.currency(symbol: '', decimalDigits: 0).format(allocated)}',
                   style: GoogleFonts.poppins(
                       fontSize: _sp(9), fontWeight: FontWeight.w600,
-                      color: isWarn ? const Color(0xFFE65100) : AppColors.textSecondary),
+                      color: isWarn ? Color(0xFFE65100) : AppColors.textSecondary),
                 ),
                 if (isWarn) ...[
                   const SizedBox(width: 4),
@@ -508,8 +508,8 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
 
   Widget _buildAllowancesCard(List<Map<String, dynamic>> allowances, bool isDark) {
     final cardColor = isDark ? const Color(0xFF122030) : Colors.white;
-    final borderColor = isDark ? const Color(0xFF1E3A4A) : AppColors.border;
-    final dividerColor = isDark ? const Color(0xFF1E3A4A) : AppColors.borderLight;
+    final borderColor = isDark ? Color(0xFF1E3A4A) : AppColors.border;
+    final dividerColor = isDark ? Color(0xFF1E3A4A) : AppColors.borderLight;
 
     return Container(
       decoration: BoxDecoration(
@@ -565,7 +565,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
                       Text(name,
                           style: GoogleFonts.poppins(
                               fontSize: _sp(11), fontWeight: FontWeight.w600,
-                              color: isDark ? const Color(0xFFE0F2F1) : AppColors.textPrimary)),
+                              color: isDark ? AppColors.primarySurface : AppColors.textPrimary)),
                       const SizedBox(height: 4),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(3),
@@ -607,7 +607,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
 
   Widget _buildPendingSection(bool isDark) {
     final cardColor = isDark ? const Color(0xFF122030) : Colors.white;
-    final borderColor = isDark ? const Color(0xFF1E3A4A) : AppColors.border;
+    final borderColor = isDark ? Color(0xFF1E3A4A) : AppColors.border;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -683,7 +683,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
                   decoration: BoxDecoration(
                     border: isLast ? null : Border(
                         bottom: BorderSide(
-                            color: isDark ? const Color(0xFF1E3A4A) : AppColors.borderLight,
+                            color: isDark ? Color(0xFF1E3A4A) : AppColors.borderLight,
                             width: 0.5)),
                   ),
                   child: Row(
@@ -712,7 +712,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
                               style: GoogleFonts.poppins(
                                   fontSize: _sp(11), fontWeight: FontWeight.w600,
                                   color: isDark
-                                      ? const Color(0xFFE0F2F1)
+                                      ? AppColors.primarySurface
                                       : AppColors.textPrimary),
                               maxLines: 1, overflow: TextOverflow.ellipsis,
                             ),
@@ -885,7 +885,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
         width: 54, height: 54,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF00897B), Color(0xFF00ACC1)],
+            colors: [AppColors.primary, AppColors.primaryLight],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -936,7 +936,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
     try {
       return Color(int.parse(hex.replaceFirst('#', '0xFF')));
     } catch (_) {
-      return const Color(0xFF00897B);
+      return AppColors.primary;
     }
   }
 
@@ -1042,7 +1042,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
               Slider(
                 value: emergencyPct,
                 min: 0, max: 30, divisions: 30,
-                activeColor: const Color(0xFF00897B),
+                activeColor: AppColors.primary,
                 label: '${emergencyPct.toStringAsFixed(0)}%',
                 onChanged: (v) => setSheet(() => emergencyPct = v),
               ),
@@ -1062,7 +1062,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
                     Container(
                       width: 16, height: 16,
                       decoration: BoxDecoration(
-                        color: Color(0xFF00897B),
+                        color: AppColors.primary,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -1119,7 +1119,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.inventory_2_outlined, size: 18, color: Color(0xFF00897B)),
+                          Icon(Icons.inventory_2_outlined, size: 18, color: AppColors.primary),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Column(
@@ -1220,7 +1220,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text('Budget created!'),
-                            backgroundColor: Color(0xFF00897B),
+                            backgroundColor: AppColors.primary,
                           ));
                       }
                     } catch (e) {
@@ -1232,7 +1232,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00897B),
+                    backgroundColor: AppColors.primary,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: const Text('Create Budget',
@@ -1254,10 +1254,10 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF00897B) : Colors.grey.shade100,
+          color: selected ? AppColors.primary : Colors.grey.shade100,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-              color: selected ? const Color(0xFF00897B) : Colors.grey.shade300),
+              color: selected ? AppColors.primary : Colors.grey.shade300),
         ),
         child: Center(
           child: Text(label,

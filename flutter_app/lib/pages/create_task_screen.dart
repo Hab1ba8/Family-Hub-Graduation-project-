@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../core/services/api_service.dart';
 import '../core/theme/theme_provider.dart';
+import '../core/theme/app_theme.dart';
 
 enum RewardTypeOption { points, money, both }
 
@@ -34,18 +35,18 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   double _rewardsBudgetRemaining = 0;
 
   // ─── Theme constants ────────────────────────────────────────────────────────
-  static const _primary = Color(0xFF00897B);
-  static const _primaryLight = Color(0xFF00ACC1);
-  static const _bgLight = Color(0xFFE8F5F5);
+  static Color get _primary => AppColors.primary;
+  static Color get _primaryLight => AppColors.primaryLight;
+  static Color get _bgLight => AppColors.background;
   static const _bgDark = Color(0xFF0A1628);
   static const _cardDark = Color(0xFF122030);
-  static const _borderLight = Color(0xFFB2DFDB);
+  static Color get _borderLight => AppColors.border;
   static const _borderDark = Color(0xFF1E3A4A);
-  static const _borderInner = Color(0xFFE0F2F1);
+  static Color get _borderInner => AppColors.primarySurface;
   static const _textPrimaryLight = Color(0xFF00352E);
-  static const _textPrimaryDark = Color(0xFFE0F2F1);
-  static const _textSecLight = Color(0xFF4DB6AC);
-  static const _textSecDark = Color(0xFF80CBC4);
+  static Color get _textPrimaryDark => AppColors.primarySurface;
+  static Color get _textSecLight => AppColors.textSecondary;
+  static Color get _textSecDark => AppColors.textHint;
 
   @override
   void initState() {
@@ -188,7 +189,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text('Task template created successfully'),
-            backgroundColor: Color(0xFF00897B)),
+            backgroundColor: AppColors.primary),
       );
     } catch (e) {
       if (!mounted) return;
@@ -566,7 +567,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                     ),
                     child: Row(
                       children: [
-                        const SizedBox(
+                        SizedBox(
                             width: 14,
                             height: 14,
                             child: CircularProgressIndicator(
@@ -591,7 +592,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                       gradient: _isSubmitting
                           ? null
                           : LinearGradient(
-                              colors: [Color(0xFF00897B), Color(0xFF00ACC1)],
+                              colors: [AppColors.primary, AppColors.primaryLight],
                               begin: Alignment.centerLeft,
                               end: Alignment.centerRight,
                             ),
@@ -692,7 +693,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
           borderSide: BorderSide(color: border)),
       focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: _primary, width: 2)),
+          borderSide: BorderSide(color: _primary, width: 2)),
       contentPadding:
           const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
     );
@@ -794,7 +795,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF0A2010) : const Color(0xFFE8F5F5),
+        color: isDark ? Color(0xFF0A2010) : AppColors.background,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFA5D6A7)),
       ),
@@ -808,7 +809,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
               style: GoogleFonts.poppins(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
-                color: const Color(0xFF00897B),
+                color: AppColors.primary,
               ),
             ),
           ),

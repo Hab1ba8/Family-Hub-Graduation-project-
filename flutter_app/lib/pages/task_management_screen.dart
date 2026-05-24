@@ -5,20 +5,21 @@ import '../core/services/api_service.dart';
 import '../core/theme/theme_provider.dart';
 import 'create_task_screen.dart';
 import '../core/widgets/guarded_button.dart';
+import '../core/theme/app_theme.dart';
 
-// ─── Teal theme constants ────────────────────────────────────────────────────
-const _tmPrimary = Color(0xFF00897B);
-const _tmPrimaryLight = Color(0xFF00ACC1);
-const _tmBgLight = Color(0xFFE8F5F5);
+// ─── Theme color aliases (getters so they update with palette changes) ───────
+Color get _tmPrimary => AppColors.primary;
+Color get _tmPrimaryLight => AppColors.primaryLight;
+Color get _tmBgLight => AppColors.background;
 const _tmBgDark = Color(0xFF0A1628);
 const _tmCardDark = Color(0xFF122030);
-const _tmBorderLight = Color(0xFFB2DFDB);
+Color get _tmBorderLight => AppColors.border;
 const _tmBorderDark = Color(0xFF1E3A4A);
-const _tmBorderInner = Color(0xFFE0F2F1);
+Color get _tmBorderInner => AppColors.primarySurface;
 const _tmTextPrimaryLight = Color(0xFF00352E);
-const _tmTextPrimaryDark = Color(0xFFE0F2F1);
-const _tmTextSecLight = Color(0xFF4DB6AC);
-const _tmTextSecDark = Color(0xFF80CBC4);
+Color get _tmTextPrimaryDark => AppColors.primarySurface;
+Color get _tmTextSecLight => AppColors.textSecondary;
+Color get _tmTextSecDark => AppColors.textHint;
 
 class TaskManagementScreen extends StatefulWidget {
   const TaskManagementScreen({super.key});
@@ -139,13 +140,13 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
 
   // ─── Avatar helpers ──────────────────────────────────────────────────────
   Map<String, Color> _getAvatarColors(String name) {
-    const sets = [
+    final sets = [
       {'bg': Color(0xFFE3F2FD), 'text': Color(0xFF1565C0), 'border': Color(0xFF90CAF9)},
       {'bg': Color(0xFFFFF3E0), 'text': Color(0xFFE65100), 'border': Color(0xFFFFCC80)},
       {'bg': Color(0xFFFCE4EC), 'text': Color(0xFFC2185B), 'border': Color(0xFFF48FB1)},
-      {'bg': Color(0xFFE0F2F1), 'text': Color(0xFF00695C), 'border': Color(0xFF80CBC4)},
+      {'bg': AppColors.primarySurface, 'text': AppColors.dark, 'border': AppColors.textHint},
       {'bg': Color(0xFFF3E5F5), 'text': Color(0xFF7B1FA2), 'border': Color(0xFFCE93D8)},
-      {'bg': Color(0xFFE8F5F5), 'text': Color(0xFF00897B), 'border': Color(0xFFB2DFDB)},
+      {'bg': AppColors.background, 'text': AppColors.primary, 'border': AppColors.border},
     ];
     final idx = name.isEmpty ? 0 : name.codeUnitAt(0) % sets.length;
     return sets[idx];
@@ -188,7 +189,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
             width: 9,
             height: 9,
             decoration: BoxDecoration(
-              color: const Color(0xFF00897B),
+              color: AppColors.primary,
               shape: BoxShape.circle,
               border: Border.all(color: Colors.white, width: 1.5),
             ),
@@ -828,7 +829,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                           style: GoogleFonts.poppins(
                               color: Colors.white, fontWeight: FontWeight.w600)),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00897B),
+                        backgroundColor: AppColors.primary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
@@ -893,13 +894,13 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE0F2F1),
+                      color: AppColors.primarySurface,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xFFB2DFDB)),
+                      border: Border.all(color: AppColors.border),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.celebration, color: const Color(0xFF00897B), size: 20),
+                        Icon(Icons.celebration, color: AppColors.primary, size: 20),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
@@ -910,7 +911,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                             ),
                             style: GoogleFonts.poppins(
                               fontSize: 12, 
-                              color: const Color(0xFF00897B),
+                              color: AppColors.primary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -968,7 +969,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Row(
           children: [
-            Icon(Icons.check_circle, color: const Color(0xFF00897B)),
+            Icon(Icons.check_circle, color: AppColors.primary),
             const SizedBox(width: 10),
             Text('Complete Task', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
           ],
@@ -986,9 +987,9 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
               width: double.infinity,
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: const Color(0xFFE0F2F1),
+                color: AppColors.primarySurface,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0xFFB2DFDB)),
+                border: Border.all(color: AppColors.border),
               ),
               child: Text(
                 _buildRewardSummaryLine(
@@ -999,7 +1000,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                 style: GoogleFonts.poppins(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF00897B),
+                  color: AppColors.primary,
                 ),
               ),
             ),
@@ -1012,7 +1013,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF00897B)),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
             child: Text('Yes, I completed it',
                 style: GoogleFonts.poppins(color: Colors.white)),
           ),
@@ -1079,7 +1080,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
         Container(
           padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
-            color: const Color(0xFFE0F2F1),
+            color: AppColors.primarySurface,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: iconColor, size: 18),
@@ -1095,7 +1096,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                 style: GoogleFonts.poppins(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF00897B),
+                  color: AppColors.primary,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -1388,7 +1389,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                   borderRadius: BorderRadius.circular(16)),
               title: Row(
                 children: [
-                  Icon(Icons.add_task, color: const Color(0xFF00897B)),
+                  Icon(Icons.add_task, color: AppColors.primary),
                   const SizedBox(width: 8),
                   Text('Assign Task', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
                 ],
@@ -1661,7 +1662,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00897B)),
+                      backgroundColor: AppColors.primary),
                   child: Text('Assign',
                       style: GoogleFonts.poppins(color: Colors.white)),
                 ),
@@ -1958,7 +1959,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                 }
               },
               style:
-                  ElevatedButton.styleFrom(backgroundColor: const Color(0xFF00897B)),
+                  ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
               child: Text('Create',
                   style: GoogleFonts.poppins(color: Colors.white)),
             ),
@@ -2060,7 +2061,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.check_circle, size: 60, color: Color(0xFF80CBC4)),
+            Icon(Icons.check_circle, size: 60, color: AppColors.textHint),
             const SizedBox(height: 16),
             Text('No pending assignment requests',
                 style: GoogleFonts.poppins(color: textSec)),
@@ -2140,7 +2141,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.task_alt, size: 60, color: Color(0xFF80CBC4)),
+            Icon(Icons.task_alt, size: 60, color: AppColors.textHint),
             const SizedBox(height: 16),
             Text('All caught up!',
                 style: GoogleFonts.poppins(
@@ -2276,7 +2277,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE0F2F1),
+                      color: AppColors.primarySurface,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: _tmBorderLight),
                     ),
@@ -2307,7 +2308,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                             const EdgeInsets.symmetric(vertical: 11),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Color(0xFF00897B), Color(0xFF00ACC1)],
+                            colors: [AppColors.primary, AppColors.primaryLight],
                             begin: Alignment.centerLeft,
                             end: Alignment.centerRight,
                           ),
@@ -2392,12 +2393,12 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
         gradient: LinearGradient(
           colors: isDark
               ? [const Color(0xFF0A2A1A), const Color(0xFF0A2030)]
-              : [const Color(0xFFE8F5F5), const Color(0xFFE0F2F1)],
+              : [AppColors.background, AppColors.primarySurface],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFB2DFDB)),
+        border: Border.all(color: AppColors.border),
       ),
       child: Row(
         children: [
@@ -2405,11 +2406,11 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: const Color(0xFF00897B),
+              color: AppColors.primary,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF00897B).withValues(alpha: 0.35),
+                  color: AppColors.primary.withValues(alpha: 0.35),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -2429,7 +2430,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: const Color(0xFF00897B),
+                    color: AppColors.primary,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -2438,19 +2439,19 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                   '${newTotal > 0 ? ' → now $newTotal pts total' : ''}',
                   style: GoogleFonts.poppins(
                     fontSize: 11,
-                    color: const Color(0xFF00897B),
+                    color: AppColors.primary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(
+          SizedBox(
             width: 20,
             height: 20,
             child: CircularProgressIndicator(
               strokeWidth: 2,
-              color: Color(0xFF00897B),
+              color: AppColors.primary,
             ),
           ),
         ],
@@ -2465,7 +2466,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
         width: 32,
         height: 32,
         decoration: BoxDecoration(
-          color: const Color(0xFFE0F2F1),
+          color: AppColors.primarySurface,
           shape: BoxShape.circle,
           border: Border.all(color: _tmBorderLight),
         ),
@@ -2551,7 +2552,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide:
-                        const BorderSide(color: _tmBorderLight)),
+                        BorderSide(color: _tmBorderLight)),
                 focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: const BorderSide(
@@ -2641,7 +2642,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                 ? 'Task approved! Points awarded.'
                 : 'Task completion rejected'),
             backgroundColor: approved
-                ? const Color(0xFF00897B)
+                ? AppColors.primary
                 : Colors.orange,
           ),
         );
@@ -2719,7 +2720,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF00695C), _tmPrimaryLight],
+              colors: [AppColors.dark, _tmPrimaryLight],
             ),
             borderRadius: BorderRadius.circular(16),
           ),
@@ -2798,7 +2799,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFF00897B) : Colors.grey[200],
+        color: isSelected ? AppColors.primary : Colors.grey[200],
         borderRadius: BorderRadius.circular(20),
         border: color != null ? Border.all(color: color, width: 1.5) : null,
       ),
@@ -2947,7 +2948,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
     final textSec = isDark ? _tmTextSecDark : _tmTextSecLight;
     final cardColor = isDark ? _tmCardDark : Colors.white;
     Color cardBorder = isDark ? _tmBorderDark : _tmBorderLight;
-    if (status == 'approved') cardBorder = const Color(0xFFB2DFDB);
+    if (status == 'approved') cardBorder = AppColors.border;
     if (status == 'rejected' || status == 'late') {
       cardBorder = const Color(0xFFFFCDD2);
     }
@@ -3030,7 +3031,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                           horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: status == 'approved'
-                            ? const Color(0xFFE0F2F1)
+                            ? AppColors.primarySurface
                             : isDark
                                 ? const Color(0xFF1A2F42)
                                 : const Color(0xFFF5F5F5),
@@ -3505,7 +3506,7 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                         Icons.star,
                         'Reward Points',
                         '+$assignedPoints pts',
-                        valueColor: const Color(0xFF00897B),
+                        valueColor: AppColors.primary,
                       ),
                     ),
                     Expanded(
@@ -3892,18 +3893,18 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                     child: currentPoints == 0
                         ? Row(
                             children: [
-                              const SizedBox(
+                              SizedBox(
                                 width: 14,
                                 height: 14,
                                 child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: Color(0xFF4DB6AC)),
+                                    color: AppColors.textSecondary),
                               ),
                               const SizedBox(width: 8),
                               Text('Loading balance...',
                                   style: GoogleFonts.poppins(
                                       fontSize: 11,
-                                      color: const Color(0xFF4DB6AC))),
+                                      color: AppColors.textSecondary)),
                             ],
                           )
                         : Wrap(
@@ -3912,11 +3913,11 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
                               Text('$memberName: $currentPoints',
                                   style: GoogleFonts.poppins(
                                       fontSize: 12,
-                                      color: const Color(0xFF4DB6AC),
+                                      color: AppColors.textSecondary,
                                       fontWeight: FontWeight.w500)),
-                              const Text(' → ',
+                              Text(' → ',
                                   style: TextStyle(
-                                      color: Color(0xFF4DB6AC),
+                                      color: AppColors.textSecondary,
                                       fontWeight: FontWeight.bold)),
                               Text('$afterPenalty pts',
                                   style: GoogleFonts.poppins(

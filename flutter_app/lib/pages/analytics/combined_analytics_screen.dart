@@ -11,6 +11,8 @@ import 'package:printing/printing.dart';
 import '../../core/services/api_service.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/guarded_button.dart';
+import 'package:provider/provider.dart';
+import 'package:app_frontend/core/theme/theme_provider.dart';
 
 class CombinedAnalyticsScreen extends StatefulWidget {
   const CombinedAnalyticsScreen({super.key});
@@ -225,6 +227,7 @@ class _CombinedAnalyticsScreenState extends State<CombinedAnalyticsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<ThemeProvider>(); // rebuild on palette change
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
@@ -349,7 +352,7 @@ class _CombinedAnalyticsScreenState extends State<CombinedAnalyticsScreen> {
           'Money as Allowance/Rewards',
           '${_money(overview['total_money_given_as_allowance_rewards'])} EGP',
           Icons.volunteer_activism,
-          const Color(0xFF00897B),
+          AppColors.primary,
         ),
       ],
     );
@@ -496,7 +499,7 @@ class _CombinedAnalyticsScreenState extends State<CombinedAnalyticsScreen> {
           x: i,
           barsSpace: 4,
           barRods: [
-            BarChartRodData(toY: earned, width: 10, color: const Color(0xFF00897B), borderRadius: BorderRadius.circular(3)),
+            BarChartRodData(toY: earned, width: 10, color: AppColors.primary, borderRadius: BorderRadius.circular(3)),
             BarChartRodData(toY: redeemed, width: 10, color: const Color(0xFFEF6C00), borderRadius: BorderRadius.circular(3)),
           ],
         ),
@@ -703,7 +706,7 @@ class _CombinedAnalyticsScreenState extends State<CombinedAnalyticsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           budgetCard('Rewards category', rewards, const Color(0xFF6A1B9A)),
-          budgetCard('Allowances category', allowances, const Color(0xFF00897B)),
+          budgetCard('Allowances category', allowances, AppColors.primary),
           budgetCard('Personal budget tracker', personalBudget, const Color(0xFF1565C0)),
           if (alerts.isNotEmpty) ...[
             const SizedBox(height: 6),

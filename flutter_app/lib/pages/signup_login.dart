@@ -7,27 +7,30 @@ import '../core/localization/app_i18n.dart';
 import '../core/widgets/language_switch_chip.dart';
 import 'home.dart';
 import 'manage_accounts_page.dart';
+import '../core/theme/app_theme.dart';
+import 'package:provider/provider.dart';
+import '../core/theme/theme_provider.dart';
 
 // ─── Shared input decoration ────────────────────────────────────────────────
 InputDecoration _fieldDeco(String hint, IconData icon, {Widget? suffix}) {
   return InputDecoration(
     hintText: hint,
     hintStyle: const TextStyle(color: Color(0xFFAAAAAA), fontSize: 14),
-    prefixIcon: Icon(icon, color: const Color(0xFF00897B), size: 20),
+    prefixIcon: Icon(icon, color: AppColors.primary, size: 20),
     suffixIcon: suffix,
     filled: true,
     fillColor: const Color(0xFFF0FAFA),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: Color(0xFFB2DFDB)),
+      borderSide: BorderSide(color: AppColors.border),
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: Color(0xFFB2DFDB)),
+      borderSide: BorderSide(color: AppColors.border),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: Color(0xFF00897B), width: 1.5),
+      borderSide: BorderSide(color: AppColors.primary, width: 1.5),
     ),
     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
   );
@@ -35,11 +38,11 @@ InputDecoration _fieldDeco(String hint, IconData icon, {Widget? suffix}) {
 
 // ─── Shared primary button style ────────────────────────────────────────────
 ButtonStyle _primaryBtn() => ElevatedButton.styleFrom(
-  backgroundColor: const Color(0xFF00897B),
+  backgroundColor: AppColors.primary,
   foregroundColor: Colors.white,
   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
   elevation: 3,
-  shadowColor: const Color(0xFF00897B).withOpacity(0.35),
+  shadowColor: AppColors.primary.withOpacity(0.35),
 );
 
 // ================= LOGIN PAGE =================
@@ -185,18 +188,18 @@ class _LoginPageState extends State<LoginPage> {
                       margin: const EdgeInsets.only(bottom: 8),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE0F2F1),
+                        color: AppColors.primarySurface,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFB2DFDB)),
+                        border: Border.all(color: AppColors.border),
                       ),
                       child: Row(
                         children: [
                           CircleAvatar(
-                            backgroundColor: const Color(0xFFE0F2F1),
+                            backgroundColor: AppColors.primarySurface,
                             child: Text(
                               initial,
-                              style: const TextStyle(
-                                color: Color(0xFF00897B),
+                              style: TextStyle(
+                                color: AppColors.primary,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -210,7 +213,7 @@ class _LoginPageState extends State<LoginPage> {
                                   _t('Current account', 'الحساب الحالي'),
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: Color(0xFF00897B),
+                                    color: AppColors.primary,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -241,11 +244,11 @@ class _LoginPageState extends State<LoginPage> {
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
                       leading: CircleAvatar(
-                        backgroundColor: const Color(0xFFE0F2F1),
+                        backgroundColor: AppColors.primarySurface,
                         child: Text(
                           (username.isNotEmpty ? username[0] : 'A').toUpperCase(),
-                          style: const TextStyle(
-                            color: Color(0xFF00897B),
+                          style: TextStyle(
+                            color: AppColors.primary,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -275,8 +278,8 @@ class _LoginPageState extends State<LoginPage> {
                         icon: Icon(Icons.add),
                         label: Text(_t('Add New Account', 'إضافة حساب جديد')),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF00897B),
-                          side: const BorderSide(color: Color(0xFF00897B)),
+                          foregroundColor: AppColors.primary,
+                          side: BorderSide(color: AppColors.primary),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -355,8 +358,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<ThemeProvider>(); // rebuild on palette change
     return Scaffold(
-      backgroundColor: const Color(0xFFE8F5F5),
+      backgroundColor: AppColors.background,
       body: Center(
         child: SingleChildScrollView(
           child: ContentContainer(
@@ -391,9 +395,9 @@ class _LoginPageState extends State<LoginPage> {
                     width: 92,
                     height: 92,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE0F2F1),
+                      color: AppColors.primarySurface,
                       shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFFB2DFDB), width: 1.4),
+                      border: Border.all(color: AppColors.border, width: 1.4),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(18),
@@ -407,7 +411,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 10),
                 Text(
                   _t('Long press icon to switch accounts', 'اضغط مطولاً على الأيقونة لتبديل الحسابات'),
-                  style: TextStyle(fontSize: 11, color: Color(0xFF4DB6AC)),
+                  style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
                 ),
                 const SizedBox(height: 32),
                 
@@ -437,13 +441,13 @@ class _LoginPageState extends State<LoginPage> {
                         return InputChip(
                           label: Text(
                             '$familyTitle ($username)',
-                            style: const TextStyle(
-                              color: Color(0xFF00897B),
+                            style: TextStyle(
+                              color: AppColors.primary,
                               fontSize: 12,
                             ),
                           ),
                           backgroundColor: Colors.white,
-                          side: const BorderSide(color: Color(0xFF00897B)),
+                          side: BorderSide(color: AppColors.primary),
                           onPressed: _isLoading
                               ? null
                               : () => _quickSwitchProfile(profileKey),
@@ -543,7 +547,7 @@ class _LoginPageState extends State<LoginPage> {
                       child: Text(
                         _t('Sign Up', 'إنشاء حساب'),
                         style: TextStyle(
-                          color: Color(0xFF00897B),
+                          color: AppColors.primary,
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
@@ -709,13 +713,13 @@ class _FamilyPasswordLoginPageState extends State<FamilyPasswordLoginPage> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF00897B).withOpacity(0.1),
+                        color: AppColors.primary.withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         Icons.lock_outline,
                         size: 40,
-                        color: Color(0xFF00897B),
+                        color: AppColors.primary,
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -859,7 +863,7 @@ class _FamilyPasswordLoginPageState extends State<FamilyPasswordLoginPage> {
                                 }
                               },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF00897B),
+                          backgroundColor: AppColors.primary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -896,9 +900,9 @@ class _FamilyPasswordLoginPageState extends State<FamilyPasswordLoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE8F5F5),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFE8F5F5),
+        backgroundColor: AppColors.background,
         foregroundColor: const Color(0xFF1A1A1A),
         elevation: 0,
         title: Text(_t('Choose Family', 'اختر العائلة')),
@@ -941,7 +945,7 @@ class _FamilyPasswordLoginPageState extends State<FamilyPasswordLoginPage> {
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    Icon(Icons.email_outlined, size: 14, color: Color(0xFF00897B)),
+                    Icon(Icons.email_outlined, size: 14, color: AppColors.primary),
                     const SizedBox(width: 6),
                     Text(
                       widget.email,
@@ -957,11 +961,11 @@ class _FamilyPasswordLoginPageState extends State<FamilyPasswordLoginPage> {
                   decoration: BoxDecoration(
                     color: const Color(0xFFF0FAFA),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFB2DFDB)),
+                    border: Border.all(color: AppColors.border),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.family_restroom, color: Color(0xFF00897B), size: 20),
+                      Icon(Icons.family_restroom, color: AppColors.primary, size: 20),
                       const SizedBox(width: 10),
                       Expanded(
                         child: DropdownButtonHideUnderline(
@@ -1067,7 +1071,7 @@ class _SignUpPageState extends State<SignUpPage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: Color(0xFF00897B),
+              primary: AppColors.primary,
               onPrimary: Colors.white,
               onSurface: Colors.black,
             ),
@@ -1188,7 +1192,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE8F5F5),
+      backgroundColor: AppColors.background,
       body: Center(
         child: SingleChildScrollView(
           child: ContentContainer(
@@ -1222,9 +1226,9 @@ class _SignUpPageState extends State<SignUpPage> {
                   width: 92,
                   height: 92,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE0F2F1),
+                    color: AppColors.primarySurface,
                     shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFFB2DFDB), width: 1.4),
+                    border: Border.all(color: AppColors.border, width: 1.4),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -1270,7 +1274,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   decoration: _fieldDeco(
                     _t('Birthdate', 'تاريخ الميلاد'),
                     Icons.cake_outlined,
-                    suffix: Icon(Icons.calendar_today, color: Color(0xFF00897B), size: 18),
+                    suffix: Icon(Icons.calendar_today, color: AppColors.primary, size: 18),
                   ),
                 ),
                 const SizedBox(height: 14),
@@ -1368,7 +1372,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       child: Text(
                         _t('Login', 'تسجيل الدخول'),
                         style: TextStyle(
-                          color: Color(0xFF00897B),
+                          color: AppColors.primary,
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),

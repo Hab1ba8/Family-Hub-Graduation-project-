@@ -749,7 +749,7 @@ class _SettingPageState extends State<SettingPage> {
                         title: _t('Edit Profile', 'تعديل الملف الشخصي'),
                         subtitle: _currentUsername.isNotEmpty ? _currentUsername : null,
                         onTap: _showEditProfileDialog),
-                    _buildRow(icon: Icons.group_outlined, iconBg: const Color(0xFFE8F5F5), iconColor: const Color(0xFF00897B),
+                    _buildRow(icon: Icons.group_outlined, iconBg: AppColors.background, iconColor: AppColors.primary,
                         title: _t('Family Members', 'أفراد العائلة'),
                         subtitle: _membersLoading ? null : '${_familyMembers.length} ${_t('members', 'أعضاء')}',
                         onTap: _showFamilyMembersSheet),
@@ -766,7 +766,7 @@ class _SettingPageState extends State<SettingPage> {
                     _buildSection(label: _t('FAMILY SETTINGS', 'إعدادات العائلة'), rows: [
                       _buildRow(
                         icon: Icons.currency_exchange,
-                        iconBg: const Color(0xFFE8F5F5), iconColor: const Color(0xFF00897B),
+                        iconBg: AppColors.background, iconColor: AppColors.primary,
                         title: _t('Conversion Rates', 'أسعار التحويل'),
                         subtitle: '1 EGP = ${_moneyToPointsRate.toStringAsFixed(0)} pts  •  100 pts = ${(_pointsToMoneyRate * 100).toStringAsFixed(0)} EGP',
                         onTap: _showConversionRateDialog,
@@ -795,7 +795,7 @@ class _SettingPageState extends State<SettingPage> {
                         onTap: _showLanguageDialog),
                     _buildToggleRow(
                       icon: isDark ? Icons.dark_mode : Icons.light_mode_outlined,
-                      iconBg: isDark ? const Color(0xFF1A1A2E) : AppColors.primarySurface,
+                      iconBg: isDark ? Color(0xFF1A1A2E) : AppColors.primarySurface,
                       iconColor: isDark ? Colors.white : AppColors.primary,
                       title: _t('Dark Mode', 'الوضع الداكن'),
                       subtitle: isDark ? _t('On', 'مفعّل') : _t('Off', 'معطّل'),
@@ -854,7 +854,7 @@ class _SettingPageState extends State<SettingPage> {
       decoration: BoxDecoration(
         gradient: AppColors.primaryGradient,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 4))],
+        boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 12, offset: Offset(0, 4))],
       ),
       child: Row(
         children: [

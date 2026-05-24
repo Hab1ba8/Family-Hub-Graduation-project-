@@ -8,6 +8,9 @@ import '../core/services/api_service.dart';
 import '../core/styling/app_color.dart';
 import '../core/utils/food_utils.dart';
 import '../core/widgets/guarded_button.dart';
+import '../core/theme/app_theme.dart';
+import 'package:provider/provider.dart';
+import '../core/theme/theme_provider.dart';
 
 class ReceiptsScreen extends StatefulWidget {
   const ReceiptsScreen({super.key});
@@ -67,6 +70,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<ThemeProvider>(); // rebuild on palette change
     return Scaffold(
       backgroundColor: Appcolor.foodBg,
       body: SafeArea(
@@ -209,7 +213,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
               margin: const EdgeInsets.only(bottom: 10),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
-                color: const Color(0xFF00695C),
+                color: AppColors.dark,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(
@@ -231,7 +235,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
           FloatingActionButton(
             heroTag: 'scan_fab',
             onPressed: _isScanning ? null : _scanReceipt,
-            backgroundColor: const Color(0xFF00695C),
+            backgroundColor: AppColors.dark,
             mini: true,
             tooltip: 'Scan receipt with AI',
             child: Icon(Icons.document_scanner,
@@ -272,7 +276,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFB2DFDB), width: 1),
+        border: Border.all(color: AppColors.border, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -747,19 +751,19 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFFE0F2F1),
+                                      color: AppColors.primarySurface,
                                       borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: const Color(0xFFB2DFDB)),
+                                      border: Border.all(color: AppColors.border),
                                     ),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Icon(Icons.add, size: 14, color: Color(0xFF00897B)),
+                                        Icon(Icons.add, size: 14, color: AppColors.primary),
                                         const SizedBox(width: 4),
                                         Text('Add Item',
                                             style: GoogleFonts.poppins(
                                                 fontSize: 12,
-                                                color: const Color(0xFF00897B),
+                                                color: AppColors.primary,
                                                 fontWeight: FontWeight.w500)),
                                       ],
                                     ),
@@ -1044,7 +1048,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                    color: const Color(0xFFE0F2F1),
+                    color: AppColors.primarySurface,
                     borderRadius: BorderRadius.circular(10)),
                 child: Icon(Icons.camera_alt,
                     color: Appcolor.foodPrimary),
@@ -1062,7 +1066,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                    color: const Color(0xFFE0F2F1),
+                    color: AppColors.primarySurface,
                     borderRadius: BorderRadius.circular(10)),
                 child: Icon(Icons.photo_library,
                     color: Appcolor.foodPrimary),
@@ -1177,7 +1181,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
                         horizontal: 20, vertical: 16),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Color(0xFF00695C), Color(0xFF00ACC1)],
+                        colors: [AppColors.dark, AppColors.primaryLight],
                       ),
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(20),
@@ -1241,7 +1245,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
                             width: double.infinity,
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFE0F2F1),
+                              color: AppColors.primarySurface,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Row(
@@ -1461,7 +1465,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
                                 Switch(
                                   value: addToInventory,
                                   activeThumbColor: Appcolor.foodPrimary,
-                                  activeTrackColor: const Color(0xFF80CBC4),
+                                  activeTrackColor: AppColors.textHint,
                                   onChanged: (v) => setDialogState(
                                       () => addToInventory = v),
                                 ),
@@ -1667,12 +1671,12 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: isChecked
-            ? const Color(0xFFE0F2F1)
+            ? AppColors.primarySurface
             : const Color(0xFFF5F5F5),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: isChecked
-              ? const Color(0xFFB2DFDB)
+              ? AppColors.border
               : Colors.grey[200]!,
         ),
       ),

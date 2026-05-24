@@ -3,6 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:app_frontend/core/services/api_service.dart';
 import 'package:app_frontend/core/widgets/guarded_button.dart';
+import 'package:app_frontend/core/theme/app_theme.dart';
+import 'package:provider/provider.dart';
+import 'package:app_frontend/core/theme/theme_provider.dart';
 
 class EventFundingScreen extends StatefulWidget {
   const EventFundingScreen({super.key});
@@ -268,7 +271,7 @@ class _EventFundingScreenState extends State<EventFundingScreen>
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF00897B),
+                          backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                         ),
@@ -441,15 +444,16 @@ class _EventFundingScreenState extends State<EventFundingScreen>
 
   @override
   Widget build(BuildContext context) {
+    context.watch<ThemeProvider>(); // rebuild on palette change
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6F8),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF00897B),
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         title: Text('Event Funding', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: Color(0xFF00897B)))
+          ? Center(child: CircularProgressIndicator(color: AppColors.primary))
           : (_eventId == null || _eventId!.isEmpty)
               ? _buildErrorState('Missing event ID')
               : _buildContent(),
@@ -485,9 +489,9 @@ class _EventFundingScreenState extends State<EventFundingScreen>
               ),
               child: TabBar(
                 controller: _tabController,
-                labelColor: const Color(0xFF00897B),
+                labelColor: AppColors.primary,
                 unselectedLabelColor: Colors.grey[700],
-                indicatorColor: const Color(0xFF00897B),
+                indicatorColor: AppColors.primary,
                 tabs: _tabs.map((t) => Tab(text: t.title)).toList(),
               ),
             ),
@@ -639,7 +643,7 @@ class _EventFundingScreenState extends State<EventFundingScreen>
                   icon: Icon(_isAutoSaveEnabled ? Icons.check_circle : Icons.savings),
                   label: Text(_isAutoSaveEnabled ? 'Auto-Save Enabled' : 'Set Auto-Save'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00897B),
+                    backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                   ),
                 ),
@@ -670,7 +674,7 @@ class _EventFundingScreenState extends State<EventFundingScreen>
               icon: Icon(Icons.add),
               label: const Text('Add Contribution'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF00897B),
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
               ),
             ),
@@ -728,7 +732,7 @@ class _EventFundingScreenState extends State<EventFundingScreen>
             minHeight: 8,
             borderRadius: BorderRadius.circular(999),
             backgroundColor: Colors.grey.shade200,
-            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF00897B)),
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
           ),
           const SizedBox(height: 6),
           Text(
@@ -776,7 +780,7 @@ class _EventFundingScreenState extends State<EventFundingScreen>
                 child: GuardedElevatedButton(
                   onPressed: _myPoints >= cost ? _redeemSpot : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00897B),
+                    backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                   ),
                   child: const Text('Redeem Spot'),
@@ -803,9 +807,9 @@ class _EventFundingScreenState extends State<EventFundingScreen>
 
                   return ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: const CircleAvatar(
-                      backgroundColor: Color(0xFFE8F5F5),
-                      child: Icon(Icons.person, color: Color(0xFF00897B)),
+                    leading: CircleAvatar(
+                      backgroundColor: AppColors.background,
+                      child: Icon(Icons.person, color: AppColors.primary),
                     ),
                     title: Text(mail, style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
                     subtitle: Text(

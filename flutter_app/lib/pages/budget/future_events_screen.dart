@@ -25,8 +25,8 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
   bool _eventsLoading = true;
 
   // ── Color / icon palette per event index ─────────────────────────────────
-  static const _eventBg = [
-    Color(0xFFE0F2F1), Color(0xFFFFF8E1), Color(0xFFE8F5F5),
+  static get _eventBg => [
+    AppColors.primarySurface, Color(0xFFFFF8E1), AppColors.background,
     Color(0xFFE3F2FD), Color(0xFFFCE4EC), Color(0xFFF3E5F5),
   ];
   static final _eventColors = [
@@ -302,7 +302,7 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
                       gradient: isLoading
                           ? null
                           : LinearGradient(
-                              colors: [Color(0xFF00897B), Color(0xFF00ACC1)],
+                              colors: [AppColors.primary, AppColors.primaryLight],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight),
                       color: isLoading ? AppColors.border : null,
@@ -382,7 +382,7 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = context.watch<ThemeProvider>().isDark;
-    final bg     = isDark ? const Color(0xFF0A1628) : AppColors.background;
+    final bg     = isDark ? Color(0xFF0A1628) : AppColors.background;
 
     return Consumer<FamilyBudgetProvider>(
       builder: (ctx, provider, _) {
@@ -412,7 +412,7 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
               width: 54, height: 54,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Color(0xFF00897B), Color(0xFF00ACC1)],
+                  colors: [AppColors.primary, AppColors.primaryLight],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -492,7 +492,7 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
     final cardBg = isDark ? const Color(0xFF122030) : Colors.white;
     final borderColor = isFunded
         ? const Color(0xFFA5D6A7)
-        : (isDark ? const Color(0xFF1E3A4A) : AppColors.border);
+        : (isDark ? Color(0xFF1E3A4A) : AppColors.border);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -529,7 +529,7 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
                         style: GoogleFonts.poppins(
                             fontSize: _sp(13), fontWeight: FontWeight.w700,
                             color: isDark
-                                ? const Color(0xFFE0F2F1)
+                                ? AppColors.primarySurface
                                 : AppColors.textPrimary),
                         maxLines: 1, overflow: TextOverflow.ellipsis),
                     Text('Expected: $dateLabel',
@@ -544,13 +544,13 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE8F5F5),
+                    color: AppColors.background,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text('✓ Funded',
                       style: GoogleFonts.poppins(
                           fontSize: _sp(9), fontWeight: FontWeight.w700,
-                          color: const Color(0xFF00897B))),
+                          color: AppColors.primary)),
                 )
               else ...[
                 GestureDetector(
@@ -732,7 +732,7 @@ class _FutureEventsScreenState extends State<FutureEventsScreen> {
                         horizontal: 24, vertical: 13),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Color(0xFF00897B), Color(0xFF00ACC1)],
+                        colors: [AppColors.primary, AppColors.primaryLight],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),

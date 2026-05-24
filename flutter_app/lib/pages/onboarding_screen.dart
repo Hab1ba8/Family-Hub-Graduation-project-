@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../core/styling/responsive.dart';
+import '../core/theme/app_theme.dart';
+import 'package:provider/provider.dart';
+import '../core/theme/theme_provider.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -38,8 +41,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<ThemeProvider>(); // rebuild on palette change
     return Scaffold(
-      backgroundColor: const Color(0xFFE8F5F5),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -48,7 +52,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
             child: Text(
               'Skip',
-              style: GoogleFonts.poppins(color: const Color(0xFF00897B), fontSize: 16),
+              style: GoogleFonts.poppins(color: AppColors.primary, fontSize: 16),
             ),
           ),
           const SizedBox(width: 16),
@@ -78,7 +82,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF00897B).withOpacity(0.1),
+                              color: AppColors.primary.withOpacity(0.1),
                               blurRadius: 30,
                               spreadRadius: 10,
                             ),
@@ -87,7 +91,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         child: Icon(
                           _pages[index]['icon'] as IconData,
                           size: 80,
-                          color: const Color(0xFF00897B),
+                          color: AppColors.primary,
                         ),
                       ),
                       const SizedBox(height: 40),
@@ -128,7 +132,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 width: _currentIndex == index ? 40 : 20,
                 decoration: BoxDecoration(
                   color: _currentIndex == index
-                      ? const Color(0xFF00897B)
+                      ? AppColors.primary
                       : Colors.grey[300],
                   borderRadius: BorderRadius.circular(2),
                 ),
@@ -153,7 +157,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF00897B),
+                  backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),

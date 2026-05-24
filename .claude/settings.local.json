@@ -10,7 +10,14 @@
       "Bash(node -e \"require\\('./routes/receiptRoutes'\\); console.log\\('routes OK'\\)\")",
       "Bash(flutter analyze *)",
       "Bash(node -e \"require\\('./controllers/receiptController'\\); console.log\\('OK'\\)\")",
-      "Bash(grep -v \"//\")"
+      "Bash(grep -v \"//\")",
+      "Bash(git stash *)",
+      "Bash(python fix_colors.py)",
+      "Bash(python fix_const2.py)",
+      "Bash(python find_missing_watch.py)",
+      "Bash(python add_watch.py)",
+      "Bash(del fix_colors.py fix_const.py fix_const2.py find_missing_watch.py add_watch.py)",
+      "PowerShell(python -c \"import docx; print\\('available'\\)\" 2>&1)"
     ]
   }
 }

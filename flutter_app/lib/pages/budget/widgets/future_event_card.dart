@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:app_frontend/core/theme/app_theme.dart';
 
 class FutureEventCard extends StatelessWidget {
   final Map<String, dynamic> event;
@@ -101,7 +102,7 @@ class FutureEventCard extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: progress,
                 backgroundColor: Colors.grey.shade200,
-                valueColor: AlwaysStoppedAnimation<Color>(isCompleted ? Colors.green : const Color(0xFF00897B)),
+                valueColor: AlwaysStoppedAnimation<Color>(isCompleted ? Colors.green : AppColors.primary),
                 minHeight: 10,
               ),
             ),
@@ -111,7 +112,7 @@ class FutureEventCard extends StatelessWidget {
               Text(
                 '${(progress * 100).toStringAsFixed(0)}%',
                 style: TextStyle(
-                  color: progress >= 1.0 ? Colors.green : const Color(0xFF00897B),
+                  color: progress >= 1.0 ? Colors.green : AppColors.primary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -120,14 +121,14 @@ class FutureEventCard extends StatelessWidget {
               const SizedBox(height: 10),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                decoration: BoxDecoration(color: const Color(0xFFE8F5F5), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: AppColors.background, borderRadius: BorderRadius.circular(8)),
                 child: Row(children: [
-                  Icon(Icons.lightbulb_outline, color: Color(0xFF00897B), size: 18),
+                  Icon(Icons.lightbulb_outline, color: AppColors.primary, size: 18),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'Suggest saving \$${suggestedSaving.toStringAsFixed(2)} per ${event['saving_frequency'] ?? 'month'}',
-                      style: const TextStyle(color: Color(0xFF00897B), fontWeight: FontWeight.w500, fontSize: 13),
+                      style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w500, fontSize: 13),
                     ),
                   ),
                 ]),

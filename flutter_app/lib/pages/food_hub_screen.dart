@@ -6,6 +6,7 @@ import '../core/services/api_service.dart';
 import '../core/theme/theme_provider.dart';
 import '../core/utils/food_utils.dart';
 import '../core/widgets/app_bottom_nav.dart';
+import '../core/theme/app_theme.dart';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // FOOD HUB — Clean Navigation Dashboard
@@ -105,7 +106,7 @@ class _FoodHubScreenState extends State<FoodHubScreen> {
   @override
   Widget build(BuildContext context) {
     _isDark = context.watch<ThemeProvider>().isDark;
-    final bg = _isDark ? const Color(0xFF0A1628) : const Color(0xFFE8F5F5);
+    final bg = _isDark ? Color(0xFF0A1628) : AppColors.background;
 
     return Scaffold(
       backgroundColor: bg,
@@ -116,10 +117,10 @@ class _FoodHubScreenState extends State<FoodHubScreen> {
             child: _loading
                 ? Center(
                     child: CircularProgressIndicator(
-                        color: Color(0xFF00897B)))
+                        color: AppColors.primary))
                 : RefreshIndicator(
                     onRefresh: _loadData,
-                    color: const Color(0xFF00897B),
+                    color: AppColors.primary,
                     child: SingleChildScrollView(
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
@@ -150,8 +151,8 @@ class _FoodHubScreenState extends State<FoodHubScreen> {
   // ── Header ───────────────────────────────────────────────────────────────
 
   Widget _buildHeader() {
-    final textPrimary = _isDark ? const Color(0xFFE0F2F1) : const Color(0xFF00352E);
-    final textSec = const Color(0xFF4DB6AC);
+    final textPrimary = _isDark ? AppColors.primarySurface : Color(0xFF00352E);
+    final textSec = AppColors.textSecondary;
 
     return Row(
       children: [
@@ -182,7 +183,7 @@ class _FoodHubScreenState extends State<FoodHubScreen> {
               onPressed: () =>
                   Navigator.pushNamed(context, '/inventory-alerts'),
               icon: Icon(Icons.notifications_outlined,
-                  color: Color(0xFF00897B), size: 28),
+                  color: AppColors.primary, size: 28),
             ),
             if (_unreadAlerts > 0)
               Positioned(
@@ -219,7 +220,7 @@ class _FoodHubScreenState extends State<FoodHubScreen> {
             'Inventory',
             '$_totalItems',
             Icons.inventory_2_outlined,
-            const Color(0xFF00897B),
+            AppColors.primary,
             badge: _lowStockCount > 0 ? '$_lowStockCount low' : null,
             badgeColor: const Color(0xFFE53935),
             onTap: () => Navigator.pushNamed(context, '/inventory'),
@@ -241,7 +242,7 @@ class _FoodHubScreenState extends State<FoodHubScreen> {
             'Leftovers',
             '$_totalLeftovers',
             Icons.takeout_dining_outlined,
-            const Color(0xFF00ACC1),
+            AppColors.primaryLight,
             badge: _expiringLeftovers > 0
                 ? '$_expiringLeftovers exp.'
                 : null,
@@ -263,8 +264,8 @@ class _FoodHubScreenState extends State<FoodHubScreen> {
     VoidCallback? onTap,
   }) {
     final cardBg = _isDark ? const Color(0xFF122030) : Colors.white;
-    final textPrimary = _isDark ? const Color(0xFFE0F2F1) : const Color(0xFF00352E);
-    final textSec = const Color(0xFF4DB6AC);
+    final textPrimary = _isDark ? AppColors.primarySurface : Color(0xFF00352E);
+    final textSec = AppColors.textSecondary;
 
     return GestureDetector(
       onTap: onTap,
@@ -318,7 +319,7 @@ class _FoodHubScreenState extends State<FoodHubScreen> {
   // ── Quick actions ────────────────────────────────────────────────────────
 
   Widget _buildQuickActions() {
-    final textPrimary = _isDark ? const Color(0xFFE0F2F1) : const Color(0xFF00352E);
+    final textPrimary = _isDark ? AppColors.primarySurface : Color(0xFF00352E);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -341,13 +342,13 @@ class _FoodHubScreenState extends State<FoodHubScreen> {
           childAspectRatio: 1.0,
           children: [
             _actionCard('Inventory', Icons.inventory_2_outlined,
-                const Color(0xFF00897B), '/inventory'),
+                AppColors.primary, '/inventory'),
             _actionCard('Categories', Icons.account_tree_outlined,
                 const Color(0xFF6D4C41), '/inventory-categories'),
             _actionCard('Recipes', Icons.menu_book_outlined,
                 const Color(0xFFFB8C00), '/recipes'),
             _actionCard('Meal Plan', Icons.calendar_today_outlined,
-                const Color(0xFF00ACC1), '/meals'),
+                AppColors.primaryLight, '/meals'),
             _actionCard('Groceries', Icons.local_grocery_store,
                 const Color(0xFF00BCD4), '/groceries'),
             _actionCard('Leftovers', Icons.takeout_dining_outlined,
@@ -367,7 +368,7 @@ class _FoodHubScreenState extends State<FoodHubScreen> {
   Widget _actionCard(
       String title, IconData icon, Color color, String route) {
     final cardBg = _isDark ? const Color(0xFF122030) : Colors.white;
-    final textPrimary = _isDark ? const Color(0xFFE0F2F1) : const Color(0xFF00352E);
+    final textPrimary = _isDark ? AppColors.primarySurface : Color(0xFF00352E);
 
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, route),
@@ -413,7 +414,7 @@ class _FoodHubScreenState extends State<FoodHubScreen> {
   // ── Expiring soon ────────────────────────────────────────────────────────
 
   Widget _buildExpiringSection() {
-    final textPrimary = _isDark ? const Color(0xFFE0F2F1) : const Color(0xFF00352E);
+    final textPrimary = _isDark ? AppColors.primarySurface : Color(0xFF00352E);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -433,7 +434,7 @@ class _FoodHubScreenState extends State<FoodHubScreen> {
               onPressed: () => Navigator.pushNamed(context, '/leftovers'),
               child: Text('View All',
                   style: GoogleFonts.poppins(
-                      color: const Color(0xFF00897B),
+                      color: AppColors.primary,
                       fontWeight: FontWeight.w600)),
             ),
           ],
@@ -484,7 +485,7 @@ class _FoodHubScreenState extends State<FoodHubScreen> {
                 Text(name,
                     style: GoogleFonts.poppins(
                         fontWeight: FontWeight.w600, fontSize: 14,
-                        color: _isDark ? const Color(0xFFE0F2F1) : const Color(0xFF00352E))),
+                        color: _isDark ? AppColors.primarySurface : Color(0xFF00352E))),
                 Text(
                   isExpired
                       ? 'Expired ${-daysLeft} day${-daysLeft == 1 ? '' : 's'} ago'

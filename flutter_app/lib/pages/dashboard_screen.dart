@@ -1,6 +1,8 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../core/theme/app_theme.dart';
+import 'package:provider/provider.dart';
+import '../core/theme/theme_provider.dart';
 
 // ── Data Models (unchanged) ───────────────────────────────────────────────────
 
@@ -175,22 +177,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   // ── Module config ──────────────────────────────────────────────────────────
-  static const _modules = [
-    {'label': 'Tasks',      'icon': Icons.checklist_rounded,            'route': '/tasks',                'bg': Color(0xFFE0F2F1), 'fg': Color(0xFF00897B)},
-    {'label': 'Budget',     'icon': Icons.account_balance_wallet_outlined,'route': '/budget',              'bg': Color(0xFFE8F5F5), 'fg': Color(0xFF00897B)},
+  static get _modules => [
+    {'label': 'Tasks',      'icon': Icons.checklist_rounded,            'route': '/tasks',                'bg': AppColors.primarySurface, 'fg': AppColors.primary},
+    {'label': 'Budget',     'icon': Icons.account_balance_wallet_outlined,'route': '/budget',              'bg': AppColors.background, 'fg': AppColors.primary},
     {'label': 'Events',     'icon': Icons.event_outlined,                 'route': '/future-events',       'bg': Color(0xFFFFF3E0), 'fg': Color(0xFFE65100)},
-    {'label': 'Wallet',     'icon': Icons.credit_card_outlined,           'route': '/combined-wallet',     'bg': Color(0xFFE0F2F1), 'fg': Color(0xFF00695C)},
+    {'label': 'Wallet',     'icon': Icons.credit_card_outlined,           'route': '/combined-wallet',     'bg': AppColors.primarySurface, 'fg': AppColors.dark},
     {'label': 'Rewards',    'icon': Icons.emoji_events_outlined,        'route': '/rewards',              'bg': Color(0xFFFFF8E1), 'fg': Color(0xFFF9A825)},
     {'label': 'Redeem',     'icon': Icons.card_giftcard_outlined,       'route': '/redeem',               'bg': Color(0xFFFCE4EC), 'fg': Color(0xFFAD1457)},
     {'label': 'Status',     'icon': Icons.trending_up_rounded,          'route': '/status',               'bg': Color(0xFFE3F2FD), 'fg': Color(0xFF1565C0)},
     {'label': 'Points',     'icon': Icons.stars_rounded,                'route': '/family-points',        'bg': Color(0xFFFCE4EC), 'fg': Color(0xFFAD1457)},
     {'label': 'Food Hub',   'icon': Icons.restaurant_outlined,          'route': '/food-hub',             'bg': Color(0xFFFFF3E0), 'fg': Color(0xFFE65100)},
     {'label': 'Inventory',  'icon': Icons.inventory_2_outlined,         'route': '/inventory',            'bg': Color(0xFFEDE7F6), 'fg': Color(0xFF6A1B9A)},
-    {'label': 'Recipes',    'icon': Icons.menu_book_outlined,           'route': '/recipes',              'bg': Color(0xFFE8F5F5), 'fg': Color(0xFF00897B)},
+    {'label': 'Recipes',    'icon': Icons.menu_book_outlined,           'route': '/recipes',              'bg': AppColors.background, 'fg': AppColors.primary},
     {'label': 'Meals',      'icon': Icons.restaurant_menu_outlined,     'route': '/meals',                'bg': Color(0xFFE0F7FA), 'fg': Color(0xFF00838F)},
     {'label': 'Leftovers',  'icon': Icons.takeout_dining_outlined,      'route': '/leftovers',            'bg': Color(0xFFFBE9E7), 'fg': Color(0xFFBF360C)},
     {'label': 'Receipts',   'icon': Icons.receipt_long_outlined,        'route': '/receipts',             'bg': Color(0xFFE8EAF6), 'fg': Color(0xFF283593)},
-    {'label': 'Groceries',  'icon': Icons.local_grocery_store_outlined, 'route': '/groceries',            'bg': Color(0xFFE0F2F1), 'fg': Color(0xFF00695C)},
+    {'label': 'Groceries',  'icon': Icons.local_grocery_store_outlined, 'route': '/groceries',            'bg': AppColors.primarySurface, 'fg': AppColors.dark},
     {'label': 'Categories', 'icon': Icons.category_outlined,            'route': '/inventory-categories', 'bg': Color(0xFFF3E5F5), 'fg': Color(0xFF7B1FA2)},
   ];
 
@@ -200,6 +202,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<ThemeProvider>(); // rebuild on palette change
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -670,7 +673,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             label,
             style: GoogleFonts.poppins(
               fontSize: _sp(10),
-              color: isActive ? AppColors.primary : const Color(0xFF9E9E9E),
+              color: isActive ? AppColors.primary : Color(0xFF9E9E9E),
               fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
             ),
           ),

@@ -11,6 +11,8 @@ import '../core/services/api_service.dart';
 import '../core/theme/app_theme.dart';
 import '../core/widgets/app_bottom_nav.dart';
 import '../core/widgets/guarded_button.dart';
+import 'package:provider/provider.dart';
+import '../core/theme/theme_provider.dart';
 
 class FamilyMapScreen extends StatefulWidget {
   const FamilyMapScreen({super.key});
@@ -47,7 +49,7 @@ class _FamilyMapScreenState extends State<FamilyMapScreen> {
     Color(0xFF43A047), // green
     Color(0xFFFB8C00), // orange
     Color(0xFF8E24AA), // purple
-    Color(0xFF00ACC1), // cyan
+    AppColors.primaryLight, // cyan
     Color(0xFFD81B60), // pink
     Color(0xFF6D4C41), // brown
   ];
@@ -447,6 +449,7 @@ class _FamilyMapScreenState extends State<FamilyMapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<ThemeProvider>(); // rebuild on palette change
     return Scaffold(
       body: _isLoading
           ? Center(child: CircularProgressIndicator(color: AppColors.primary))
@@ -895,7 +898,7 @@ class _FamilyMapScreenState extends State<FamilyMapScreen> {
                       width: 7,
                       height: 7,
                       decoration: BoxDecoration(
-                        color: isOnline ? const Color(0xFF00897B) : Colors.grey,
+                        color: isOnline ? AppColors.primary : Colors.grey,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -977,7 +980,7 @@ class _FamilyMapScreenState extends State<FamilyMapScreen> {
                   width: 7,
                   height: 7,
                   decoration: BoxDecoration(
-                    color: isOnline ? const Color(0xFF00897B) : Colors.grey,
+                    color: isOnline ? AppColors.primary : Colors.grey,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -1049,7 +1052,7 @@ class _FamilyMapScreenState extends State<FamilyMapScreen> {
                         width: 8,
                         height: 8,
                         decoration: BoxDecoration(
-                          color: isOnline ? const Color(0xFF00897B) : Colors.grey,
+                          color: isOnline ? AppColors.primary : Colors.grey,
                           shape: BoxShape.circle,
                         ),
                       ),

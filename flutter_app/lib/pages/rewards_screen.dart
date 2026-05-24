@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../core/services/api_service.dart';
 import '../core/theme/theme_provider.dart';
 import '../core/widgets/app_bottom_nav.dart';
+import '../core/theme/app_theme.dart';
 
 class RewardsScreen extends StatefulWidget {
   const RewardsScreen({super.key});
@@ -25,18 +26,18 @@ class _RewardsScreenState extends State<RewardsScreen> {
   double _pointsToMoneyRate = 0.05;
 
   // ─── Theme constants ────────────────────────────────────────────────────────
-  static const _primary = Color(0xFF00897B);
-  static const _primaryLight = Color(0xFF00ACC1);
-  static const _bgLight = Color(0xFFE8F5F5);
+  static final _primary = AppColors.primary;
+  static final _primaryLight = AppColors.primaryLight;
+  static final _bgLight = AppColors.background;
   static const _bgDark = Color(0xFF0A1628);
   static const _cardDark = Color(0xFF122030);
-  static const _borderLight = Color(0xFFB2DFDB);
+  static final _borderLight = AppColors.border;
   static const _borderDark = Color(0xFF1E3A4A);
-  static const _borderInner = Color(0xFFE0F2F1);
+  static final _borderInner = AppColors.primarySurface;
   static const _textPrimaryLight = Color(0xFF00352E);
-  static const _textPrimaryDark = Color(0xFFE0F2F1);
-  static const _textSecLight = Color(0xFF4DB6AC);
-  static const _textSecDark = Color(0xFF80CBC4);
+  static final _textPrimaryDark = AppColors.primarySurface;
+  static final _textSecLight = AppColors.textSecondary;
+  static final _textSecDark = AppColors.textHint;
 
   @override
   void initState() {
@@ -149,13 +150,13 @@ class _RewardsScreenState extends State<RewardsScreen> {
   }
 
   // ─── Avatar helpers ──────────────────────────────────────────────────────
-  static const _avatarPalette = [
+  static final _avatarPalette = [
     {'bg': Color(0xFFE3F2FD), 'text': Color(0xFF1565C0), 'border': Color(0xFF90CAF9)},
     {'bg': Color(0xFFFFF3E0), 'text': Color(0xFFE65100), 'border': Color(0xFFFFCC80)},
     {'bg': Color(0xFFFCE4EC), 'text': Color(0xFFC2185B), 'border': Color(0xFFF48FB1)},
-    {'bg': Color(0xFFE0F2F1), 'text': Color(0xFF00695C), 'border': Color(0xFF80CBC4)},
+    {'bg': AppColors.primarySurface, 'text': AppColors.dark, 'border': AppColors.textHint},
     {'bg': Color(0xFFF3E5F5), 'text': Color(0xFF7B1FA2), 'border': Color(0xFFCE93D8)},
-    {'bg': Color(0xFFE8F5F5), 'text': Color(0xFF00897B), 'border': Color(0xFFB2DFDB)},
+    {'bg': AppColors.background, 'text': AppColors.primary, 'border': AppColors.border},
   ];
 
   Widget _buildAvatar(String name, {double size = 38}) {
@@ -246,7 +247,7 @@ class _RewardsScreenState extends State<RewardsScreen> {
                                 'Earned This Week',
                                 '+$_earnedThisWeek',
                                 Icons.trending_up,
-                                const Color(0xFF00897B),
+                                AppColors.primary,
                                 isDark,
                                 cardColor,
                                 border,
@@ -369,7 +370,7 @@ class _RewardsScreenState extends State<RewardsScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF00695C), _primaryLight],
+          colors: [AppColors.dark, _primaryLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -679,7 +680,7 @@ class _RewardsScreenState extends State<RewardsScreen> {
   ) {
     final isEarned = item['type'] == 'earned';
     final accentColor =
-        isEarned ? const Color(0xFF00897B) : const Color(0xFFE53935);
+        isEarned ? AppColors.primary : Color(0xFFE53935);
     final bgColor = isEarned ? _borderInner : const Color(0xFFFFEBEE);
 
     return Container(
@@ -824,7 +825,7 @@ class _RewardsScreenState extends State<RewardsScreen> {
                     _primary),
                 const SizedBox(height: 4),
                 _buildPriceRow('💰', '${moneyOnly.toStringAsFixed(2)} EGP',
-                    const Color(0xFF00ACC1)),
+                    AppColors.primaryLight),
                 const SizedBox(height: 4),
                 _buildPriceRow(
                     '⭐💰',

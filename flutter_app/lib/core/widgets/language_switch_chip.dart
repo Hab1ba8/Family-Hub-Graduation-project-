@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/locale_service.dart';
+import '../theme/app_theme.dart';
 
 class LanguageSwitchChip extends StatelessWidget {
   const LanguageSwitchChip({super.key});
@@ -43,13 +44,13 @@ class LanguageSwitchChip extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 1),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: active ? const Color(0xFF00897B) : Colors.transparent,
+          color: active ? AppColors.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(100),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: active ? Colors.white : const Color(0xFF00897B),
+            color: active ? Colors.white : AppColors.primary,
             fontWeight: FontWeight.w700,
             fontSize: 12,
           ),

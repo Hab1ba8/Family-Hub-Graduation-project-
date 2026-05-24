@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../core/services/api_service.dart';
 import '../core/theme/theme_provider.dart';
 import '../core/widgets/guarded_button.dart';
+import '../core/theme/app_theme.dart';
 
 // ─── Meal type option data ───────────────────────────────────────────────────
 class _MealTypeOption {
@@ -14,9 +15,9 @@ class _MealTypeOption {
   const _MealTypeOption(this.label, this.emoji, this.color, this.subtitle);
 }
 
-const _mealTypeOptions = [
+final _mealTypeOptions = [
   _MealTypeOption('Breakfast', '🌅', Color(0xFFFB8C00), 'Morning recipes'),
-  _MealTypeOption('Lunch', '☀️', Color(0xFF00897B), 'Midday meals'),
+  _MealTypeOption('Lunch', '☀️', AppColors.primary, 'Midday meals'),
   _MealTypeOption('Dinner', '🌙', Color(0xFF1565C0), 'Evening dishes'),
   _MealTypeOption('Snack', '🍿', Color(0xFFE91E63), 'Light bites'),
   _MealTypeOption('Any', '✨', Color(0xFF7B1FA2), 'All categories'),
@@ -141,7 +142,7 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
   void _showSnack(String msg, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(msg, style: GoogleFonts.poppins(fontSize: 13)),
-      backgroundColor: isError ? Colors.red[700] : const Color(0xFF00897B),
+      backgroundColor: isError ? Colors.red[700] : AppColors.primary,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     ));
@@ -151,9 +152,9 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = context.watch<ThemeProvider>().isDark;
-    final bg = isDark ? const Color(0xFF0A1628) : const Color(0xFFE8F5F5);
+    final bg = isDark ? Color(0xFF0A1628) : AppColors.background;
     final surface = isDark ? const Color(0xFF122030) : Colors.white;
-    final textPrimary = isDark ? const Color(0xFFE0F2F1) : const Color(0xFF00352E);
+    final textPrimary = isDark ? AppColors.primarySurface : Color(0xFF00352E);
 
     return Scaffold(
       backgroundColor: bg,
@@ -163,7 +164,7 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
             constraints: const BoxConstraints(maxWidth: 700),
             child: _loading
                 ? Center(
-                    child: CircularProgressIndicator(color: Color(0xFF00897B)))
+                    child: CircularProgressIndicator(color: AppColors.primary))
                 : Column(
                     children: [
                       _buildHeader(textPrimary, surface),
@@ -179,7 +180,7 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
                             ? _buildEmptyState(textPrimary)
                             : RefreshIndicator(
                                 onRefresh: _loadSuggestions,
-                                color: const Color(0xFF00897B),
+                                color: AppColors.primary,
                                 child: ListView.builder(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 16, vertical: 4),
@@ -211,7 +212,7 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
               decoration: BoxDecoration(
                   color: surface, borderRadius: BorderRadius.circular(10)),
               child: Icon(Icons.arrow_back_ios_new,
-                  size: 18, color: Color(0xFF00897B)),
+                  size: 18, color: AppColors.primary),
             ),
           ),
           const SizedBox(width: 14),
@@ -226,7 +227,7 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
                         color: textPrimary)),
                 Text('Based on your inventory & leftovers',
                     style: GoogleFonts.poppins(
-                        fontSize: 12, color: const Color(0xFF4DB6AC))),
+                        fontSize: 12, color: AppColors.textSecondary)),
               ],
             ),
           ),
@@ -250,8 +251,8 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
         child: GuardedElevatedButton(
           onPressed: _showMealTypePicker,
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF00897B),
-            disabledBackgroundColor: const Color(0xFF00897B).withValues(alpha: 0.6),
+            backgroundColor: AppColors.primary,
+            disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.6),
             padding: const EdgeInsets.symmetric(vertical: 14),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14)),
@@ -324,7 +325,7 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
             Container(
               padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
-                color: const Color(0xFF00897B).withValues(alpha: 0.08),
+                color: AppColors.primary.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
               child: const Text('🍽️', style: TextStyle(fontSize: 52)),
@@ -405,7 +406,7 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
 
     // ── Colours ──
     final matchColor = matchPct >= 80
-        ? const Color(0xFF00897B)
+        ? AppColors.primary
         : matchPct >= 50
             ? const Color(0xFFFB8C00)
             : Colors.red;
@@ -541,12 +542,12 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
                 // Available ingredients
                 if (availableRaw.isNotEmpty) ...[
                   _sectionLabel('✅ Available in your kitchen',
-                      const Color(0xFF00897B)),
+                      AppColors.primary),
                   const SizedBox(height: 6),
                   _ingredientWrap(
                     availableRaw.map((e) => e.toString()).toList(),
-                    bgColor: const Color(0xFFE0F2F1),
-                    textColor: const Color(0xFF00897B),
+                    bgColor: AppColors.primarySurface,
+                    textColor: AppColors.primary,
                     icon: Icons.check_circle_outline,
                   ),
                   const SizedBox(height: 10),
@@ -567,7 +568,7 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
                       'All ingredients ready!',
                       style: GoogleFonts.poppins(
                           fontSize: 12,
-                          color: const Color(0xFF00897B),
+                          color: AppColors.primary,
                           fontWeight: FontWeight.w500),
                     ),
                   ),
@@ -582,8 +583,8 @@ class _MealSuggestionsScreenState extends State<MealSuggestionsScreen> {
                         style: GoogleFonts.poppins(
                             fontWeight: FontWeight.w600, fontSize: 13)),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF00897B),
-                      side: const BorderSide(color: Color(0xFF00897B)),
+                      foregroundColor: AppColors.primary,
+                      side: BorderSide(color: AppColors.primary),
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
@@ -798,7 +799,7 @@ class _MealTypePickerSheetState extends State<_MealTypePickerSheet> {
             child: ElevatedButton(
               onPressed: () => Navigator.pop(context, _selected),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF00897B),
+                backgroundColor: AppColors.primary,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14)),

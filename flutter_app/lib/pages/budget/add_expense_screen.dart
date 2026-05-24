@@ -147,9 +147,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = context.watch<ThemeProvider>().isDark;
-    final bg     = isDark ? const Color(0xFF0A1628) : AppColors.background;
+    final bg     = isDark ? Color(0xFF0A1628) : AppColors.background;
     final cardBg = isDark ? const Color(0xFF122030) : Colors.white;
-    final border = isDark ? const Color(0xFF1E3A4A) : AppColors.border;
+    final border = isDark ? Color(0xFF1E3A4A) : AppColors.border;
 
     final categories = _categories;
     final selectedCategoryValue = categories.any((c) => c['_id'] == _selectedCategoryId)
@@ -189,7 +189,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF122030) : AppColors.background,
+                color: isDark ? Color(0xFF122030) : AppColors.background,
                 border: Border.all(color: AppColors.primary, width: 2),
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -207,7 +207,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       style: GoogleFonts.poppins(
                           fontSize: _sp(20), fontWeight: FontWeight.w700,
                           color: isDark
-                              ? const Color(0xFFE0F2F1)
+                              ? AppColors.primarySurface
                               : AppColors.textPrimary),
                       decoration: InputDecoration(
                         hintText: '0.00',
@@ -335,7 +335,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                             style: GoogleFonts.poppins(
                                 fontSize: _sp(12),
                                 color: isDark
-                                    ? const Color(0xFFE0F2F1)
+                                    ? AppColors.primarySurface
                                     : AppColors.textPrimary)),
                       ]),
                     );
@@ -373,7 +373,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     style: GoogleFonts.poppins(
                         fontSize: _sp(13),
                         color: isDark
-                            ? const Color(0xFFE0F2F1)
+                            ? AppColors.primarySurface
                             : AppColors.textPrimary),
                   ),
                   const Spacer(),
@@ -389,7 +389,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             Container(
               constraints: const BoxConstraints(minHeight: 70),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF122030) : AppColors.background,
+                color: isDark ? Color(0xFF122030) : AppColors.background,
                 border: Border.all(color: AppColors.border),
                 borderRadius: BorderRadius.circular(11),
               ),
@@ -401,7 +401,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 style: GoogleFonts.poppins(
                     fontSize: _sp(12),
                     color: isDark
-                        ? const Color(0xFFE0F2F1)
+                        ? AppColors.primarySurface
                         : AppColors.textPrimary),
                 decoration: InputDecoration(
                   hintText: 'Add a note...',
@@ -488,7 +488,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                             style: GoogleFonts.poppins(
                                 fontSize: _sp(12), fontWeight: FontWeight.w600,
                                 color: isDark
-                                    ? const Color(0xFFE0F2F1)
+                                    ? AppColors.primarySurface
                                     : AppColors.textPrimary)),
                         Text(
                           _isEmergency
@@ -526,7 +526,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   gradient: _isLoading
                       ? null
                       : LinearGradient(
-                          colors: [Color(0xFF00897B), Color(0xFF00ACC1)],
+                          colors: [AppColors.primary, AppColors.primaryLight],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -579,7 +579,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   Widget _fieldContainer(bool isDark, {required Widget child}) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
     decoration: BoxDecoration(
-      color: isDark ? const Color(0xFF122030) : AppColors.background,
+      color: isDark ? Color(0xFF122030) : AppColors.background,
       border: Border.all(color: AppColors.border),
       borderRadius: BorderRadius.circular(11),
     ),

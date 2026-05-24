@@ -36,18 +36,18 @@ class _RedeemScreenState extends State<RedeemScreen> {
   }
 
   static final _itemBgColors = [
-    Color(0xFFE0F2F1), Color(0xFFFFF8E1), Color(0xFFFCE4EC),
-    Color(0xFFE3F2FD), Color(0xFFE8F5F5), Color(0xFFF3E5F5),
+    AppColors.primarySurface, Color(0xFFFFF8E1), Color(0xFFFCE4EC),
+    Color(0xFFE3F2FD), AppColors.background, Color(0xFFF3E5F5),
   ];
   static final _itemIconColors = [
     AppColors.primary, Color(0xFFF9A825), Color(0xFFE91E63),
-    Color(0xFF1565C0), Color(0xFF00897B), Color(0xFF7B1FA2),
+    Color(0xFF1565C0), AppColors.primary, Color(0xFF7B1FA2),
   ];
   static final _memberColors = [
     {'bg': Color(0xFFE3F2FD), 'text': Color(0xFF1565C0), 'border': Color(0xFF90CAF9)},
     {'bg': Color(0xFFFFF3E0), 'text': Color(0xFFE65100),  'border': Color(0xFFFFCC80)},
     {'bg': Color(0xFFFCE4EC), 'text': Color(0xFFC2185B),  'border': Color(0xFFF48FB1)},
-    {'bg': Color(0xFFE0F2F1), 'text': Color(0xFF00695C),  'border': Color(0xFF80CBC4)},
+    {'bg': AppColors.primarySurface, 'text': AppColors.dark,  'border': AppColors.textHint},
   ];
 
   @override
@@ -280,7 +280,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                       decoration: BoxDecoration(
                         gradient: canSubmit
                             ? LinearGradient(
-                                colors: [Color(0xFF00897B), Color(0xFF00ACC1)],
+                                colors: [AppColors.primary, AppColors.primaryLight],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight)
                             : null,
@@ -522,7 +522,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = context.watch<ThemeProvider>().isDark;
-    final bg     = isDark ? const Color(0xFF0A1628) : AppColors.background;
+    final bg     = isDark ? Color(0xFF0A1628) : AppColors.background;
 
     return Scaffold(
       backgroundColor: bg,
@@ -567,7 +567,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
 
   Widget _buildChildView(bool isDark) {
     final cardBg = isDark ? const Color(0xFF122030) : Colors.white;
-    final border = isDark ? const Color(0xFF1E3A4A) : AppColors.border;
+    final border = isDark ? Color(0xFF1E3A4A) : AppColors.border;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 80),
@@ -625,7 +625,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF00695C), Color(0xFF00ACC1)],
+          colors: [AppColors.dark, AppColors.primaryLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -706,7 +706,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
           duration: const Duration(milliseconds: 180),
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isActive ? AppColors.primary : (isDark ? const Color(0xFF122030) : Colors.white),
+            color: isActive ? AppColors.primary : (isDark ? Color(0xFF122030) : Colors.white),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
                 color: isActive ? AppColors.primary : AppColors.border,
@@ -739,7 +739,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
     final cardBg      = isDark ? const Color(0xFF122030) : Colors.white;
     final border      = highlighted
         ? AppColors.primary
-        : (isDark ? const Color(0xFF1E3A4A) : AppColors.border);
+        : (isDark ? Color(0xFF1E3A4A) : AppColors.border);
     final iconBg    = _itemBgColors[index % _itemBgColors.length];
     final iconColor = _itemIconColors[index % _itemIconColors.length];
 
@@ -775,7 +775,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                     style: GoogleFonts.poppins(
                         fontSize: _sp(12), fontWeight: FontWeight.w600,
                         color: isDark
-                            ? const Color(0xFFE0F2F1)
+                            ? AppColors.primarySurface
                             : AppColors.textPrimary),
                     maxLines: 1, overflow: TextOverflow.ellipsis),
                 Text(
@@ -812,7 +812,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
               decoration: BoxDecoration(
                 gradient: canAfford
                     ? LinearGradient(
-                        colors: [Color(0xFF00897B), Color(0xFF00ACC1)],
+                        colors: [AppColors.primary, AppColors.primaryLight],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight)
                     : null,
@@ -843,8 +843,8 @@ class _RedeemScreenState extends State<RedeemScreen> {
 
   Widget _buildParentView(bool isDark) {
     final cardBg = isDark ? const Color(0xFF122030) : Colors.white;
-    final border = isDark ? const Color(0xFF1E3A4A) : AppColors.border;
-    final divider = isDark ? const Color(0xFF1E3A4A) : AppColors.borderLight;
+    final border = isDark ? Color(0xFF1E3A4A) : AppColors.border;
+    final divider = isDark ? Color(0xFF1E3A4A) : AppColors.borderLight;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 80),
@@ -927,7 +927,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                 style: GoogleFonts.poppins(
                                     fontSize: _sp(12), fontWeight: FontWeight.w600,
                                     color: isDark
-                                        ? const Color(0xFFE0F2F1)
+                                        ? AppColors.primarySurface
                                         : AppColors.textPrimary),
                                 maxLines: 1, overflow: TextOverflow.ellipsis),
                             Text(

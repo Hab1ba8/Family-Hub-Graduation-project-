@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
 
 class Appcolor {
   // ── Brand colors ──
@@ -6,12 +7,12 @@ class Appcolor {
   static const Color secondaryColor = Color.fromARGB(255, 204, 189, 123);
 
   // ── Food‑module teal (aligned with app theme) ──
-  static const Color foodPrimary = Color(0xFF00897B);
-  static const Color foodPrimaryLight = Color(0xFF00ACC1);
-  static const Color foodPrimaryDark = Color(0xFF00695C);
-  static const Color foodBg = Color(0xFFE8F5F5);
-  static const Color foodCardBg = Color(0xFFE0F2F1);
-  static const Color foodAccent = Color(0xFF4DB6AC);
+  static Color get foodPrimary => AppColors.primary;
+  static Color get foodPrimaryLight => AppColors.primaryLight;
+  static Color get foodPrimaryDark => AppColors.dark;
+  static Color get foodBg => AppColors.background;
+  static Color get foodCardBg => AppColors.primarySurface;
+  static Color get foodAccent => AppColors.textSecondary;
 
   // ── Neutral text ──
   static const Color textDark = Color(0xFF00352E);
@@ -22,11 +23,11 @@ class Appcolor {
   static const Color error = Color(0xFFF44336);
   static const Color warning = Color(0xFFFF9800);
   static const Color info = Color(0xFF2196F3);
-  static const Color success = Color(0xFF00897B);
+  static Color get success => AppColors.primary;
 
   // ── Category card palette (10 colours, indexed) ──
-  static const List<Color> categoryColors = [
-    Color(0xFF00897B),
+  static List<Color> get categoryColors => [
+    AppColors.primary,
     Color(0xFFFF9800),
     Color(0xFF2196F3),
     Color(0xFF9C27B0),

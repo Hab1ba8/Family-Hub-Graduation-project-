@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../core/services/api_service.dart';
 import '../core/localization/app_i18n.dart';
 import '../core/theme/app_theme.dart';
+import 'package:provider/provider.dart';
+import '../core/theme/theme_provider.dart';
 
 class PlanningChatScreen extends StatefulWidget {
   const PlanningChatScreen({super.key});
@@ -164,6 +166,7 @@ class _PlanningChatScreenState extends State<PlanningChatScreen>
 
   @override
   Widget build(BuildContext context) {
+    context.watch<ThemeProvider>(); // rebuild on palette change
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(

@@ -1,6 +1,9 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../core/services/api_service.dart';
+import '../core/theme/app_theme.dart';
+import 'package:provider/provider.dart';
+import '../core/theme/theme_provider.dart';
 
 class FamilyPointsScreen extends StatefulWidget {
   const FamilyPointsScreen({super.key});
@@ -44,14 +47,15 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<ThemeProvider>(); // rebuild on palette change
     return Scaffold(
-      backgroundColor: const Color(0xFFE8F5F5),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
           'Family Points',
           style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
         ),
-        backgroundColor: const Color(0xFF00897B),
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
@@ -66,7 +70,7 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
           constraints: const BoxConstraints(maxWidth: 600),
           child: _isLoading
               ? Center(
-                  child: CircularProgressIndicator(color: Color(0xFF00897B)))
+                  child: CircularProgressIndicator(color: AppColors.primary))
               : _errorMessage != null
                   ? _buildErrorView()
                   : _buildContent(),
@@ -95,7 +99,7 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
               icon: Icon(Icons.refresh),
               label: const Text('Retry'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF00897B),
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
               ),
             ),
@@ -127,7 +131,7 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
 
     return RefreshIndicator(
       onRefresh: _loadFamilyPoints,
-      color: const Color(0xFF00897B),
+      color: AppColors.primary,
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -136,14 +140,14 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF00695C), Color(0xFF00ACC1)],
+                colors: [AppColors.dark, AppColors.primaryLight],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF00897B).withValues(alpha: 0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -220,7 +224,7 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
         borderRadius: BorderRadius.circular(16),
         border: borderColor != null
             ? Border.all(color: borderColor, width: 2)
-            : Border.all(color: const Color(0xFFB2DFDB)),
+            : Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -237,7 +241,7 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
           height: 50,
           decoration: BoxDecoration(
             color: medalColor?.withValues(alpha: 0.15) ??
-                const Color(0xFFE0F2F1),
+                AppColors.primarySurface,
             shape: BoxShape.circle,
           ),
           child: Center(
@@ -247,7 +251,7 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
                     '#$rank',
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF00897B),
+                      color: AppColors.primary,
                       fontSize: 16,
                     ),
                   ),
@@ -268,7 +272,7 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
               memberType,
               style: GoogleFonts.poppins(
                 fontSize: 12,
-                color: const Color(0xFF4DB6AC),
+                color: AppColors.textSecondary,
               ),
             ),
             Text(
@@ -284,7 +288,7 @@ class _FamilyPointsScreenState extends State<FamilyPointsScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF00897B), Color(0xFF00ACC1)],
+              colors: [AppColors.primary, AppColors.primaryLight],
             ),
             borderRadius: BorderRadius.circular(20),
           ),

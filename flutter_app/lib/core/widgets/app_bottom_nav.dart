@@ -72,7 +72,7 @@ class AppBottomNav extends StatelessWidget {
             label,
             style: GoogleFonts.poppins(
               fontSize: _sp(context, 10),
-              color: isActive ? AppColors.primary : const Color(0xFF9E9E9E),
+              color: isActive ? AppColors.primary : Color(0xFF9E9E9E),
               fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
             ),
           ),

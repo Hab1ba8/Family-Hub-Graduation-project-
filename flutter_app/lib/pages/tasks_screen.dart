@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../core/services/api_service.dart';
 import '../core/theme/theme_provider.dart';
 import '../core/widgets/guarded_button.dart';
+import '../core/theme/app_theme.dart';
 
 // ─── Task Model ────────────────────────────────────────────────────────────────
 class TaskItem {
@@ -114,18 +115,18 @@ class _TasksScreenState extends State<TasksScreen>
   List<TaskItem> _availableTasks = [];
 
   // ─── Theme constants ─────────────────────────────────────────────────────────
-  static const _primary = Color(0xFF00897B);
-  static const _primaryLight = Color(0xFF00ACC1);
-  static const _bgLight = Color(0xFFE8F5F5);
+  static Color get _primary => AppColors.primary;
+  static Color get _primaryLight => AppColors.primaryLight;
+  static Color get _bgLight => AppColors.background;
   static const _bgDark = Color(0xFF0A1628);
   static const _cardDark = Color(0xFF122030);
-  static const _borderLight = Color(0xFFB2DFDB);
+  static Color get _borderLight => AppColors.border;
   static const _borderDark = Color(0xFF1E3A4A);
-  static const _borderInner = Color(0xFFE0F2F1);
+  static Color get _borderInner => AppColors.primarySurface;
   static const _textPrimaryLight = Color(0xFF00352E);
-  static const _textPrimaryDark = Color(0xFFE0F2F1);
-  static const _textSecondaryLight = Color(0xFF4DB6AC);
-  static const _textSecondaryDark = Color(0xFF80CBC4);
+  static Color get _textPrimaryDark => AppColors.primarySurface;
+  static Color get _textSecondaryLight => AppColors.textSecondary;
+  static Color get _textSecondaryDark => AppColors.textHint;
 
   @override
   void initState() {
@@ -290,7 +291,7 @@ class _TasksScreenState extends State<TasksScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Task added and assigned to you!'),
-            backgroundColor: Color(0xFF00897B),
+            backgroundColor: AppColors.primary,
           ),
         );
         _loadTasks();
@@ -385,7 +386,7 @@ class _TasksScreenState extends State<TasksScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Task completed! Rewards applied.'),
-            backgroundColor: Color(0xFF00897B),
+            backgroundColor: AppColors.primary,
           ),
         );
       }
@@ -497,13 +498,13 @@ class _TasksScreenState extends State<TasksScreen>
   }
 
   // ─── Avatar helper ─────────────────────────────────────────────────────────
-  static const _avatarPalette = [
+  static final _avatarPalette = [
     {'bg': Color(0xFFE3F2FD), 'text': Color(0xFF1565C0), 'border': Color(0xFF90CAF9)},
     {'bg': Color(0xFFFFF3E0), 'text': Color(0xFFE65100), 'border': Color(0xFFFFCC80)},
     {'bg': Color(0xFFFCE4EC), 'text': Color(0xFFC2185B), 'border': Color(0xFFF48FB1)},
-    {'bg': Color(0xFFE0F2F1), 'text': Color(0xFF00695C), 'border': Color(0xFF80CBC4)},
+    {'bg': AppColors.primarySurface, 'text': AppColors.dark, 'border': AppColors.textHint},
     {'bg': Color(0xFFF3E5F5), 'text': Color(0xFF7B1FA2), 'border': Color(0xFFCE93D8)},
-    {'bg': Color(0xFFE8F5F5), 'text': Color(0xFF00897B), 'border': Color(0xFFB2DFDB)},
+    {'bg': AppColors.background, 'text': AppColors.primary, 'border': AppColors.border},
   ];
 
   Widget _buildAvatar(String name, {double size = 40}) {
@@ -593,7 +594,7 @@ class _TasksScreenState extends State<TasksScreen>
                                     width: 10,
                                     height: 10,
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF00897B),
+                                      color: AppColors.primary,
                                       shape: BoxShape.circle,
                                       border: Border.all(
                                           color: bg, width: 1.5),
@@ -810,7 +811,7 @@ class _TasksScreenState extends State<TasksScreen>
       height: 56,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF00897B), Color(0xFF00ACC1)],
+          colors: [AppColors.primary, AppColors.primaryLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -891,11 +892,11 @@ class _TasksScreenState extends State<TasksScreen>
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide:
-                          const BorderSide(color: _borderLight)),
+                          BorderSide(color: _borderLight)),
                   focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide:
-                          const BorderSide(color: _primary, width: 2)),
+                          BorderSide(color: _primary, width: 2)),
                 ),
               ),
               const SizedBox(height: 12),
@@ -910,11 +911,11 @@ class _TasksScreenState extends State<TasksScreen>
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide:
-                          const BorderSide(color: _borderLight)),
+                          BorderSide(color: _borderLight)),
                   focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide:
-                          const BorderSide(color: _primary, width: 2)),
+                          BorderSide(color: _primary, width: 2)),
                 ),
               ),
               // Category picker — only shown when categories are loaded
@@ -930,11 +931,11 @@ class _TasksScreenState extends State<TasksScreen>
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide:
-                            const BorderSide(color: _borderLight)),
+                            BorderSide(color: _borderLight)),
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide:
-                            const BorderSide(color: _primary, width: 2)),
+                            BorderSide(color: _primary, width: 2)),
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 10),
                   ),
@@ -1030,7 +1031,7 @@ class _TasksScreenState extends State<TasksScreen>
             Icon(Icons.task_alt,
                 size: 60,
                 color:
-                    const Color(0xFF4DB6AC).withValues(alpha: 0.45)),
+                    AppColors.textSecondary.withValues(alpha: 0.45)),
             const SizedBox(height: 16),
             Text('No tasks in this section!',
                 style: GoogleFonts.poppins(color: textSec)),
@@ -1325,7 +1326,7 @@ class _TasksScreenState extends State<TasksScreen>
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF00897B), Color(0xFF00ACC1)],
+            colors: [AppColors.primary, AppColors.primaryLight],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),

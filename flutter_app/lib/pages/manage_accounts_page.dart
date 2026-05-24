@@ -1,6 +1,9 @@
 ﻿import 'package:flutter/material.dart';
 import '../core/services/api_service.dart';
 import '../core/localization/app_i18n.dart';
+import '../core/theme/app_theme.dart';
+import 'package:provider/provider.dart';
+import '../core/theme/theme_provider.dart';
 
 class ManageAccountsPage extends StatefulWidget {
   const ManageAccountsPage({super.key});
@@ -93,6 +96,7 @@ class _ManageAccountsPageState extends State<ManageAccountsPage> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<ThemeProvider>(); // rebuild on palette change
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pop(_changed);
@@ -125,11 +129,11 @@ class _ManageAccountsPageState extends State<ManageAccountsPage> {
                       margin: const EdgeInsets.only(bottom: 10),
                       child: ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: const Color(0xFFE0F2F1),
+                          backgroundColor: AppColors.primarySurface,
                           child: Text(
                             (username.isNotEmpty ? username[0] : 'A').toUpperCase(),
-                            style: const TextStyle(
-                              color: Color(0xFF00897B),
+                            style: TextStyle(
+                              color: AppColors.primary,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -140,9 +144,9 @@ class _ManageAccountsPageState extends State<ManageAccountsPage> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             if (isActive)
-                              const Padding(
+                              Padding(
                                 padding: EdgeInsets.only(right: 6),
-                                child: Icon(Icons.check_circle, color: Color(0xFF00897B)),
+                                child: Icon(Icons.check_circle, color: AppColors.primary),
                               ),
                             IconButton(
                               tooltip: _t('Switch account', 'تبديل الحساب'),

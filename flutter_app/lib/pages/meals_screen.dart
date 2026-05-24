@@ -4,6 +4,9 @@ import 'package:intl/intl.dart';
 import '../core/services/api_service.dart';
 import '../core/widgets/app_bottom_nav.dart';
 import '../core/widgets/guarded_button.dart';
+import '../core/theme/app_theme.dart';
+import 'package:provider/provider.dart';
+import '../core/theme/theme_provider.dart';
 
 class MealsScreen extends StatefulWidget {
   const MealsScreen({super.key});
@@ -27,15 +30,15 @@ class _MealsScreenState extends State<MealsScreen> {
     'Dinner': Icons.dinner_dining,
     'Snack': Icons.cookie,
   };
-  static const _mealTypeColors = {
+  static final _mealTypeColors = {
     'Breakfast': Color(0xFFFFF3E0),
-    'Lunch': Color(0xFFE0F2F1),
+    'Lunch': AppColors.primarySurface,
     'Dinner': Color(0xFFE3F2FD),
     'Snack': Color(0xFFFCE4EC),
   };
-  static const _mealTypeAccent = {
+  static final _mealTypeAccent = {
     'Breakfast': Color(0xFFFF9800),
-    'Lunch': Color(0xFF00897B),
+    'Lunch': AppColors.primary,
     'Dinner': Color(0xFF2196F3),
     'Snack': Color(0xFFE91E63),
   };
@@ -106,7 +109,7 @@ class _MealsScreenState extends State<MealsScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: Color(0xFF00897B),
+              primary: AppColors.primary,
               onPrimary: Colors.white,
               surface: Colors.white,
             ),
@@ -223,7 +226,7 @@ class _MealsScreenState extends State<MealsScreen> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF00897B),
+                backgroundColor: AppColors.primary,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               child: Text('Add', style: GoogleFonts.poppins(color: Colors.white)),
@@ -316,7 +319,7 @@ class _MealsScreenState extends State<MealsScreen> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF00897B),
+                backgroundColor: AppColors.primary,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               child: Text('Save', style: GoogleFonts.poppins(color: Colors.white)),
@@ -387,7 +390,7 @@ class _MealsScreenState extends State<MealsScreen> {
     final mealData = detail['meal'] ?? {};
     final List<dynamic> mealItems = detail['mealItems'] ?? [];
     final mealType = mealData['meal_type'] ?? 'Lunch';
-    final accentColor = _mealTypeAccent[mealType] ?? const Color(0xFF00897B);
+    final accentColor = _mealTypeAccent[mealType] ?? AppColors.primary;
 
     showModalBottomSheet(
       context: context,
@@ -436,7 +439,7 @@ class _MealsScreenState extends State<MealsScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: _mealTypeColors[mealType] ?? const Color(0xFFE0F2F1),
+                            color: _mealTypeColors[mealType] ?? AppColors.primarySurface,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Icon(_mealTypeIcons[mealType] ?? Icons.restaurant,
@@ -830,7 +833,7 @@ class _MealsScreenState extends State<MealsScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF00897B),
+                  backgroundColor: AppColors.primary,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
                 child: Text('Add', style: GoogleFonts.poppins(color: Colors.white)),
@@ -862,8 +865,9 @@ class _MealsScreenState extends State<MealsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<ThemeProvider>(); // rebuild on palette change
     return Scaffold(
-      backgroundColor: const Color(0xFFE8F5F5),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -908,14 +912,14 @@ class _MealsScreenState extends State<MealsScreen> {
                 children: [
                   IconButton(
                     onPressed: _goToPreviousDay,
-                    icon: Icon(Icons.chevron_left, color: Color(0xFF00897B)),
+                    icon: Icon(Icons.chevron_left, color: AppColors.primary),
                   ),
                   GestureDetector(
                     onTap: _pickDate,
                     child: Row(
                       children: [
                         Icon(Icons.calendar_today,
-                            size: 18, color: Color(0xFF00897B)),
+                            size: 18, color: AppColors.primary),
                         const SizedBox(width: 8),
                         Text(
                           _formatDateLabel(),
@@ -935,7 +939,7 @@ class _MealsScreenState extends State<MealsScreen> {
                   ),
                   IconButton(
                     onPressed: _goToNextDay,
-                    icon: Icon(Icons.chevron_right, color: Color(0xFF00897B)),
+                    icon: Icon(Icons.chevron_right, color: AppColors.primary),
                   ),
                 ],
               ),
@@ -943,10 +947,10 @@ class _MealsScreenState extends State<MealsScreen> {
             // Content
             Expanded(
               child: _loading
-                  ? Center(child: CircularProgressIndicator(color: Color(0xFF00897B)))
+                  ? Center(child: CircularProgressIndicator(color: AppColors.primary))
                   : RefreshIndicator(
                       onRefresh: _loadMeals,
-                      color: const Color(0xFF00897B),
+                      color: AppColors.primary,
                       child: _meals.isEmpty
                           ? ListView(
                               children: [
@@ -991,14 +995,14 @@ class _MealsScreenState extends State<MealsScreen> {
           height: 56,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF00695C), Color(0xFF00ACC1)],
+              colors: [AppColors.dark, AppColors.primaryLight],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF00897B).withValues(alpha: 0.4),
+                color: AppColors.primary.withValues(alpha: 0.4),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),
@@ -1094,7 +1098,7 @@ class _MealsScreenState extends State<MealsScreen> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: _mealTypeColors[type] ?? const Color(0xFFE0F2F1),
+                color: _mealTypeColors[type] ?? AppColors.primarySurface,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(

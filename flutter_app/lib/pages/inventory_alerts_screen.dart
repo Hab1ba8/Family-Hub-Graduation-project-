@@ -6,6 +6,7 @@ import '../core/services/api_service.dart';
 import '../core/theme/theme_provider.dart';
 import '../core/utils/food_utils.dart';
 import '../core/widgets/guarded_button.dart';
+import '../core/theme/app_theme.dart';
 
 class InventoryAlertsScreen extends StatefulWidget {
   const InventoryAlertsScreen({super.key});
@@ -111,7 +112,7 @@ class _InventoryAlertsScreenState extends State<InventoryAlertsScreen> {
       case 'expired':
         return Colors.red[800]!;
       default:
-        return const Color(0xFF00897B);
+        return AppColors.primary;
     }
   }
 
@@ -138,8 +139,8 @@ class _InventoryAlertsScreenState extends State<InventoryAlertsScreen> {
   @override
   Widget build(BuildContext context) {
     _isDark = context.watch<ThemeProvider>().isDark;
-    final bg = _isDark ? const Color(0xFF0A1628) : const Color(0xFFE8F5F5);
-    final textPrimary = _isDark ? const Color(0xFFE0F2F1) : const Color(0xFF00352E);
+    final bg = _isDark ? Color(0xFF0A1628) : AppColors.background;
+    final textPrimary = _isDark ? AppColors.primarySurface : Color(0xFF00352E);
     final filtered = _filteredAlerts;
     final unread = filtered.where((a) => a['is_read'] != true).toList();
     final read = filtered.where((a) => a['is_read'] == true).toList();
@@ -151,7 +152,7 @@ class _InventoryAlertsScreenState extends State<InventoryAlertsScreen> {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 700),
             child: _loading
-                ? Center(child: CircularProgressIndicator(color: Color(0xFF00897B)))
+                ? Center(child: CircularProgressIndicator(color: AppColors.primary))
                 : Column(
                     children: [
                       // Header
@@ -168,7 +169,7 @@ class _InventoryAlertsScreenState extends State<InventoryAlertsScreen> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Icon(Icons.arrow_back_ios_new,
-                                    size: 18, color: Color(0xFF00897B)),
+                                    size: 18, color: AppColors.primary),
                               ),
                             ),
                             const SizedBox(width: 14),
@@ -194,7 +195,7 @@ class _InventoryAlertsScreenState extends State<InventoryAlertsScreen> {
                                 child: Text('Read All',
                                     style: GoogleFonts.poppins(
                                         fontSize: 12,
-                                        color: const Color(0xFF00897B),
+                                        color: AppColors.primary,
                                         fontWeight: FontWeight.w600)),
                               ),
                           ],
@@ -209,7 +210,7 @@ class _InventoryAlertsScreenState extends State<InventoryAlertsScreen> {
                           child: GuardedElevatedButton(
                             onPressed: _generateAlerts,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF00897B),
+                              backgroundColor: AppColors.primary,
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12)),
@@ -296,12 +297,12 @@ class _InventoryAlertsScreenState extends State<InventoryAlertsScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF00897B)
+              ? AppColors.primary
               : (_isDark ? const Color(0xFF122030) : Colors.white),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected
-                ? const Color(0xFF00897B)
+                ? AppColors.primary
                 : (_isDark ? const Color(0xFF1E3A4A) : Colors.grey[300]!),
           ),
         ),
@@ -324,8 +325,8 @@ class _InventoryAlertsScreenState extends State<InventoryAlertsScreen> {
   }
 
   Widget _buildEmptyState() {
-    final textPrimary = _isDark ? const Color(0xFFE0F2F1) : const Color(0xFF00352E);
-    final bg = _isDark ? const Color(0xFF0F1F35) : const Color(0xFFE0F2F1);
+    final textPrimary = _isDark ? AppColors.primarySurface : Color(0xFF00352E);
+    final bg = _isDark ? Color(0xFF0F1F35) : AppColors.primarySurface;
 
     return Center(
       child: Column(
@@ -338,7 +339,7 @@ class _InventoryAlertsScreenState extends State<InventoryAlertsScreen> {
               borderRadius: BorderRadius.circular(50),
             ),
             child: Icon(Icons.notifications_none,
-                size: 48, color: Color(0xFF00897B)),
+                size: 48, color: AppColors.primary),
           ),
           const SizedBox(height: 20),
           Text(
@@ -389,7 +390,7 @@ class _InventoryAlertsScreenState extends State<InventoryAlertsScreen> {
     final createdAt = (alert['createdAt'] ?? '').toString();
     final cardBg = _isDark ? const Color(0xFF122030) : Colors.white;
     final cardBorder = _isDark ? const Color(0xFF1E3A4A) : color.withValues(alpha: 0.3);
-    final textPrimary = _isDark ? const Color(0xFFE0F2F1) : const Color(0xFF00352E);
+    final textPrimary = _isDark ? AppColors.primarySurface : Color(0xFF00352E);
 
     // ── Extract populated item details ──
     final item = alert['inventory_item_id'];

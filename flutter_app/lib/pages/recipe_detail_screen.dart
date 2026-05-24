@@ -4,6 +4,9 @@ import '../core/services/api_service.dart';
 import '../core/styling/app_color.dart';
 import '../core/utils/food_utils.dart';
 import '../core/widgets/guarded_button.dart';
+import '../core/theme/app_theme.dart';
+import 'package:provider/provider.dart';
+import '../core/theme/theme_provider.dart';
 
 class RecipeDetailScreen extends StatefulWidget {
   final dynamic recipe;
@@ -148,6 +151,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<ThemeProvider>(); // rebuild on palette change
     final ingredients = (_recipe != null ? _recipe['ingredients'] as List<dynamic>? : null) ?? [];
     final steps = (_recipe != null ? _recipe['steps'] as List<dynamic>? : null) ?? [];
 
@@ -381,7 +385,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: const Color(0xFFE8F5F5),
+                color: AppColors.background,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text('${scale.toStringAsFixed(1)}x',
@@ -419,7 +423,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE8F5F5),
+                    color: AppColors.background,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
@@ -745,7 +749,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
-                          color: isAvailable ? const Color(0xFFE0F2F1) : Colors.orange[50],
+                          color: isAvailable ? AppColors.primarySurface : Colors.orange[50],
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(

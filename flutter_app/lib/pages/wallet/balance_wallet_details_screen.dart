@@ -2,6 +2,9 @@
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/services/api_service.dart';
+import 'package:app_frontend/core/theme/app_theme.dart';
+import 'package:provider/provider.dart';
+import 'package:app_frontend/core/theme/theme_provider.dart';
 
 class BalanceWalletDetailsScreen extends StatefulWidget {
   const BalanceWalletDetailsScreen({super.key});
@@ -56,6 +59,7 @@ class _BalanceWalletDetailsScreenState extends State<BalanceWalletDetailsScreen>
 
   @override
   Widget build(BuildContext context) {
+    context.watch<ThemeProvider>(); // rebuild on palette change
     final memberName = (_member['member_name'] ?? 'Member').toString();
     final memberMail = (_member['member_mail'] ?? '').toString();
     final moneySummary = _summary['money_wallet'] as Map<String, dynamic>? ?? {};
@@ -151,7 +155,7 @@ class _BalanceWalletDetailsScreenState extends State<BalanceWalletDetailsScreen>
       runSpacing: 10,
       children: [
         _summaryCard('Money Wallet', '${moneyCredits.toDouble().toStringAsFixed(2)} in / ${moneyDebits.toDouble().toStringAsFixed(2)} out', const Color(0xFF1565C0)),
-        _summaryCard('Personal Budget', '${personalCredits.toDouble().toStringAsFixed(2)} in / ${personalDebits.toDouble().toStringAsFixed(2)} out', const Color(0xFF00897B)),
+        _summaryCard('Personal Budget', '${personalCredits.toDouble().toStringAsFixed(2)} in / ${personalDebits.toDouble().toStringAsFixed(2)} out', AppColors.primary),
         _summaryCard('Shared Budget', '${sharedCredits.toDouble().toStringAsFixed(2)} in / ${sharedDebits.toDouble().toStringAsFixed(2)} out', const Color(0xFFF57C00)),
       ],
     );
@@ -223,7 +227,7 @@ class _BalanceWalletDetailsScreenState extends State<BalanceWalletDetailsScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isCredit ? const Color(0xFF00897B).withValues(alpha: 0.25) : Colors.red.withValues(alpha: 0.22)),
+        border: Border.all(color: isCredit ? AppColors.primary.withValues(alpha: 0.25) : Colors.red.withValues(alpha: 0.22)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,14 +237,14 @@ class _BalanceWalletDetailsScreenState extends State<BalanceWalletDetailsScreen>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: (isCredit ? const Color(0xFF00897B) : Colors.red).withValues(alpha: 0.12),
+                  color: (isCredit ? AppColors.primary : Colors.red).withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
                   '${isCredit ? '+' : '-'}${amount.toStringAsFixed(2)}',
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w700,
-                    color: isCredit ? const Color(0xFF00897B) : Colors.red.shade700,
+                    color: isCredit ? AppColors.primary : Colors.red.shade700,
                   ),
                 ),
               ),

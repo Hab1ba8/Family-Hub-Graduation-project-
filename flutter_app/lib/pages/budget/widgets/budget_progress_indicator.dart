@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:app_frontend/core/theme/app_theme.dart';
 
 // BR4 - Visual indicator for budget limit
 class BudgetProgressIndicatorWidget extends StatelessWidget {
@@ -25,7 +26,7 @@ class BudgetProgressIndicatorWidget extends StatelessWidget {
     } else if (progress >= 0.8) {
       barColor = Colors.orange;
     } else {
-      barColor = const Color(0xFF00897B);
+      barColor = AppColors.primary;
     }
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
