@@ -71,117 +71,62 @@ class _BudgetAnalyticsScreenState extends State<BudgetAnalyticsScreen>
 
       return Scaffold(
         backgroundColor: bg,
-        body: Column(
-          children: [
-            _buildHeader(isDark, budgetTitle, dateRange),
-            Expanded(
-              child: provider.isLoading || analytics == null
-                  ? Center(
-                      child: CircularProgressIndicator(color: AppColors.primary))
-                  : TabBarView(
-                      controller: _tabCtrl,
-                      children: [
-                        _buildOverviewTab(analytics, isDark),
-                        _buildTrendTab(analytics, isDark),
-                        _buildExpensesTab(provider, isDark),
-                      ],
-                    ),
+        appBar: AppBar(
+          backgroundColor: AppColors.background,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: AppColors.primary),
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(budgetTitle,
+                  style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary),
+                  overflow: TextOverflow.ellipsis),
+              if (dateRange.isNotEmpty)
+                Text(dateRange,
+                    style: GoogleFonts.poppins(
+                        fontSize: _sp(10),
+                        color: AppColors.textSecondary)),
+            ],
+          ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.ios_share_outlined, color: AppColors.primary, size: 20),
+              onPressed: () {},
             ),
           ],
-        ),
-      );
-    });
-  }
-
-  // ── Custom header with gradient + tab pills ────────────────────────────────
-  Widget _buildHeader(bool isDark, String title, String dateRange) {
-    return AnimatedBuilder(
-      animation: _tabCtrl,
-      builder: (_, __) => Container(
-        decoration: BoxDecoration(gradient: AppColors.primaryGradient),
-        child: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(4, 6, 8, 0),
-                child: Row(children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back_ios_new,
-                        color: Colors.white, size: 18),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(title,
-                            style: GoogleFonts.poppins(
-                                fontSize: _sp(17),
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white)),
-                        if (dateRange.isNotEmpty)
-                          Text(dateRange,
-                              style: GoogleFonts.poppins(
-                                  fontSize: _sp(10),
-                                  color: Colors.white70)),
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.ios_share_outlined,
-                        color: Colors.white, size: 20),
-                    onPressed: () {},
-                  ),
-                ]),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(14, 8, 14, 12),
-                child: Row(children: [
-                  _tabPill(0, 'Overview'),
-                  const SizedBox(width: 6),
-                  _tabPill(1, 'Trend'),
-                  const SizedBox(width: 6),
-                  _tabPill(2, 'Expenses'),
-                ]),
-              ),
+          bottom: TabBar(
+            controller: _tabCtrl,
+            labelColor: AppColors.primary,
+            unselectedLabelColor: AppColors.textSecondary,
+            indicatorColor: AppColors.primary,
+            labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            tabs: const [
+              Tab(text: 'Overview'),
+              Tab(text: 'Trend'),
+              Tab(text: 'Expenses'),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _tabPill(int index, String label) {
-    final isActive = _tabCtrl.index == index;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          _tabCtrl.animateTo(index);
-          setState(() {});
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          padding: const EdgeInsets.symmetric(vertical: 6),
-          decoration: BoxDecoration(
-            color: isActive ? Colors.white : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: isActive ? Colors.white : Colors.white54,
-            ),
-          ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
-              fontSize: _sp(10),
-              fontWeight: FontWeight.w600,
-              color: isActive ? AppColors.primary : Colors.white,
-            ),
-          ),
-        ),
-      ),
-    );
+        body: provider.isLoading || analytics == null
+            ? Center(
+                child: CircularProgressIndicator(color: AppColors.primary))
+            : TabBarView(
+                controller: _tabCtrl,
+                children: [
+                  _buildOverviewTab(analytics, isDark),
+                  _buildTrendTab(analytics, isDark),
+                  _buildExpensesTab(provider, isDark),
+                ],
+              ),
+      );
+    });
   }
 
   // ── Overview tab (pie chart + breakdown) ──────────────────────────────────

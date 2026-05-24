@@ -17,7 +17,13 @@
       "Bash(python find_missing_watch.py)",
       "Bash(python add_watch.py)",
       "Bash(del fix_colors.py fix_const.py fix_const2.py find_missing_watch.py add_watch.py)",
-      "PowerShell(python -c \"import docx; print\\('available'\\)\" 2>&1)"
+      "PowerShell(python -c \"import docx; print\\('available'\\)\" 2>&1)",
+      "Bash(grep -n 'AppBar\\\\|appBar\\\\|Scaffold\\\\|leading\\\\|gradient\\\\|back_button\\\\|BackButton\\\\|IconButton.*back\\\\|SliverAppBar\\\\|FlexibleSpace\\\\|LinearGradient\\\\|title:' 'G:/UNI/graduation project/Modules/Authentication module/auth implementation/flutter_app/lib/pages/__TRACKED_VAR__')",
+      "Bash(grep -n 'AppBar\\\\|appBar\\\\|Scaffold\\\\|leading\\\\|BackButton\\\\|IconButton.*back\\\\|SliverAppBar\\\\|FlexibleSpace\\\\|LinearGradient\\\\|title:' 'G:/UNI/graduation project/Modules/Authentication module/auth implementation/flutter_app/lib/pages/__TRACKED_VAR__')",
+      "Bash(grep -n -A 15 'appBar: AppBar' 'G:/UNI/graduation project/Modules/Authentication module/auth implementation/flutter_app/lib/pages/__TRACKED_VAR__')",
+      "Bash(grep -n -A 20 'appBar: AppBar' 'G:/UNI/graduation project/Modules/Authentication module/auth implementation/flutter_app/lib/pages/__TRACKED_VAR__')",
+      "Bash(grep -n -A 20 'return Scaffold' 'G:/UNI/graduation project/Modules/Authentication module/auth implementation/flutter_app/lib/pages/__TRACKED_VAR__')",
+      "Bash(grep -n -A 30 '_buildHeader\\\\\\(\\\\\\)' 'G:/UNI/graduation project/Modules/Authentication module/auth implementation/flutter_app/lib/pages/__TRACKED_VAR__')"
     ]
   }
 }

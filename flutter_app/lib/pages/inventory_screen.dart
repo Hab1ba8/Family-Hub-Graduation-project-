@@ -1153,6 +1153,45 @@ class _InventoryScreenState extends State<InventoryScreen> {
     _isDark = context.watch<ThemeProvider>().isDark;
     return Scaffold(
       backgroundColor: _isDark ? Color(0xFF0A1628) : AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppColors.primary),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text('Inventory',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+        actions: [
+          Stack(
+            children: [
+              IconButton(
+                onPressed: () => Navigator.pushNamed(context, '/inventory-alerts'),
+                icon: Icon(Icons.notifications_outlined, color: AppColors.primary),
+              ),
+              if (_unreadAlerts > 0)
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                  ),
+                ),
+            ],
+          ),
+          IconButton(
+            onPressed: () async {
+              await Navigator.pushNamed(context, '/inventory-categories');
+              _loadData();
+            },
+            icon: Icon(Icons.account_tree_outlined, color: AppColors.primary),
+            tooltip: 'Manage Categories',
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -1162,7 +1201,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     child: CircularProgressIndicator(
                         color: AppColors.primary))
                 : Column(children: [
-                    _buildHeader(),
                     _buildInventorySelector(),
                     const SizedBox(height: 8),
                     _buildSearchBar(),

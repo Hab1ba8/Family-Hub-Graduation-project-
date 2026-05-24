@@ -168,8 +168,9 @@ class _StatusScreenState extends State<StatusScreen> {
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.background,
         elevation: 0,
+        scrolledUnderElevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: _primary),
           onPressed: () => Navigator.pop(context),

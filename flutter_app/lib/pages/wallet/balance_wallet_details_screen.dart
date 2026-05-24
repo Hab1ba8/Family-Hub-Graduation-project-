@@ -67,21 +67,25 @@ class _BalanceWalletDetailsScreenState extends State<BalanceWalletDetailsScreen>
     final sharedSummary = _summary['shared_budget'] as Map<String, dynamic>? ?? {};
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F7F3),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF1B5E20),
+        backgroundColor: AppColors.background,
         elevation: 0,
-        title: Text('Balance Details', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppColors.primary),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text('Balance Details', style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
         actions: [
           IconButton(
             onPressed: _loadDetails,
-            icon: Icon(Icons.refresh),
+            icon: Icon(Icons.refresh, color: AppColors.primary),
           ),
         ],
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: Color(0xFF1B5E20)))
+          ? Center(child: CircularProgressIndicator(color: AppColors.primary))
           : RefreshIndicator(
               onRefresh: _loadDetails,
               child: ListView(

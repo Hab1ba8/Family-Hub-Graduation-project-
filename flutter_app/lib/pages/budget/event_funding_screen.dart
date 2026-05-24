@@ -448,9 +448,14 @@ class _EventFundingScreenState extends State<EventFundingScreen>
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6F8),
       appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        title: Text('Event Funding', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppColors.primary),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text('Event Funding', style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator(color: AppColors.primary))

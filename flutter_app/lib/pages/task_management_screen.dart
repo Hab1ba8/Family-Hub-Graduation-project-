@@ -211,8 +211,9 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
       return Scaffold(
         backgroundColor: bg,
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: AppColors.background,
           elevation: 0,
+          scrolledUnderElevation: 0,
           title: Text('Manage Tasks',
               style: GoogleFonts.poppins(
                   color: textPrimary, fontWeight: FontWeight.bold)),
@@ -225,8 +226,9 @@ class _TaskManagementScreenState extends State<TaskManagementScreen>
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.background,
         elevation: 0,
+        scrolledUnderElevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: _tmPrimary),
           onPressed: () => Navigator.pop(context),

@@ -178,13 +178,49 @@ class _GroceryListDetailScreenState extends State<GroceryListDetailScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppColors.primary),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: _isEditing
+            ? TextField(
+                controller: _titleCtrl,
+                autofocus: true,
+                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                decoration: const InputDecoration(border: InputBorder.none),
+                onSubmitted: (_) => _updateTitle(),
+              )
+            : GestureDetector(
+                onTap: () => setState(() => _isEditing = true),
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(_listTitle,
+                          style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                          overflow: TextOverflow.ellipsis),
+                    ),
+                    const SizedBox(width: 6),
+                    Icon(Icons.edit_outlined, size: 16, color: AppColors.textSecondary),
+                  ],
+                ),
+              ),
+        actions: [
+          if (_isEditing)
+            IconButton(onPressed: _updateTitle, icon: Icon(Icons.check, color: AppColors.primary))
+          else
+            IconButton(onPressed: _deleteList, icon: const Icon(Icons.delete_outline, color: Colors.red)),
+        ],
+      ),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 600),
             child: Column(
               children: [
-                _buildTopBar(),
                 if (_loading)
                   Expanded(
                     child: Center(

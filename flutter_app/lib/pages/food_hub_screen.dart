@@ -110,6 +110,37 @@ class _FoodHubScreenState extends State<FoodHubScreen> {
 
     return Scaffold(
       backgroundColor: bg,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppColors.primary),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text('Food Hub',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+        actions: [
+          Stack(
+            children: [
+              IconButton(
+                onPressed: () => Navigator.pushNamed(context, '/inventory-alerts'),
+                icon: Icon(Icons.notifications_outlined, color: AppColors.primary, size: 26),
+              ),
+              if (_unreadAlerts > 0)
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -127,8 +158,6 @@ class _FoodHubScreenState extends State<FoodHubScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildHeader(),
-                          const SizedBox(height: 20),
                           _buildStatsRow(),
                           const SizedBox(height: 24),
                           _buildQuickActions(),

@@ -2,6 +2,7 @@
 import 'package:google_fonts/google_fonts.dart';
 import '../core/services/api_service.dart';
 import '../core/styling/app_color.dart';
+import '../core/theme/app_theme.dart';
 import '../core/utils/food_utils.dart';
 import '../core/widgets/app_bottom_nav.dart';
 import '../core/widgets/guarded_button.dart';
@@ -130,6 +131,17 @@ class _GroceriesScreenState extends State<GroceriesScreen> {
 
     return Scaffold(
       backgroundColor: Appcolor.foodBg,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppColors.primary),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text('Grocery Lists',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+      ),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -140,7 +152,6 @@ class _GroceriesScreenState extends State<GroceriesScreen> {
                         color: Appcolor.foodPrimary))
                 : Column(
                     children: [
-                      _buildTopBar(),
                       _buildSearchBar(),
                       const SizedBox(height: 8),
                       // Summary chip

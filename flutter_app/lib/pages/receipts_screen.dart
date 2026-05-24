@@ -73,39 +73,23 @@ class _ReceiptsScreenState extends State<ReceiptsScreen> {
     context.watch<ThemeProvider>(); // rebuild on palette change
     return Scaffold(
       backgroundColor: Appcolor.foodBg,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppColors.primary),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text('Receipts',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+      ),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 700),
             child: Column(
               children: [
-                // Green header
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.fromLTRB(8, 12, 20, 24),
-                  decoration: BoxDecoration(
-                    color: Appcolor.foodPrimary,
-                  ),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: Icon(Icons.arrow_back_ios_new,
-                            color: Colors.white, size: 20),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Receipts',
-                        style: GoogleFonts.poppins(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
                 // Content
                 Expanded(
                   child: _loading

@@ -868,34 +868,23 @@ class _MealsScreenState extends State<MealsScreen> {
     context.watch<ThemeProvider>(); // rebuild on palette change
     return Scaffold(
       backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppColors.primary),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text('Meal Planner',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+      ),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 700),
             child: Column(
           children: [
-            // App Bar
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 12, 16, 0),
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: Icon(Icons.arrow_back, color: Color(0xFF2E3E33)),
-                  ),
-                  Expanded(
-                    child: Text(
-                      'Meal Planner',
-                      style: GoogleFonts.poppins(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF00352E),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
             // Date Selector
             Container(
               margin: const EdgeInsets.fromLTRB(16, 12, 16, 4),

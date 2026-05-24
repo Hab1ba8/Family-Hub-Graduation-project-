@@ -231,30 +231,30 @@ class _CombinedAnalyticsScreenState extends State<CombinedAnalyticsScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: BoxDecoration(gradient: AppColors.primaryGradient),
-        ),
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppColors.primary),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Text('Analytics',
-            style: GoogleFonts.poppins(
-                fontSize: _sp(17), fontWeight: FontWeight.w700)),
+            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
         actions: [
           IconButton(
               tooltip: 'Refresh',
               onPressed: _loadData,
-              icon: Icon(Icons.refresh)),
+              icon: Icon(Icons.refresh, color: AppColors.primary)),
           IconButton(
             tooltip: 'Export PDF',
             onPressed: _isExporting ? null : _exportCombinedReportPdf,
             icon: _isExporting
-                ? const SizedBox(
+                ? SizedBox(
                     width: 18,
                     height: 18,
                     child: CircularProgressIndicator(
-                        strokeWidth: 2, color: Colors.white))
-                : Icon(Icons.picture_as_pdf),
+                        strokeWidth: 2, color: AppColors.primary))
+                : Icon(Icons.picture_as_pdf, color: AppColors.primary),
           ),
         ],
       ),

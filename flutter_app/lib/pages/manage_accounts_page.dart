@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../core/services/api_service.dart';
 import '../core/localization/app_i18n.dart';
 import '../core/theme/app_theme.dart';
@@ -104,7 +105,15 @@ class _ManageAccountsPageState extends State<ManageAccountsPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_t('Manage Accounts', 'إدارة الحسابات')),
+          backgroundColor: AppColors.background,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: AppColors.primary),
+            onPressed: () => Navigator.of(context).pop(_changed),
+          ),
+          title: Text(_t('Manage Accounts', 'إدارة الحسابات'),
+              style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
         ),
         body: _loading
             ? Center(child: CircularProgressIndicator())

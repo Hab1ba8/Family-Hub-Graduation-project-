@@ -418,18 +418,18 @@ class _CombinedWalletScreenState extends State<CombinedWalletScreen>
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: BoxDecoration(gradient: AppColors.primaryGradient),
-        ),
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppColors.primary),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Text('My Wallet',
-            style: GoogleFonts.poppins(
-                fontSize: _sp(17), fontWeight: FontWeight.w700)),
+            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh_outlined, color: Colors.white),
+            icon: Icon(Icons.refresh_outlined, color: AppColors.primary),
             onPressed: _loadData,
           ),
         ],

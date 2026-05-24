@@ -134,58 +134,20 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
 
     return Consumer<FamilyBudgetProvider>(
       builder: (context, provider, _) {
+        final reminders = provider.activeReminders;
         return Scaffold(
           backgroundColor: bg,
-          body: SafeArea(
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 700),
-                child: Column(
-                  children: [
-                    _buildHeader(context, provider, isDark),
-                    Expanded(
-                      child: provider.isLoading
-                          ? Center(
-                              child: CircularProgressIndicator(color: AppColors.primary))
-                          : provider.budgets.isEmpty
-                              ? _buildEmptyState(context, provider)
-                              : _buildContent(context, provider, isDark),
-                    ),
-                  ],
-                ),
-              ),
+          appBar: AppBar(
+            backgroundColor: AppColors.background,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: AppColors.primary),
+              onPressed: () => Navigator.pop(context),
             ),
-          ),
-          floatingActionButton: _buildFAB(context, provider),
-          bottomNavigationBar: const AppBottomNav(selectedIndex: 1),
-        );
-      },
-    );
-  }
-
-  // ── Header ─────────────────────────────────────────────────────────────────
-
-  Widget _buildHeader(BuildContext context, FamilyBudgetProvider provider, bool isDark) {
-    final textColor = isDark ? AppColors.primarySurface : AppColors.textPrimary;
-    final headerBg = isDark ? Color(0xFF122030) : AppColors.background;
-    final reminders = provider.activeReminders;
-
-    return Container(
-      color: headerBg,
-      padding: const EdgeInsets.fromLTRB(4, 8, 8, 0),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: Icon(Icons.arrow_back, color: AppColors.primary),
-              ),
-              Expanded(
-                child: Text('Budget',
-                    style: GoogleFonts.poppins(
-                        fontSize: _sp(20), fontWeight: FontWeight.w700, color: textColor)),
-              ),
+            title: Text('Budget',
+                style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+            actions: [
               IconButton(
                 onPressed: () => Navigator.pushNamed(context, '/combined-analytics'),
                 icon: Icon(Icons.analytics_outlined, color: AppColors.primary),
@@ -204,7 +166,7 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
                       right: 8, top: 8,
                       child: Container(
                         width: 9, height: 9,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                             color: Colors.orange, shape: BoxShape.circle),
                       ),
                     ),
@@ -212,31 +174,52 @@ class _BudgetDashboardScreenState extends State<BudgetDashboardScreen> {
               ),
             ],
           ),
-          if (reminders.isNotEmpty)
-            GestureDetector(
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => FutureEventsScreen())),
-              child: Container(
-                margin: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                    color: Colors.orange.shade700,
-                    borderRadius: BorderRadius.circular(10)),
-                child: Row(children: [
-                  Icon(Icons.notifications_active, color: Colors.white, size: 16),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      '${reminders.length} upcoming event reminder${reminders.length > 1 ? 's' : ''}',
-                      style: GoogleFonts.poppins(color: Colors.white, fontSize: _sp(11)),
+          body: SafeArea(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 700),
+                child: Column(
+                  children: [
+                    if (reminders.isNotEmpty)
+                      GestureDetector(
+                        onTap: () => Navigator.push(context,
+                            MaterialPageRoute(builder: (_) => FutureEventsScreen())),
+                        child: Container(
+                          margin: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                              color: Colors.orange.shade700,
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Row(children: [
+                            Icon(Icons.notifications_active, color: Colors.white, size: 16),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                '${reminders.length} upcoming event reminder${reminders.length > 1 ? 's' : ''}',
+                                style: GoogleFonts.poppins(color: Colors.white, fontSize: _sp(11)),
+                              ),
+                            ),
+                            Icon(Icons.chevron_right, color: Colors.white, size: 16),
+                          ]),
+                        ),
+                      ),
+                    Expanded(
+                      child: provider.isLoading
+                          ? Center(
+                              child: CircularProgressIndicator(color: AppColors.primary))
+                          : provider.budgets.isEmpty
+                              ? _buildEmptyState(context, provider)
+                              : _buildContent(context, provider, isDark),
                     ),
-                  ),
-                  Icon(Icons.chevron_right, color: Colors.white, size: 16),
-                ]),
+                  ],
+                ),
               ),
             ),
-        ],
-      ),
+          ),
+          floatingActionButton: _buildFAB(context, provider),
+          bottomNavigationBar: const AppBottomNav(selectedIndex: 1),
+        );
+      },
     );
   }
 

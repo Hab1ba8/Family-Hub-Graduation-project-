@@ -2,6 +2,7 @@
 import 'package:google_fonts/google_fonts.dart';
 import '../core/services/api_service.dart';
 import '../core/styling/app_color.dart';
+import '../core/theme/app_theme.dart';
 import '../core/utils/food_utils.dart';
 import 'recipe_detail_screen.dart';
 
@@ -101,6 +102,17 @@ class _RecipesScreenState extends State<RecipesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Appcolor.foodBg,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppColors.primary),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text('Recipe Book',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+      ),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -115,39 +127,6 @@ class _RecipesScreenState extends State<RecipesScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Header
-                          Row(
-                            children: [
-                              GestureDetector(
-                                onTap: () => Navigator.pop(context),
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Icon(Icons.arrow_back_ios_new, size: 18, color: Appcolor.foodPrimary),
-                                ),
-                              ),
-                              const SizedBox(width: 14),
-                              Expanded(
-                                child: Text(
-                                  'Recipe Book',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Appcolor.textDark,
-                                  ),
-                                ),
-                              ),
-                              Text(
-                                '${_recipes.length} recipes',
-                                style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[600]),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-
                           // Search bar
                           Container(
                             decoration: BoxDecoration(

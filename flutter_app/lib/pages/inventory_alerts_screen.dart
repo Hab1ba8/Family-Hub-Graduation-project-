@@ -140,13 +140,31 @@ class _InventoryAlertsScreenState extends State<InventoryAlertsScreen> {
   Widget build(BuildContext context) {
     _isDark = context.watch<ThemeProvider>().isDark;
     final bg = _isDark ? Color(0xFF0A1628) : AppColors.background;
-    final textPrimary = _isDark ? AppColors.primarySurface : Color(0xFF00352E);
     final filtered = _filteredAlerts;
     final unread = filtered.where((a) => a['is_read'] != true).toList();
     final read = filtered.where((a) => a['is_read'] == true).toList();
 
     return Scaffold(
       backgroundColor: bg,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppColors.primary),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text('Inventory Alerts',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+        actions: [
+          if (_unreadCount > 0)
+            TextButton(
+              onPressed: _markAllRead,
+              child: Text('Read All',
+                  style: GoogleFonts.poppins(fontSize: 12, color: AppColors.primary, fontWeight: FontWeight.w600)),
+            ),
+        ],
+      ),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -155,53 +173,6 @@ class _InventoryAlertsScreenState extends State<InventoryAlertsScreen> {
                 ? Center(child: CircularProgressIndicator(color: AppColors.primary))
                 : Column(
                     children: [
-                      // Header
-                      Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () => Navigator.pop(context),
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: _isDark ? const Color(0xFF122030) : Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Icon(Icons.arrow_back_ios_new,
-                                    size: 18, color: AppColors.primary),
-                              ),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Inventory Alerts',
-                                      style: GoogleFonts.poppins(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                          color: textPrimary)),
-                                  if (_unreadCount > 0)
-                                    Text('$_unreadCount unread',
-                                        style: GoogleFonts.poppins(
-                                            fontSize: 12, color: Colors.red[400], fontWeight: FontWeight.w600)),
-                                ],
-                              ),
-                            ),
-                            if (_unreadCount > 0)
-                              TextButton(
-                                onPressed: _markAllRead,
-                                child: Text('Read All',
-                                    style: GoogleFonts.poppins(
-                                        fontSize: 12,
-                                        color: AppColors.primary,
-                                        fontWeight: FontWeight.w600)),
-                              ),
-                          ],
-                        ),
-                      ),
-
                       // Generate button
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),

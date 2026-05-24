@@ -170,23 +170,24 @@ class _PlanningChatScreenState extends State<PlanningChatScreen>
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: BoxDecoration(gradient: AppColors.primaryGradient),
-        ),
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppColors.primary),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Row(
           children: [
             Container(
-              width: 36,
-              height: 36,
+              width: 32,
+              height: 32,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.18),
+                color: AppColors.primarySurface,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(Icons.smart_toy_outlined,
-                  color: Colors.white, size: 20),
+                  color: AppColors.primary, size: 18),
             ),
             const SizedBox(width: 10),
             Column(
@@ -195,13 +196,13 @@ class _PlanningChatScreenState extends State<PlanningChatScreen>
                 Text(
                   _t('Family AI Assistant', 'مساعد العائلة الذكي'),
                   style: GoogleFonts.poppins(
-                      fontSize: _sp(15), fontWeight: FontWeight.w700),
+                      fontSize: _sp(15), fontWeight: FontWeight.w700, color: AppColors.textPrimary),
                 ),
                 Text(
                   _t('Powered by Gemini', 'مدعوم بـ Gemini'),
                   style: GoogleFonts.poppins(
                       fontSize: _sp(10),
-                      color: Colors.white.withOpacity(0.75)),
+                      color: AppColors.textSecondary),
                 ),
               ],
             ),
@@ -210,7 +211,7 @@ class _PlanningChatScreenState extends State<PlanningChatScreen>
         actions: [
           if (_messages.isNotEmpty)
             IconButton(
-              icon: Icon(Icons.delete_outline),
+              icon: Icon(Icons.delete_outline, color: AppColors.primary),
               tooltip: _t('Clear history', 'مسح السجل'),
               onPressed: _clearHistory,
             ),

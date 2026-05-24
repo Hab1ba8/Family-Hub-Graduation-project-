@@ -419,13 +419,42 @@ class _InventoryCategoriesScreenState extends State<InventoryCategoriesScreen> {
     _isDark = context.watch<ThemeProvider>().isDark;
     return Scaffold(
       backgroundColor: _isDark ? Color(0xFF0A1628) : AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppColors.primary),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text('Categories',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+        actions: [
+          IconButton(
+            tooltip: 'Expand all',
+            onPressed: () {
+              setState(() {
+                for (final cat in _flatCategories) {
+                  final id = cat['_id']?.toString();
+                  if (id != null) _expandedIds.add(id);
+                }
+              });
+            },
+            icon: Icon(Icons.unfold_more, color: AppColors.primary),
+          ),
+          IconButton(
+            tooltip: 'Collapse all',
+            onPressed: () => setState(() => _expandedIds.clear()),
+            icon: Icon(Icons.unfold_less, color: AppColors.primary),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 600),
             child: Column(
               children: [
-                _buildHeader(),
                 _buildInventorySelector(),
                 _buildSearchBar(),
                 const SizedBox(height: 8),

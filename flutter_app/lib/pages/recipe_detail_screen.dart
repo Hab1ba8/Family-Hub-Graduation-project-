@@ -157,52 +157,36 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
 
     return Scaffold(
       backgroundColor: Appcolor.foodBg,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppColors.primary),
+          onPressed: () => Navigator.pop(context, !_isNew),
+        ),
+        title: Text(
+          _isNew ? 'New Recipe' : (_recipe['recipe_name'] ?? 'Recipe'),
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+          overflow: TextOverflow.ellipsis,
+        ),
+        actions: [
+          if (!_isNew && !_editing)
+            IconButton(
+              onPressed: () => setState(() => _editing = true),
+              icon: Icon(Icons.edit_outlined, color: AppColors.primary),
+            ),
+        ],
+      ),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 700),
             child: Column(
               children: [
-                // Top bar
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context, !_isNew),
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Icon(Icons.arrow_back_ios_new, size: 18, color: Appcolor.foodPrimary),
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Text(
-                          _isNew ? 'New Recipe' : (_recipe['recipe_name'] ?? 'Recipe'),
-                          style: GoogleFonts.poppins(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Appcolor.textDark,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (!_isNew && !_editing)
-                        IconButton(
-                          onPressed: () => setState(() => _editing = true),
-                          icon: Icon(Icons.edit_outlined, color: Appcolor.foodPrimary),
-                        ),
-                    ],
-                  ),
-                ),
-
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
