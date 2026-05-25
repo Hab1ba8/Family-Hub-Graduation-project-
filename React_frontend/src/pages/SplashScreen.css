@@ -1,0 +1,73 @@
+/* ─── Splash Screen ────────────────────────────────────────────────────────── */
+.splash-page {
+  min-height: 100vh;
+  background-color: var(--background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.splash-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  animation: splashFadeIn 0.6s ease forwards;
+}
+
+@keyframes splashFadeIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Logo circle */
+.splash-logo {
+  width: 110px;
+  height: 110px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 32px rgba(0, 137, 123, 0.25);
+  margin-bottom: 24px;
+}
+
+.splash-title {
+  font-size: 30px;
+  font-weight: 700;
+  color: #00352E;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.3px;
+}
+
+.splash-subtitle {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin: 0 0 40px 0;
+}
+
+/* Bouncing dots */
+.splash-dots {
+  display: flex;
+  gap: 10px;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  opacity: 0.5;
+  animation: bounce 1.2s ease-in-out infinite;
+}
+
+.dot-1 { animation-delay: 0s; }
+.dot-2 { animation-delay: 0.2s; }
+.dot-3 { animation-delay: 0.4s; }
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0);  opacity: 0.4; }
+  50%       { transform: translateY(-8px); opacity: 1; }
+}

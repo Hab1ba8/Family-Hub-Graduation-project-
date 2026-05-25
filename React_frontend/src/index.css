@@ -1,14 +1,168 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background: #f3f4f6;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+/* ─── Theme CSS Variables (matches Flutter AppColors) ─────────────────────── */
+:root {
+  --primary:        #00897B;
+  --primary-light:  #4DB6AC;
+  --primary-surface:#E0F2F1;
+  --background:     #F5FFFE;
+  --border:         #B2DFDB;
+  --text-primary:   #1A1A1A;
+  --text-secondary: #4DB6AC;
+  --text-hint:      #80CBC4;
+  --white:          #FFFFFF;
+  --error:          #E53935;
+  --shadow:         rgba(0, 137, 123, 0.18);
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--background);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button {
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+}
+
+input {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ─── Shared Layout ────────────────────────────────────────────────────────── */
+.page-container {
+  min-height: 100vh;
+  background-color: var(--background);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.content-box {
+  width: 100%;
+  max-width: 440px;
+  padding: 0 24px;
+}
+
+/* ─── Shared Card ──────────────────────────────────────────────────────────── */
+.auth-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 24px;
+  padding: 28px 24px;
+  box-shadow: 0 12px 40px var(--shadow);
+  width: 100%;
+}
+
+/* ─── Shared Input ─────────────────────────────────────────────────────────── */
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input-wrapper .input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary);
+  font-size: 18px;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.field-input {
+  width: 100%;
+  padding: 14px 16px 14px 44px;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background-color: #F0FAFA;
+  color: var(--text-primary);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
+
+.field-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 137, 123, 0.12);
+}
+
+.field-input::placeholder {
+  color: var(--text-hint);
+}
+
+.field-input.no-icon {
+  padding-left: 16px;
+}
+
+/* suffix icon (eye toggle) */
+.input-suffix {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-hint);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+}
+
+/* ─── Primary Button ───────────────────────────────────────────────────────── */
+.btn-primary {
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  color: white;
+  background-color: var(--primary);
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px var(--shadow);
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-primary:hover {
+  background-color: #00796B;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-primary:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ─── Error Message ────────────────────────────────────────────────────────── */
+.error-box {
+  background-color: #FFF0F0;
+  border: 1px solid #FFCDD2;
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: var(--error);
+  font-size: 13px;
+  text-align: center;
 }

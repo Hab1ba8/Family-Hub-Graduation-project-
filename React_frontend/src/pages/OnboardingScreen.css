@@ -1,0 +1,130 @@
+/* ─── Onboarding Screen ────────────────────────────────────────────────────── */
+.onboard-page {
+  min-height: 100vh;
+  background-color: var(--background);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 24px 32px;
+  max-width: 520px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Top bar */
+.onboard-topbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+}
+
+.onboard-skip {
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--primary);
+  cursor: pointer;
+  padding: 6px 4px;
+}
+
+.onboard-skip:hover { text-decoration: underline; }
+
+/* Slide area */
+.onboard-slide {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px 0;
+  animation: fadeSlide 0.25s ease;
+}
+
+.onboard-slide.left  { animation: slideFromRight 0.25s ease; }
+.onboard-slide.right { animation: slideFromLeft  0.25s ease; }
+
+@keyframes fadeSlide      { from { opacity: 0; }                               to { opacity: 1; } }
+@keyframes slideFromRight { from { opacity: 0; transform: translateX(40px); }  to { opacity: 1; transform: translateX(0); } }
+@keyframes slideFromLeft  { from { opacity: 0; transform: translateX(-40px); } to { opacity: 1; transform: translateX(0); } }
+
+/* Icon circle */
+.onboard-icon-circle {
+  width: 200px;
+  height: 200px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 40px rgba(0, 137, 123, 0.12);
+  margin-bottom: 40px;
+}
+
+.onboard-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #00352E;
+  margin-bottom: 16px;
+  line-height: 1.3;
+}
+
+.onboard-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+/* Dot indicators */
+.onboard-indicators {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.onboard-dot {
+  height: 4px;
+  width: 20px;
+  border-radius: 2px;
+  background-color: #D1D5DB;
+  border: none;
+  cursor: pointer;
+  transition: width 0.3s ease, background-color 0.3s ease;
+  padding: 0;
+}
+
+.onboard-dot.active {
+  width: 40px;
+  background-color: var(--primary);
+}
+
+/* Footer */
+.onboard-footer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.onboard-login-link {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.onboard-login-link button {
+  background: none;
+  border: none;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+  margin-left: 4px;
+}
+
+.onboard-login-link button:hover { text-decoration: underline; }

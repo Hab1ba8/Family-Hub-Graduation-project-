@@ -23,7 +23,12 @@
       "Bash(grep -n -A 15 'appBar: AppBar' 'G:/UNI/graduation project/Modules/Authentication module/auth implementation/flutter_app/lib/pages/__TRACKED_VAR__')",
       "Bash(grep -n -A 20 'appBar: AppBar' 'G:/UNI/graduation project/Modules/Authentication module/auth implementation/flutter_app/lib/pages/__TRACKED_VAR__')",
       "Bash(grep -n -A 20 'return Scaffold' 'G:/UNI/graduation project/Modules/Authentication module/auth implementation/flutter_app/lib/pages/__TRACKED_VAR__')",
-      "Bash(grep -n -A 30 '_buildHeader\\\\\\(\\\\\\)' 'G:/UNI/graduation project/Modules/Authentication module/auth implementation/flutter_app/lib/pages/__TRACKED_VAR__')"
+      "Bash(grep -n -A 30 '_buildHeader\\\\\\(\\\\\\)' 'G:/UNI/graduation project/Modules/Authentication module/auth implementation/flutter_app/lib/pages/__TRACKED_VAR__')",
+      "PowerShell(Get-ChildItem \"G:\\\\UNI\\\\graduation project\\\\Modules\\\\Authentication module\\\\auth implementation\\\\React_frontend\" -Recurse | Where-Object { !$_.PSIsContainer } | Select-Object -ExpandProperty FullName | Sort-Object)",
+      "PowerShell($r = Invoke-WebRequest -Uri \"http://localhost:8000/api/auth/families?mail=shahd_tarek@gmail.com\" -TimeoutSec 5; $r.Content)",
+      "Bash(netstat -ano)",
+      "Bash(findstr \":3000\")",
+      "Bash(findstr \":8000\")"
     ]
   }
 }

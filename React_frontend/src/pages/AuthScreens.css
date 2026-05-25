@@ -1,0 +1,182 @@
+/* ─── Shared Auth Styles (Login + SignUp) ──────────────────────────────────── */
+
+.auth-page {
+  min-height: 100vh;
+  background-color: var(--background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.auth-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 24px;
+  padding: 28px 24px 32px;
+  box-shadow: 0 12px 40px rgba(0, 137, 123, 0.12);
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+/* Back button */
+.auth-back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--primary-surface);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.auth-back-btn:hover { background: var(--border); }
+
+/* Logo circle */
+.auth-logo-circle {
+  width: 76px;
+  height: 76px;
+  background: var(--primary-surface);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  margin-bottom: 16px;
+  box-shadow: 0 4px 20px rgba(0, 137, 123, 0.15);
+}
+
+.family-initial-big {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* Headings */
+.auth-heading {
+  font-size: 24px;
+  font-weight: 700;
+  color: #00352E;
+  text-align: center;
+  margin: 0 0 6px;
+}
+
+.auth-subheading {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+  margin: 0 0 20px;
+}
+
+/* Form */
+.auth-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+/* Switch text (login/signup link) */
+.auth-switch-text {
+  font-size: 14px;
+  color: #6b7280;
+  text-align: center;
+  margin-top: 4px;
+}
+
+.auth-switch-text button {
+  background: none;
+  border: none;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+  margin-left: 4px;
+}
+
+.auth-switch-text button:hover { text-decoration: underline; }
+
+/* ─── Family picker list ───────────────────────────────────────────────────── */
+.family-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.family-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border);
+  background: white;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  font-family: 'Poppins', sans-serif;
+}
+
+.family-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 2px 12px rgba(0, 137, 123, 0.1);
+}
+
+.family-card.selected {
+  border-color: var(--primary);
+  background: var(--primary-surface);
+}
+
+.family-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--primary-surface);
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.family-card.selected .family-avatar {
+  background: var(--primary);
+  color: white;
+}
+
+.family-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.family-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.family-email {
+  font-size: 12px;
+  color: #9ca3af;
+}
