@@ -8,22 +8,22 @@ import BottomNavBar from '../components/common/BottomNavBar';
 import api from '../api/apiService';
 import './PlanningChatScreen.css';
 
-// ── Suggestion chips (matches Flutter's suggestion chips) ─────────────────────
+// ── Suggestion list (matches Flutter's _suggestions array exactly) ────────────
 const SUGGESTIONS_EN = [
-  'What is our budget overview?',
-  'Who earned the most points this week?',
-  'What can we cook with our inventory?',
-  'Show our family task summary',
-  'How much have we saved for events?',
-  'Suggest meals for today',
+  'What was our average budget for the last 3 months?',
+  'Who was the best child in the past 2 weeks?',
+  'What do you suggest to save money next month?',
+  'Suggest meals for today based on what we have.',
+  'Which category did we overspend on?',
+  'How many tasks were completed this week?',
 ];
 const SUGGESTIONS_AR = [
-  'ما هو ملخص ميزانيتنا؟',
-  'من حصل على أكثر النقاط هذا الأسبوع؟',
-  'ماذا يمكننا طهيه من مخزوننا؟',
-  'أظهر ملخص مهام العائلة',
-  'كم وفّرنا للأحداث؟',
-  'اقترح وجبات لليوم',
+  'ما متوسط ميزانيتنا في آخر 3 أشهر؟',
+  'من كان أفضل طفل في الأسبوعين الماضيين؟',
+  'ماذا تقترح لتوفير المال الشهر القادم؟',
+  'اقترح وجبات لليوم بناءً على ما لدينا.',
+  'ما الفئة التي تجاوزنا ميزانيتها؟',
+  'كم مهمة أُنجزت هذا الأسبوع؟',
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -33,8 +33,9 @@ export default function PlanningChatScreen() {
 
   const [messages,    setMessages]    = useState([]);
   const [input,       setInput]       = useState('');
-  const [loading,     setLoading]     = useState(false);      // sending
-  const [histLoading, setHistLoading] = useState(true);      // initial load
+  const [loading,     setLoading]     = useState(false);
+  const [histLoading, setHistLoading] = useState(true);
+  const [showConfirm, setShowConfirm] = useState(false);   // clear history dialog
 
   const bottomRef = useRef(null);
   const inputRef  = useRef(null);
@@ -64,7 +65,13 @@ export default function PlanningChatScreen() {
     }
   }
 
-  async function clearHistory() {
+  // ── Clear history — shows confirmation dialog first (Flutter parity) ───────
+  function promptClearHistory() {
+    setShowConfirm(true);
+  }
+
+  async function confirmClearHistory() {
+    setShowConfirm(false);
     try {
       await api.delete('/planning/history');
       setMessages([]);
@@ -83,7 +90,8 @@ export default function PlanningChatScreen() {
       const reply = res.data?.data?.reply || t('No response', 'لا يوجد رد');
       setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
     } catch (e) {
-      const errMsg = e?.response?.data?.message || t('Failed to get response', 'فشل الحصول على رد');
+      const errMsg = e?.response?.data?.message
+        || t('Sorry, something went wrong. Please try again.', 'عذراً، حدث خطأ. يرجى المحاولة مجدداً.');
       setMessages(prev => [...prev, { role: 'assistant', content: `⚠️ ${errMsg}` }]);
     } finally {
       setLoading(false);
@@ -101,18 +109,41 @@ export default function PlanningChatScreen() {
   return (
     <div className="pc-root">
 
+      {/* ── Confirm dialog ────────────────────────────────────────────────── */}
+      {showConfirm && (
+        <div className="pc-dialog-overlay" onClick={() => setShowConfirm(false)}>
+          <div className="pc-dialog" onClick={e => e.stopPropagation()}>
+            <h3 className="pc-dialog-title">{t('Clear History', 'مسح السجل')}</h3>
+            <p className="pc-dialog-body">
+              {t(
+                'Are you sure you want to clear the entire chat history?',
+                'هل أنت متأكد من مسح سجل المحادثة بالكامل؟'
+              )}
+            </p>
+            <div className="pc-dialog-actions">
+              <button className="pc-dialog-cancel" onClick={() => setShowConfirm(false)}>
+                {t('Cancel', 'إلغاء')}
+              </button>
+              <button className="pc-dialog-clear" onClick={confirmClearHistory}>
+                {t('Clear', 'مسح')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Header ────────────────────────────────────────────────────────── */}
       <div className="pc-header">
         <div className="pc-header-avatar">🤖</div>
         <div className="pc-header-text">
-          <span className="pc-header-title">{t('Family AI Assistant', 'المساعد الذكي للعائلة')}</span>
-          <span className="pc-header-sub">{t('Powered by Gemini AI', 'مدعوم بتقنية Gemini AI')}</span>
+          <span className="pc-header-title">{t('Family AI Assistant', 'مساعد العائلة الذكي')}</span>
+          <span className="pc-header-sub">{t('Powered by Gemini', 'مدعوم بـ Gemini')}</span>
         </div>
         {messages.length > 0 && (
           <button
             className="pc-clear-btn"
-            title={t('Clear history', 'مسح المحادثة')}
-            onClick={clearHistory}
+            title={t('Clear history', 'مسح السجل')}
+            onClick={promptClearHistory}
           >
             🗑️
           </button>
@@ -128,21 +159,27 @@ export default function PlanningChatScreen() {
         ) : messages.length === 0 ? (
           <div className="pc-empty">
             <div className="pc-empty-icon">🤖</div>
-            <h3 className="pc-empty-title">{t('Family AI Assistant', 'المساعد الذكي للعائلة')}</h3>
+            <h3 className="pc-empty-title">
+              {t('Ask me anything about your family!', 'اسألني أي شيء عن عائلتك!')}
+            </h3>
             <p className="pc-empty-sub">
               {t(
-                'Ask me anything about your family — budgets, tasks, meals, events, and more!',
-                'اسألني أي شيء عن عائلتك — الميزانيات والمهام والوجبات والأحداث وأكثر!'
+                'Budget, tasks, points, suggestions and more.',
+                'الميزانية، المهام، النقاط، والاقتراحات وأكثر.'
               )}
             </p>
-            <div className="pc-chips">
+            <p className="pc-empty-try">{t('Try asking:', 'جرب أن تسأل:')}</p>
+            {/* Full-width suggestion list tiles (matches Flutter's _buildSuggestionChip) */}
+            <div className="pc-suggestion-list">
               {suggestions.map((s, i) => (
                 <button
                   key={i}
-                  className="pc-chip"
+                  className="pc-suggestion-tile"
                   onClick={() => sendMessage(s)}
                 >
-                  {s}
+                  <span className="pc-suggestion-icon">💬</span>
+                  <span className="pc-suggestion-text">{s}</span>
+                  <span className="pc-suggestion-arrow">›</span>
                 </button>
               ))}
             </div>
@@ -154,10 +191,14 @@ export default function PlanningChatScreen() {
                 key={i}
                 className={`pc-bubble-row${msg.role === 'user' ? ' user' : ' ai'}`}
               >
-                {msg.role !== 'user' && (
-                  <div className="pc-ai-avatar">🤖</div>
-                )}
                 <div className={`pc-bubble${msg.role === 'user' ? ' user' : ' ai'}`}>
+                  {/* AI Assistant label — matches Flutter's _buildMessageBubble */}
+                  {msg.role !== 'user' && (
+                    <div className="pc-ai-label">
+                      <span className="pc-ai-label-icon">🤖</span>
+                      <span className="pc-ai-label-text">{t('AI Assistant', 'المساعد الذكي')}</span>
+                    </div>
+                  )}
                   <span className="pc-bubble-text">{msg.content}</span>
                 </div>
               </div>
@@ -166,7 +207,6 @@ export default function PlanningChatScreen() {
             {/* Typing indicator */}
             {loading && (
               <div className="pc-bubble-row ai">
-                <div className="pc-ai-avatar">🤖</div>
                 <div className="pc-bubble ai pc-typing">
                   <span className="pc-dot" />
                   <span className="pc-dot" />
@@ -184,7 +224,7 @@ export default function PlanningChatScreen() {
         <textarea
           ref={inputRef}
           className="pc-input"
-          placeholder={t('Ask your family assistant...', 'اسأل مساعد العائلة...')}
+          placeholder={t('Ask about budget, tasks, points…', 'اسأل عن الميزانية، المهام، النقاط…')}
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -196,7 +236,7 @@ export default function PlanningChatScreen() {
           onClick={() => sendMessage()}
           disabled={!input.trim() || loading}
         >
-          ➤
+          {loading ? '⏳' : '➤'}
         </button>
       </div>
 
